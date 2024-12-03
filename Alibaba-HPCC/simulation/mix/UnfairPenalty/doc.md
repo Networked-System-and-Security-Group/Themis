@@ -1,0 +1,5 @@
+- Inter-DC，Fat-Tree，Naive-Test表示的都是拓扑结构（目前只用了Inter-DC）
+- 每个文件夹下的ExprGroup表示实验组，ControlGroup表示对照组（暂时还没用）
+- flow.txt表示流，topology.txt表示拓扑，pfc.txt表示pfc结果(格式见get_pfc函数，我已注释，flow和topology文件格式均在文件最后几行)，fct_intra/inter_dc.txt是使用lrx_analyze.py文件，将fct文件分成了dc内/间流量，intra/inter_ratio_and_flow_size_record.txt是使用lrx_analyze.py文件，记录dc内/间fct翻倍超过2倍的流量
+- mix/qlen.txt的格式注释：`sw # dist cnt[i](cnt[i] is the number of times that the queue len is larger than i KB)`
+- lrx_analyze.py在结果跑完后使用，用于分析fct，记得看一下代码里的MODE变量（代码里有注释）
