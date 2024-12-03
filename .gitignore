@@ -1,4 +1,4 @@
-simulation/build/
+Alibaba-HPCC/simulation/build/
 *.tr
 *.pyc
 *.trgdb
