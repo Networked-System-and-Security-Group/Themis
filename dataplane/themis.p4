@@ -225,8 +225,6 @@ control Egress(
             // rixin: 下面两个字段用来match需要修改dstQPN字段的CNP
             hdr.ipv4.dst_addr: exact;
             hdr.udp.src_port: exact;
-            // rixin: 这个字段与dstIP结合，供destroy_qp函数来删表项
-            hdr.bth.dest_qp: exact;
         }
         actions = {
             set_dstQPN;

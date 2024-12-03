@@ -54,7 +54,7 @@
 
 #define ARRLEN(arr) sizeof(arr)/sizeof(arr[0])
 #if __TOFINO_MODE__ == 0
-const char *P4_PROG_NAME = "rixin_test";
+const char *P4_PROG_NAME = "themis";
 static const char CPUIF_NAME[] = "bf_pci0";
 #else
 const char *P4_PROG_NAME = "hawkeye";
