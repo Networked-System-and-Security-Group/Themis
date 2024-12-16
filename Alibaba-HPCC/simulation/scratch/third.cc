@@ -712,6 +712,8 @@ int main(int argc, char *argv[])
 	topof >> node_num >> switch_num >> link_num;
 	flowf >> flow_num;
 	std::cout << "flow_num: " << flow_num << "\n";
+	std::cout << "node_num: " << node_num << "\n";
+	std::cout << "switch_num: " << switch_num << "\n";
 	tracef >> trace_num;
 
 
@@ -835,12 +837,15 @@ int main(int argc, char *argv[])
 
 	nic_rate = get_nic_rate(n);
 	//nzh:第二个模块的端口在这里开
+	//zxc:在此处把所有的自循环qbb的if_is_self_loop项设置为1
 	Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n.Get(49));
 	Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(sw->GetDevice(7));
+	dev->if_is_self_loop =1;
 	Ptr<BEgressQueue> re_queue1 = dev->m_queue;
 
 	sw = DynamicCast<SwitchNode>(n.Get(48));
 	dev = DynamicCast<QbbNetDevice>(sw->GetDevice(7));
+	dev->if_is_self_loop =1;
 	Ptr<BEgressQueue> re_queue2 = dev->m_queue;
 	// config switch
 	for (uint32_t i = 0; i < node_num; i++){
@@ -851,6 +856,7 @@ int main(int argc, char *argv[])
 			// 对于交换机来说，其上的设备数为其连接的服务器有多少个
 			for (uint32_t j = 1; j < sw->GetNDevices(); j++){
 				Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(sw->GetDevice(j));
+				std::cout<<"qbb: "<<i<<" "<<j<<" "<<"if loop? "<<dev->if_is_self_loop<<std::endl;
 				//nzh:在EW上开启第二个模块，cnp_handler存储经过的cnp（包括交换机发和端发，m_cnp_time存储收到cnp时间，re_queue1和2代表新端口的m_queue,放到dev的re_queue里
 				if (i == 48) 
 				{
@@ -932,7 +938,6 @@ int main(int argc, char *argv[])
 			Ptr<Node> node = n.Get(i);
 			rdma->SetNode(node);
 			rdma->SetRdmaHw(rdmaHw);
-
 			node->AggregateObject (rdma);
 			rdma->Init();
 			rdma->TraceConnectWithoutContext("QpComplete", MakeBoundCallback (qp_finish, fct_output));
@@ -1068,6 +1073,6 @@ int main(int argc, char *argv[])
 	fclose(trace_output);
 
 	endt = clock();
-	std::cout << (double)(endt - begint) / CLOCKS_PER_SEC << "\n";
+	std::cout << (double)(endt - begint) / CLOCKS_PER_SEC << "\n";//ZXC:这里输出的是代码运行时间不是测试网络的运行时间
 
 }

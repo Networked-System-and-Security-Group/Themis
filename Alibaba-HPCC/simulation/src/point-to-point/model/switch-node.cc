@@ -168,7 +168,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		// admission control
 		FlowIdTag t;
 		p->PeekPacketTag(t);
-		uint32_t inDev = t.GetFlowId();
+		uint32_t inDev = t.GetFlowId(); 
 		if (qIndex != 0){ //not highest priority
 			//交换机判断丢包逻辑
 			if (m_mmu->CheckIngressAdmission(inDev, qIndex, p->GetSize()) && m_mmu->CheckEgressAdmission(idx, qIndex, p->GetSize())){			// Admission control
@@ -178,6 +178,11 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 				return; // Drop
 			}
 			CheckAndSendPfc(inDev, qIndex);
+		}
+		if(m_id==48||m_id==49){//zxc:48和49是外部交换机，其他交换机不需要进行此操作，为了代码的可读性后续可以用数组保存所有外部交换机id
+			if(p->recycle_times_left>0){
+				idx=7;//zxc:7是自循环qbb的编号，对于还没循环结束的包，将其送入自循环qbb，改变topo后需要改变这里
+			}
 		}
 		m_bytes[inDev][idx][qIndex] += p->GetSize();
 		m_devices[idx]->SwitchSend(qIndex, p, ch);

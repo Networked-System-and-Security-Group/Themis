@@ -209,7 +209,7 @@ class Packet : public SimpleRefCount<Packet>
 {
 public:
 
-
+uint32_t recycle_times_left=0;//ZXC:需要被循环减速的包设置此项为循环次数，应当被发送的包此项为0
 	//yibo
 	/*
 	inline void Unref (void) const

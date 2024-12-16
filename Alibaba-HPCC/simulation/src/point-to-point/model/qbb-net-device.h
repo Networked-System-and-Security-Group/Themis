@@ -197,6 +197,7 @@ class CNP_Handler{
    */
   Ptr<BEgressQueue> m_queue;
   Ptr<BEgressQueue> re_queue;
+  uint32_t if_is_self_loop = 0;//ZXC:indicates that this qbb is used in deceleration
 protected:
 
 	//Ptr<Node> m_node;

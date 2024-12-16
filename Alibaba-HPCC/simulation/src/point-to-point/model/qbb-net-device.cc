@@ -274,9 +274,11 @@ void WriteToFile(std::string str){
 	out.close();
 }
 
-	void
-		QbbNetDevice::DequeueAndTransmit(void)
+void QbbNetDevice::DequeueAndTransmit(void)
 	{
+		// if(if_is_self_loop){
+		// 	std::cout<<"this is self loop qbb"<<std::endl;
+		// }
 		NS_LOG_FUNCTION(this);
 		if (!m_linkUp) return; // if link is down, return
 		if (m_txMachineState == BUSY) return;	// Quit if channel busy
@@ -321,246 +323,24 @@ void WriteToFile(std::string str){
 				//ch.getInt = 1;
 				p->PeekHeader(ch);
 				//nzh:第二个模块的处理逻辑，若是有cnp，就发到新端口,此端口的re_queue指向新端口的m_queue
-				if(m_queue->GetLastQueue()!=0&&m_bps==1600000000000)
-				{
-					CnpKey key(ch.udp.dport,ch.udp.sport,ch.dip,ch.sip,ch.udp.pg);
-					if(m_cnp_handler==NULL)
-					{
-						std::cout<<"cnp_handler is null"<<std::endl;
+				//zxc:re_queue机制已废弃
+				if(m_queue->GetLastQueue()!=0){
+					if(m_bps==1600000000000 ){//ZXC:inter-DC链路的处理逻辑
+						CnpKey p_key(ch.udp.dport, ch.udp.sport, ch.dip, ch.sip, ch.udp.pg);
+						auto iter = m_cnp_handler->find(p_key);
+						if(iter!=m_cnp_handler->end()){//ZXC:如果被cnp匹配上，发给减速队列
+							p->recycle_times_left = 100;//zxc:此数字代表被减速的包需要循环多少次
+							//std::cout<<"set p recycle time once*******************************"<<std::endl;				
+						}
 					}
-					auto it = m_cnp_handler->find(key);
-					if(it!=m_cnp_handler->end())
-					{
-						// if(re_queue)
-						// 	re_queue->Enqueue(p,ch.udp.pg);
-						// else
-						// {
-						// 	NS_LOG_ERROR("re_queue mot found");
-						// }
-
+					else if(if_is_self_loop == 1){//ZXC:自循环减速qbb的处理逻辑
+						if(p->recycle_times_left > 0){
+							p->recycle_times_left -= 1;//zxc:每循环一次该数字减一
+							//std::cout<<"recycle times left: "<<p->recycle_times_left<<std::endl;
+						}
 					}
-
 				}
-				// if(enable_themis&&m_queue->GetLastQueue()!=0&&m_bps==1600000000000){
-				// std::string str = std::to_string(m_queue->GetNBytes(m_queue->GetLastQueue()));
-				// str=str+' '+std::to_string(ch.udp.seq)+'\n';
-				// WriteToFile(str);
-				// //输出源ip和目的ip
-				// // std::cout<<ch.sip<<"  "<<ch.dip<<std::endl;
-				// }
-				// if(enable_themis&&m_queue->GetLastQueue()!=0&&m_bps==400000000000){
-				// // 					std::string str = std::to_string(m_queue->GetNBytes(m_queue->GetLastQueue()));
-				// // str=str+' '+std::to_string(ch.udp.seq)+'\n';
-				// // WriteToFile(str);
-				// 	//输出此时队列内的长度	
-				// 	if(ch.udp.pg!=m_queue->GetLastQueue())
-				// 	{
-				// 		std::cout<<ch.udp.pg<<"  "<<m_queue->GetLastQueue()<<std::endl;
-				// 		std::cout<<ch.udp.sport<<"  "<<ch.dip<<"  "<<ch.udp.pg<<std::endl;
-				// 	}
-				// 	CnpKey key(ch.udp.dport,ch.udp.sport,ch.dip,ch.sip,ch.udp.pg);
-				// 	// if(m_cnp_handler==NULL)
-				// 	// {
-				// 	// 	std::cout<<"cnp_handler is null"<<std::endl;
-				// 	// }
-				// 	auto it = m_cnp_handler->find(key);
-				// 	if(it!=m_cnp_handler->end())
-				// 	{
-				// 		CNP_Handler &cnp = it->second;
-				// 		if(!cnp.finished&&cnp.sended)
-				// 		{
-				// 			//第一个包第一次
-				// 			if(cnp.first==0)
-				// 			{
-				// 				cnp.finish_time=cnp.rec_time;
-				// 				//std::cout<<m_node->GetId()<<std::endl;
-				// 				first_num++;
-				// 				//printf("first_num:%d\n",first_num);
-				// 				cnp.first=ch.udp.seq;
-				// 				cnp.biggest=0;
-				// 				cnp.delay = Seconds(m_bps.CalculateTxTime(m_queue->GetNBytes(ch.udp.pg)));
-				// 				//std::cout<<"delay:              "<<cnp.delay<<std::endl;
-				// 				cnp.n--;
-				// 				m_queue->Enqueue(p,ch.udp.pg);
-				// 				return;
-				// 			}
-				// 			//第一个包其他次
-				// 			else if(cnp.first==ch.udp.seq)
-				// 			{
-				// 				//printf("%d n = %d",first_num,cnp.n);
-				// 				if(cnp.n!=0){
-				// 					cnp.n--;
-				// 					cnp.delay+=Seconds(m_bps.CalculateTxTime(m_queue->GetNBytes(ch.udp.pg)));
-				// 					m_queue->Enqueue(p,ch.udp.pg);
-				// 					return;
-				// 				}
-				// 				else{
-				// 					cnp.finished=true;
-				// 					cnp.sended=false;
-				// 					//important
-				// 					//printf("into stage 2 %d\n",first_num);
-				// 				}
-				// 			}
-				// 			//其他包
-				// 			else {
-				// 				//printf("2\n");
-				// 				m_queue->Enqueue(p,ch.udp.pg);
-				// 				return;
-				// 			}
-				// 		}
-				// 		if(cnp.finished&&!cnp.sended)
-				// 		{
-				// 			//printf("3\n");
-				// 			if(ns3::Simulator::Now()>=cnp.finish_time)
-				// 			{
-				// 				cnp.sended=true;
-				// 				//printf("into stage 3 %d\n",first_num);
-				// 			}
-				// 			if(ch.udp.seq>cnp.biggest+1000)
-				// 			{
-				// 				m_queue->Enqueue(p,ch.udp.pg);
-				// 				return;
-				// 			}
-				// 		}
-				// 		if(cnp.finished&&cnp.sended)
-				// 		{
-				// 			if(ch.udp.seq>cnp.biggest+1000)
-				// 			{
-				// 				m_queue->Enqueue(p,ch.udp.pg);
-				// 				return;
-				// 			}
-				// 			if(ns3::Simulator::Now()-cnp.rec_time<=ns3::MicroSeconds(55))
-				// 			{
-				// 				cnp.finished=false;
-				// 				cnp.first=0;
-				// 				cnp.n=num;
-				// 				//printf("receive cnp again\n");
-				// 				cnp.biggest=0;
-				// 			}
-				// 		}
-				// 		if(ch.udp.seq>cnp.biggest)
-				// 		{
-				// 			cnp.biggest=ch.udp.seq;
-				// 		}
-				// /*注释到此为止 */
-				// 		// if(!cnp.finished&&cnp.sended)
-				// 		// {
-				// 		// 	//第一个包第一次
-				// 		// 	if(cnp.first==0)
-				// 		// 	{
-				// 		// 		// std::cout<<"sip= "<<ch.sip<< " dip= "<<ch.dip<<std::endl;
-				// 		// 		cnp.finish_time=cnp.rec_time;
-				// 		// 		//std::cout<<m_node->GetId()<<std::endl;
-				// 		// 		first_num++;
-				// 		// 		//printf("first_num:%d\n",first_num);
-				// 		// 		cnp.first=ch.udp.seq;
-				// 		// 		cnp.biggest=ch.udp.seq;
-				// 		// 		cnp.delay = Seconds(m_bps.CalculateTxTime(m_queue->GetNBytes(ch.udp.pg)));
-				// 		// 		//std::cout<<"delay:              "<<cnp.delay<<std::endl;
-				// 		// 		//cnp.n--;
-				// 		// 		if(m_queue->GetNBytes(m_queue->GetLastQueue())>10)
-				// 		// 		{
-				// 		// 			cnp.n--;
-				// 		// 		}
-				// 		// 		else{
-				// 		// 			cnp.first=0;
-				// 		// 		}
-				// 		// // 								std::string str = std::to_string(m_queue->GetNBytes(m_queue->GetLastQueue()));
-				// 		// // str=str+' '+std::to_string(ch.udp.seq)+'\n';
-				// 		// // WriteToFile(str);
-				// 		// 		m_queue->Enqueue(p,ch.udp.pg);
-				// 		// 		return;
-				// 		// 	}
-				// 		// 	//第一个包其他次
-				// 		// 	else if(cnp.first==ch.udp.seq)
-				// 		// 	{
-				// 		// 		//printf("%d n = %d",first_num,cnp.n);
-				// 		// 		if(cnp.n!=0){
-				// 		// 			cnp.n--;
-				// 		// // 									std::string str = std::to_string(m_queue->GetNBytes(m_queue->GetLastQueue()));
-				// 		// // str=str+' '+std::to_string(ch.udp.seq)+'\n';
-				// 		// // WriteToFile(str);
-				// 		// 			cnp.delay+=Seconds(m_bps.CalculateTxTime(m_queue->GetNBytes(ch.udp.pg)));
-				// 		// 			m_queue->Enqueue(p,ch.udp.pg);
-				// 		// 			return;
-				// 		// 		}
-				// 		// 		else{
-				// 		// 			cnp.finished=true;
-				// 		// 			cnp.sended=false;
-				// 		// 			//important
-				// 		// 			//printf("into stage 2 %d\n",first_num);
-				// 		// 		}
-				// 		// 	}
-				// 		// 	//其他包
-				// 		// 	else {
-				// 		// 		if(ch.udp.seq>cnp.biggest)
-				// 		// 		{
-				// 		// 			cnp.biggest=ch.udp.seq;
-				// 		// 		}
-				// 		// 		//printf("2\n");
-				// 		// // 								std::string str = std::to_string(m_queue->GetNBytes(m_queue->GetLastQueue()));
-				// 		// // str=str+' '+std::to_string(ch.udp.seq)+'\n';
-				// 		// // WriteToFile(str);
-				// 		// 		m_queue->Enqueue(p,ch.udp.pg);
-				// 		// 		return;
-				// 		// 	}
-				// 		// }
-				// 		// if(cnp.finished&&!cnp.sended)
-				// 		// {
-				// 		// 	//printf("3\n");
-				// 		// 	if(ns3::Simulator::Now()>=cnp.finish_time)
-				// 		// 	{
-				// 		// 		cnp.sended=true;
-				// 		// 		//printf("into stage 3 %d\n",first_num);
-				// 		// 	}
-				// 		// 	if(ch.udp.seq>cnp.biggest&&cnp.biggest)
-				// 		// 	{
-				// 		// 		cnp.biggest+=1000;
-				// 		// // 								std::string str = std::to_string(m_queue->GetNBytes(m_queue->GetLastQueue()));
-				// 		// // str=str+' '+std::to_string(ch.udp.seq)+'\n';
-				// 		// // WriteToFile(str);
-				// 		// 		m_queue->Enqueue(p,ch.udp.pg);
-				// 		// 		return;
-				// 		// 	}
-				// 		// 	if(ch.udp.seq==cnp.biggest&&cnp.biggest)
-				// 		// 	{
-				// 		// 		finish_num++;
-				// 		// 		//printf("finish_num:%d\n",finish_num);
-				// 		// 		cnp.biggest=0;
-				// 		// 	}
-				// 		// }
-				// 		// if(cnp.finished&&cnp.sended)
-				// 		// {
-				// 		// 	if(ch.udp.seq>cnp.biggest&&cnp.biggest)
-				// 		// 	{
-
-				// 		// 		//printf("stage 3 resubmit%d %u %u\n",first_num,cnp.biggest,ch.udp.seq);
-				// 		// 		//std::cout<<"stage 3 resubmit "<<first_num<<" "<<cnp.biggest<<" "<<ch.udp.seq<<std::endl;
-				// 		// 		cnp.biggest+=1000;
-				// 		// // 								std::string str = std::to_string(m_queue->GetNBytes(m_queue->GetLastQueue()));
-				// 		// // str=str+' '+std::to_string(ch.udp.seq)+'\n';
-				// 		// // WriteToFile(str);
-				// 		// 		//printf("biggest to %d\n",cnp.biggest);
-				// 		// 		m_queue->Enqueue(p,ch.udp.pg);
-				// 		// 		return;
-				// 		// 	}
-				// 		// 	if(ch.udp.seq==cnp.biggest&&cnp.biggest)
-				// 		// 	{
-				// 		// 		finish_num++;
-				// 		// 		//printf("finish_num:%d\n",finish_num);
-				// 		// 		cnp.biggest=0;
-				// 		// 	}
-				// 		// 	if(ns3::Simulator::Now()-cnp.rec_time<=ns3::MicroSeconds(55)&&cnp.biggest==0)
-				// 		// 	{
-				// 		// 		cnp.finished=false;
-				// 		// 		cnp.first=0;
-				// 		// 		cnp.n=num;
-				// 		// 		//printf("receive cnp again\n");
-				// 		// 	}
-				// 		// }
-				// 		/*注释到此为止 */
-				// 	}
-				//  }
+                // zxc：这是本文件下方大量被注释掉的代码原先所处的行位置，为了编码方便我将注释移动至文件最下方，此行紧邻下一行的m_snifferTrace(p)，中间勿插入代码				
 				m_snifferTrace(p);
 				m_promiscSnifferTrace(p);
 				Ptr<Packet> packet = p->Copy();
@@ -885,3 +665,228 @@ void WriteToFile(std::string str){
 		}
 	}
 } // namespace ns3
+
+
+
+
+//从文件中部移动至此处的被注释掉的代码
+				// if(enable_themis&&m_queue->GetLastQueue()!=0&&m_bps==1600000000000){
+				// std::string str = std::to_string(m_queue->GetNBytes(m_queue->GetLastQueue()));
+				// str=str+' '+std::to_string(ch.udp.seq)+'\n';
+				// WriteToFile(str);
+				// //输出源ip和目的ip
+				// // std::cout<<ch.sip<<"  "<<ch.dip<<std::endl;
+				// }
+				// if(enable_themis&&m_queue->GetLastQueue()!=0&&m_bps==400000000000){
+				// // 					std::string str = std::to_string(m_queue->GetNBytes(m_queue->GetLastQueue()));
+				// // str=str+' '+std::to_string(ch.udp.seq)+'\n';
+				// // WriteToFile(str);
+				// 	//输出此时队列内的长度	
+				// 	if(ch.udp.pg!=m_queue->GetLastQueue())
+				// 	{
+				// 		std::cout<<ch.udp.pg<<"  "<<m_queue->GetLastQueue()<<std::endl;
+				// 		std::cout<<ch.udp.sport<<"  "<<ch.dip<<"  "<<ch.udp.pg<<std::endl;
+				// 	}
+				// 	CnpKey key(ch.udp.dport,ch.udp.sport,ch.dip,ch.sip,ch.udp.pg);
+				// 	// if(m_cnp_handler==NULL)
+				// 	// {
+				// 	// 	std::cout<<"cnp_handler is null"<<std::endl;
+				// 	// }
+				// 	auto it = m_cnp_handler->find(key);
+				// 	if(it!=m_cnp_handler->end())
+				// 	{
+				// 		CNP_Handler &cnp = it->second;
+				// 		if(!cnp.finished&&cnp.sended)
+				// 		{
+				// 			//第一个包第一次
+				// 			if(cnp.first==0)
+				// 			{
+				// 				cnp.finish_time=cnp.rec_time;
+				// 				//std::cout<<m_node->GetId()<<std::endl;
+				// 				first_num++;
+				// 				//printf("first_num:%d\n",first_num);
+				// 				cnp.first=ch.udp.seq;
+				// 				cnp.biggest=0;
+				// 				cnp.delay = Seconds(m_bps.CalculateTxTime(m_queue->GetNBytes(ch.udp.pg)));
+				// 				//std::cout<<"delay:              "<<cnp.delay<<std::endl;
+				// 				cnp.n--;
+				// 				m_queue->Enqueue(p,ch.udp.pg);
+				// 				return;
+				// 			}
+				// 			//第一个包其他次
+				// 			else if(cnp.first==ch.udp.seq)
+				// 			{
+				// 				//printf("%d n = %d",first_num,cnp.n);
+				// 				if(cnp.n!=0){
+				// 					cnp.n--;
+				// 					cnp.delay+=Seconds(m_bps.CalculateTxTime(m_queue->GetNBytes(ch.udp.pg)));
+				// 					m_queue->Enqueue(p,ch.udp.pg);
+				// 					return;
+				// 				}
+				// 				else{
+				// 					cnp.finished=true;
+				// 					cnp.sended=false;
+				// 					//important
+				// 					//printf("into stage 2 %d\n",first_num);
+				// 				}
+				// 			}
+				// 			//其他包
+				// 			else {
+				// 				//printf("2\n");
+				// 				m_queue->Enqueue(p,ch.udp.pg);
+				// 				return;
+				// 			}
+				// 		}
+				// 		if(cnp.finished&&!cnp.sended)
+				// 		{
+				// 			//printf("3\n");
+				// 			if(ns3::Simulator::Now()>=cnp.finish_time)
+				// 			{
+				// 				cnp.sended=true;
+				// 				//printf("into stage 3 %d\n",first_num);
+				// 			}
+				// 			if(ch.udp.seq>cnp.biggest+1000)
+				// 			{
+				// 				m_queue->Enqueue(p,ch.udp.pg);
+				// 				return;
+				// 			}
+				// 		}
+				// 		if(cnp.finished&&cnp.sended)
+				// 		{
+				// 			if(ch.udp.seq>cnp.biggest+1000)
+				// 			{
+				// 				m_queue->Enqueue(p,ch.udp.pg);
+				// 				return;
+				// 			}
+				// 			if(ns3::Simulator::Now()-cnp.rec_time<=ns3::MicroSeconds(55))
+				// 			{
+				// 				cnp.finished=false;
+				// 				cnp.first=0;
+				// 				cnp.n=num;
+				// 				//printf("receive cnp again\n");
+				// 				cnp.biggest=0;
+				// 			}
+				// 		}
+				// 		if(ch.udp.seq>cnp.biggest)
+				// 		{
+				// 			cnp.biggest=ch.udp.seq;
+				// 		}
+				// /*注释到此为止 */
+				// 		// if(!cnp.finished&&cnp.sended)
+				// 		// {
+				// 		// 	//第一个包第一次
+				// 		// 	if(cnp.first==0)
+				// 		// 	{
+				// 		// 		// std::cout<<"sip= "<<ch.sip<< " dip= "<<ch.dip<<std::endl;
+				// 		// 		cnp.finish_time=cnp.rec_time;
+				// 		// 		//std::cout<<m_node->GetId()<<std::endl;
+				// 		// 		first_num++;
+				// 		// 		//printf("first_num:%d\n",first_num);
+				// 		// 		cnp.first=ch.udp.seq;
+				// 		// 		cnp.biggest=ch.udp.seq;
+				// 		// 		cnp.delay = Seconds(m_bps.CalculateTxTime(m_queue->GetNBytes(ch.udp.pg)));
+				// 		// 		//std::cout<<"delay:              "<<cnp.delay<<std::endl;
+				// 		// 		//cnp.n--;
+				// 		// 		if(m_queue->GetNBytes(m_queue->GetLastQueue())>10)
+				// 		// 		{
+				// 		// 			cnp.n--;
+				// 		// 		}
+				// 		// 		else{
+				// 		// 			cnp.first=0;
+				// 		// 		}
+				// 		// // 								std::string str = std::to_string(m_queue->GetNBytes(m_queue->GetLastQueue()));
+				// 		// // str=str+' '+std::to_string(ch.udp.seq)+'\n';
+				// 		// // WriteToFile(str);
+				// 		// 		m_queue->Enqueue(p,ch.udp.pg);
+				// 		// 		return;
+				// 		// 	}
+				// 		// 	//第一个包其他次
+				// 		// 	else if(cnp.first==ch.udp.seq)
+				// 		// 	{
+				// 		// 		//printf("%d n = %d",first_num,cnp.n);
+				// 		// 		if(cnp.n!=0){
+				// 		// 			cnp.n--;
+				// 		// // 									std::string str = std::to_string(m_queue->GetNBytes(m_queue->GetLastQueue()));
+				// 		// // str=str+' '+std::to_string(ch.udp.seq)+'\n';
+				// 		// // WriteToFile(str);
+				// 		// 			cnp.delay+=Seconds(m_bps.CalculateTxTime(m_queue->GetNBytes(ch.udp.pg)));
+				// 		// 			m_queue->Enqueue(p,ch.udp.pg);
+				// 		// 			return;
+				// 		// 		}
+				// 		// 		else{
+				// 		// 			cnp.finished=true;
+				// 		// 			cnp.sended=false;
+				// 		// 			//important
+				// 		// 			//printf("into stage 2 %d\n",first_num);
+				// 		// 		}
+				// 		// 	}
+				// 		// 	//其他包
+				// 		// 	else {
+				// 		// 		if(ch.udp.seq>cnp.biggest)
+				// 		// 		{
+				// 		// 			cnp.biggest=ch.udp.seq;
+				// 		// 		}
+				// 		// 		//printf("2\n");
+				// 		// // 								std::string str = std::to_string(m_queue->GetNBytes(m_queue->GetLastQueue()));
+				// 		// // str=str+' '+std::to_string(ch.udp.seq)+'\n';
+				// 		// // WriteToFile(str);
+				// 		// 		m_queue->Enqueue(p,ch.udp.pg);
+				// 		// 		return;
+				// 		// 	}
+				// 		// }
+				// 		// if(cnp.finished&&!cnp.sended)
+				// 		// {
+				// 		// 	//printf("3\n");
+				// 		// 	if(ns3::Simulator::Now()>=cnp.finish_time)
+				// 		// 	{
+				// 		// 		cnp.sended=true;
+				// 		// 		//printf("into stage 3 %d\n",first_num);
+				// 		// 	}
+				// 		// 	if(ch.udp.seq>cnp.biggest&&cnp.biggest)
+				// 		// 	{
+				// 		// 		cnp.biggest+=1000;
+				// 		// // 								std::string str = std::to_string(m_queue->GetNBytes(m_queue->GetLastQueue()));
+				// 		// // str=str+' '+std::to_string(ch.udp.seq)+'\n';
+				// 		// // WriteToFile(str);
+				// 		// 		m_queue->Enqueue(p,ch.udp.pg);
+				// 		// 		return;
+				// 		// 	}
+				// 		// 	if(ch.udp.seq==cnp.biggest&&cnp.biggest)
+				// 		// 	{
+				// 		// 		finish_num++;
+				// 		// 		//printf("finish_num:%d\n",finish_num);
+				// 		// 		cnp.biggest=0;
+				// 		// 	}
+				// 		// }
+				// 		// if(cnp.finished&&cnp.sended)
+				// 		// {
+				// 		// 	if(ch.udp.seq>cnp.biggest&&cnp.biggest)
+				// 		// 	{
+
+				// 		// 		//printf("stage 3 resubmit%d %u %u\n",first_num,cnp.biggest,ch.udp.seq);
+				// 		// 		//std::cout<<"stage 3 resubmit "<<first_num<<" "<<cnp.biggest<<" "<<ch.udp.seq<<std::endl;
+				// 		// 		cnp.biggest+=1000;
+				// 		// // 								std::string str = std::to_string(m_queue->GetNBytes(m_queue->GetLastQueue()));
+				// 		// // str=str+' '+std::to_string(ch.udp.seq)+'\n';
+				// 		// // WriteToFile(str);
+				// 		// 		//printf("biggest to %d\n",cnp.biggest);
+				// 		// 		m_queue->Enqueue(p,ch.udp.pg);
+				// 		// 		return;
+				// 		// 	}
+				// 		// 	if(ch.udp.seq==cnp.biggest&&cnp.biggest)
+				// 		// 	{
+				// 		// 		finish_num++;
+				// 		// 		//printf("finish_num:%d\n",finish_num);
+				// 		// 		cnp.biggest=0;
+				// 		// 	}
+				// 		// 	if(ns3::Simulator::Now()-cnp.rec_time<=ns3::MicroSeconds(55)&&cnp.biggest==0)
+				// 		// 	{
+				// 		// 		cnp.finished=false;
+				// 		// 		cnp.first=0;
+				// 		// 		cnp.n=num;
+				// 		// 		//printf("receive cnp again\n");
+				// 		// 	}
+				// 		// }
+				// 		/*注释到此为止 */
+				// 	}
+				//  }
