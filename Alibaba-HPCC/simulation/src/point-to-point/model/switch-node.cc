@@ -13,6 +13,7 @@
 #include "ns3/int-header.h"
 #include "rdma-hw.h"
 #include <cmath>
+#include<map>
 
 namespace ns3 {
 
@@ -49,7 +50,9 @@ SwitchNode::SwitchNode(){
 	m_ecmpSeed = m_id;
 	m_node_type = 1;
 	m_mmu = CreateObject<SwitchMmu>();
-	m_cnp_handler = std::map<QbbNetDevice::CnpKey, QbbNetDevice::CNP_Handler>();
+	m_cnp_handler = std::map<CnpKey, CNP_Handler>();
+	ExternalSwitch = 0;
+	loop_qbb_index = 7;
 	for (uint32_t i = 0; i < pCnt; i++)
 		for (uint32_t j = 0; j < pCnt; j++)
 			for (uint32_t k = 0; k < qCnt; k++)
@@ -105,6 +108,32 @@ void SwitchNode::CheckAndSendResume(uint32_t inDev, uint32_t qIndex){
 		m_mmu->SetResume(inDev, qIndex);
 	}
 }
+
+
+//zxc:此函数用于判断是否收到cnp以及在收到cnp时更新m_cnp_handler信息
+int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
+	uint8_t c = (ch.ack.flags >> qbbHeader::FLAG_CNP) & 1; if(!c) return 0;//zxc:不是cnp的话返回0
+	uint16_t qIndex = ch.ack.pg;
+	uint16_t port = ch.ack.dport;
+	uint32_t sip = ch.sip;
+	CnpKey key(ch.ack.sport,ch.ack.dport,ch.sip,ch.dip,ch.ack.pg);
+	auto iter = m_cnp_handler.find(key);
+	if(iter!=m_cnp_handler.end()){
+		CNP_Handler &cnp_handler = iter->second;
+		cnp_handler.rec_time = Simulator::Now();
+	}
+	else{
+		CNP_Handler cnp_handler;
+		cnp_handler.n =5;
+		cnp_handler.rec_time=Simulator::Now();
+		m_cnp_handler[key] = cnp_handler;
+	}
+	return 1;//更新m_cnp_handler信息后返回1
+}
+
+
+
+
 //nzh:非常重要的函数！！！important
 void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 	int idx = GetOutDev(p, ch);
@@ -121,7 +150,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		//nzh:收到了端上的cnp，也要更新cnp时间
 		if((ch.l3Prot == 0xFD || ch.l3Prot == 0xFC)&&((ch.ack.flags >> qbbHeader::FLAG_CNP) & 1))
 		{
-			QbbNetDevice::CnpKey key(ch.udp.sport,ch.udp.dport,ch.sip,ch.dip,ch.udp.pg);
+			CnpKey key(ch.udp.sport,ch.udp.dport,ch.sip,ch.dip,ch.udp.pg);
 			auto it = m_cnp_time.find(key);
 			if(it != m_cnp_time.end()){
 				Time now = Simulator::Now();
@@ -149,7 +178,6 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 					p->AddHeader(ackh);
 					p->AddHeader(h);
 					p->AddHeader(ppp);
-
 				}
 				else
 				{
@@ -157,13 +185,14 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 				}
 			}
 			else{
-				QbbNetDevice::CNP_Handler cnp;
+				CNP_Handler cnp;
 				cnp.n = num;
 				cnp.rec_time = Simulator::Now();
-
 				(m_cnp_handler)[key] = cnp;
 			}
 		}
+
+
 
 		// admission control
 		FlowIdTag t;
@@ -179,11 +208,38 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 			}
 			CheckAndSendPfc(inDev, qIndex);
 		}
-		if(m_id==48||m_id==49){//zxc:48和49是外部交换机，其他交换机不需要进行此操作，为了代码的可读性后续可以用数组保存所有外部交换机id
-			if(p->recycle_times_left>0){
-				idx=7;//zxc:7是自循环qbb的编号，对于还没循环结束的包，将其送入自循环qbb，改变topo后需要改变这里
+
+		//zxc:控制逻辑只在外部交换机上实现
+		if(ExternalSwitch){
+			//zxc：判断是否是cnp以及更新cnp_handler信息
+			int is_cnp = ReceiveCnp(p,ch);
+			//zxc:判断是否要循环减速，cnp直接发走，非cnp才需要执行此操作
+			if(!is_cnp){
+				CnpKey key(ch.ack.sport,ch.ack.dport,ch.sip,ch.dip,ch.ack.pg);
+				auto iter = m_cnp_handler.find(key);
+				//zxc: 如果没有被cnp命中则直接发走，被命中则进入下方控制逻辑
+				if(iter!=m_cnp_handler.end()){
+					//zxc:recycle_times_left==0表明这个包已经被减速并完成减速
+					if(p->recycle_times_left!=0){
+						//zxc:this packet is cnp-tergeted for the first time
+						if(p->recycle_times_left<0){
+							p->recycle_times_left = iter->second.n;
+							idx = loop_qbb_index;
+							std::cout<<"put one packet to decelerating loop and the left is "<<p->recycle_times_left<<"**********"<<"\n";
+						}
+						//zxc:this packet has been targeted and is in the loop
+						else{
+							p->recycle_times_left -= 1;
+							idx = loop_qbb_index;
+							std::cout<<"reduce loop times by one and the left is "<<p->recycle_times_left<<"\n";
+						}
+					
+					}
+				}
+
 			}
 		}
+		//zxc:inDev是输入网卡，idx是目的网卡，qIndex是目的网卡接收此pkt的队列
 		m_bytes[inDev][idx][qIndex] += p->GetSize();
 		m_devices[idx]->SwitchSend(qIndex, p, ch);
 	}else

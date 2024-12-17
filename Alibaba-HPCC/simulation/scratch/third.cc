@@ -841,12 +841,17 @@ int main(int argc, char *argv[])
 	Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n.Get(49));
 	Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(sw->GetDevice(7));
 	dev->if_is_self_loop =1;
-	Ptr<BEgressQueue> re_queue1 = dev->m_queue;
+	sw->ExternalSwitch = 1;
+	sw->loop_qbb_index = 7;
+	//Ptr<BEgressQueue> re_queue1 = dev->m_queue;
 
 	sw = DynamicCast<SwitchNode>(n.Get(48));
 	dev = DynamicCast<QbbNetDevice>(sw->GetDevice(7));
 	dev->if_is_self_loop =1;
-	Ptr<BEgressQueue> re_queue2 = dev->m_queue;
+	sw->ExternalSwitch = 1;
+	sw->loop_qbb_index = 7;
+	//Ptr<BEgressQueue> re_queue2 = dev->m_queue;
+
 	// config switch
 	for (uint32_t i = 0; i < node_num; i++){
 		if (n.Get(i)->GetNodeType() == 1){ // is switch
@@ -856,23 +861,23 @@ int main(int argc, char *argv[])
 			// 对于交换机来说，其上的设备数为其连接的服务器有多少个
 			for (uint32_t j = 1; j < sw->GetNDevices(); j++){
 				Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(sw->GetDevice(j));
-				std::cout<<"qbb: "<<i<<" "<<j<<" "<<"if loop? "<<dev->if_is_self_loop<<std::endl;
+				//std::cout<<"qbb: "<<i<<" "<<j<<" "<<"if loop? "<<dev->if_is_self_loop<<std::endl;
 				//nzh:在EW上开启第二个模块，cnp_handler存储经过的cnp（包括交换机发和端发，m_cnp_time存储收到cnp时间，re_queue1和2代表新端口的m_queue,放到dev的re_queue里
 				if (i == 48) 
 				{
 					dev->enable_themis = true;
-					dev->m_cnp_handler = &sw->m_cnp_handler;
-					dev->re_queue = re_queue2;
-					if(dev->m_cnp_handler == NULL)
-						std::cout << "m_cnp_handler is NULL\n";
+					//dev->m_cnp_handler = &sw->m_cnp_handler;
+					//dev->re_queue = re_queue2;
+					// if(dev->m_cnp_handler == NULL)
+					// 	std::cout << "m_cnp_handler is NULL\n";
 				}
 				else if(i == 49)
 				{
 					dev->enable_themis = true;
-					dev->m_cnp_handler = &sw->m_cnp_handler;
-					dev->re_queue = re_queue1;
-					if(dev->m_cnp_handler == NULL)
-						std::cout << "m_cnp_handler is NULL\n";
+					//dev->m_cnp_handler = &sw->m_cnp_handler;
+					//dev->re_queue = re_queue1;
+					// if(dev->m_cnp_handler == NULL)
+					// 	std::cout << "m_cnp_handler is NULL\n";
 				}
 				// set ecn
 				uint64_t rate = dev->GetDataRate().GetBitRate();
@@ -893,6 +898,7 @@ int main(int argc, char *argv[])
 					rate /= 2;
 				}
 			}
+
 			sw->m_mmu->ConfigNPort(sw->GetNDevices()-1);
 			// switch buffer大小单位为MB
 			sw->m_mmu->ConfigBufferSize(buffer_size* 1024 * 1024);

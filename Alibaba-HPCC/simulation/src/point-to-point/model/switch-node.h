@@ -6,6 +6,7 @@
 #include "ns3/qbb-net-device.h"
 #include "switch-mmu.h"
 #include "pint.h"
+#include <map>
 
 namespace ns3 {
 
@@ -27,6 +28,65 @@ class SwitchNode : public Node{
 	uint64_t m_lastPktTs[pCnt]; // ns
 	double m_u[pCnt];
 
+
+
+
+//zxc:以下是为switch_node新增的cnp-handler和cnp-key
+	class CNP_Handler{
+  		public:
+    	Time rec_time;//最后一次接到CNP的时间
+    	Time finish_time;//
+    	uint32_t first;//第一个序列号
+    	uint32_t biggest;//最大序列号
+    	uint32_t n;//需要resubmit n遍
+    	Time delay;//第一个包resubmit带来的延迟
+    	bool finished;// n次resubmit是否完成
+    	bool sended;//是否发送过
+    	CNP_Handler(){
+      		rec_time = Time(0);
+      		finish_time = Time(0);
+      		delay = Time(0);
+      		first = 0;
+      		biggest = 0;
+      		n = 5;
+      		finished = false;
+      		sended = true;
+    	}
+ 	};
+
+	struct CnpKey {
+    	uint16_t sport;
+    	uint16_t dport;
+    	uint32_t sip;
+    	uint32_t dip;
+    	uint16_t qindex;
+    	// 重载小于运算符，用于 map 的键比较
+    	bool operator<(const CnpKey& other) const {
+      		if (sip != other.sip) {
+        		return sip < other.sip;
+      		}
+      		if (dip != other.dip) {
+       			 return dip < other.dip;
+      		}
+      		if (sport != other.sport) {
+        		return sport < other.sport;
+      		}
+      		if (dport != other.dport) {
+        		return dport < other.dport;
+      		}
+      		return qindex < other.qindex;
+    	}
+    	CnpKey(uint16_t sport, uint16_t dport, uint32_t sip, uint32_t dip, uint16_t qindex) {
+      	this->sport = sport;
+      	this->dport = dport;
+      	this->sip = sip;
+      	this->dip = dip;
+      	this->qindex = qindex;
+    	}
+	};
+
+
+
 protected:
 	bool m_ecnEnabled;
 	uint32_t m_ccMode;
@@ -41,8 +101,9 @@ private:
 	void CheckAndSendPfc(uint32_t inDev, uint32_t qIndex);
 	void CheckAndSendResume(uint32_t inDev, uint32_t qIndex);
 public:
-	std::map<QbbNetDevice::CnpKey, QbbNetDevice::CNP_Handler> m_cnp_handler;
-	std::map<QbbNetDevice::CnpKey, Time> m_cnp_time;
+	int ReceiveCnp(Ptr<Packet>p, CustomHeader &ch);//zxc:为交换机添加实现控制逻辑所需函数
+	std::map<CnpKey, CNP_Handler> m_cnp_handler;
+	std::map<CnpKey, Time> m_cnp_time;
 	Ptr<SwitchMmu> m_mmu;
 	void CheckAndSendCnp(uint32_t ifIndex, uint32_t qIndex, Ptr<Packet> p);
 	static TypeId GetTypeId (void);
@@ -55,6 +116,8 @@ public:
 	// for approximate calc in PINT
 	int logres_shift(int b, int l);
 	int log2apprx(int x, int b, int m, int l); // given x of at most b bits, use most significant m bits of x, calc the result in l bits
+	uint32_t ExternalSwitch = 0;//zxc:if this is an external switch
+	uint32_t loop_qbb_index=7; //zxc: the index of the loop-decelerating qbb-net-device that installed in this switch
 };
 
 } /* namespace ns3 */

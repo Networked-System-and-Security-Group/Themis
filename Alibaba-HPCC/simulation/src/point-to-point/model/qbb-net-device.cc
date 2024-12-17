@@ -276,9 +276,6 @@ void WriteToFile(std::string str){
 
 void QbbNetDevice::DequeueAndTransmit(void)
 	{
-		// if(if_is_self_loop){
-		// 	std::cout<<"this is self loop qbb"<<std::endl;
-		// }
 		NS_LOG_FUNCTION(this);
 		if (!m_linkUp) return; // if link is down, return
 		if (m_txMachineState == BUSY) return;	// Quit if channel busy
@@ -323,23 +320,28 @@ void QbbNetDevice::DequeueAndTransmit(void)
 				//ch.getInt = 1;
 				p->PeekHeader(ch);
 				//nzh:第二个模块的处理逻辑，若是有cnp，就发到新端口,此端口的re_queue指向新端口的m_queue
-				//zxc:re_queue机制已废弃
-				if(m_queue->GetLastQueue()!=0){
-					if(m_bps==1600000000000 ){//ZXC:inter-DC链路的处理逻辑
-						CnpKey p_key(ch.udp.dport, ch.udp.sport, ch.dip, ch.sip, ch.udp.pg);
-						auto iter = m_cnp_handler->find(p_key);
-						if(iter!=m_cnp_handler->end()){//ZXC:如果被cnp匹配上，发给减速队列
-							p->recycle_times_left = 100;//zxc:此数字代表被减速的包需要循环多少次
-							//std::cout<<"set p recycle time once*******************************"<<std::endl;				
-						}
-					}
-					else if(if_is_self_loop == 1){//ZXC:自循环减速qbb的处理逻辑
-						if(p->recycle_times_left > 0){
-							p->recycle_times_left -= 1;//zxc:每循环一次该数字减一
-							//std::cout<<"recycle times left: "<<p->recycle_times_left<<std::endl;
-						}
-					}
-				}
+				//zxc:re_queue机制已废弃，由于ns3采用事件驱动结构，通过指针将pkt送入qbb后，该qbb不会被调度
+
+
+				// if(m_queue->GetLastQueue()!=0){
+				// 	if(m_bps==1600000000000 ){//ZXC:inter-DC链路的处理逻辑
+				// 		CnpKey p_key(ch.udp.dport, ch.udp.sport, ch.dip, ch.sip, ch.udp.pg);
+				// 		auto iter = m_cnp_handler->find(p_key);
+				// 		if(iter!=m_cnp_handler->end()){//ZXC:如果被cnp匹配上，发给减速队列
+				// 			p->recycle_times_left = 10;//zxc:此数字代表被减速的包需要循环多少次
+				// 			std::cout<<"set p recycle time once*******************************"<<std::endl;				
+				// 		}
+				// 	}
+				// 	else if(if_is_self_loop == 1){//ZXC:自循环减速qbb的处理逻辑
+				// 		if(p->recycle_times_left > 0){
+				// 			p->recycle_times_left -= 1;//zxc:每循环一次该数字减一
+				// 			std::cout<<"recycle times left: "<<p->recycle_times_left<<std::endl;
+				// 		}
+				// 	}
+				// }
+
+
+
                 // zxc：这是本文件下方大量被注释掉的代码原先所处的行位置，为了编码方便我将注释移动至文件最下方，此行紧邻下一行的m_snifferTrace(p)，中间勿插入代码				
 				m_snifferTrace(p);
 				m_promiscSnifferTrace(p);
@@ -386,6 +388,7 @@ void QbbNetDevice::DequeueAndTransmit(void)
 	}
 //nzh：收到了交换机发的cnp，创建cnp_handler以存储cnp信息，更新cnp接收时间，
 	void QbbNetDevice::ReceiveCnp(Ptr<Packet> p, CustomHeader &ch) {
+		return;
 		uint8_t c = (ch.ack.flags >> qbbHeader::FLAG_CNP) & 1;
 		if(!c){
 			return;
@@ -396,7 +399,7 @@ void QbbNetDevice::DequeueAndTransmit(void)
 		//在m_cnp_handler中查
 		CnpKey key(ch.ack.sport,ch.ack.dport,ch.sip,ch.dip,ch.ack.pg);
 		if (m_cnp_handler == nullptr) {
-        	std::cerr << "m_cnp_handler is null" << std::endl;
+        	std::cerr << "m_cnp_handler is null 1" << std::endl;
         	return;
     	}
 		auto it = m_cnp_handler->find(key);
