@@ -101,6 +101,8 @@ void SwitchNode::CheckAndSendPfc(uint32_t inDev, uint32_t qIndex){
 		m_mmu->SetPause(inDev, qIndex);
 	}
 }
+
+
 void SwitchNode::CheckAndSendResume(uint32_t inDev, uint32_t qIndex){
 	Ptr<QbbNetDevice> device = DynamicCast<QbbNetDevice>(m_devices[inDev]);
 	if (m_mmu->CheckShouldResume(inDev, qIndex)){
@@ -124,13 +126,12 @@ int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 	}
 	else{
 		CNP_Handler cnp_handler;
-		cnp_handler.n =5;
+		cnp_handler.n =num;
 		cnp_handler.rec_time=Simulator::Now();
 		m_cnp_handler[key] = cnp_handler;
 	}
 	return 1;//更新m_cnp_handler信息后返回1
 }
-
 
 
 
@@ -147,52 +148,6 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		}else{
 			qIndex = (ch.l3Prot == 0x06 ? 1 : ch.udp.pg); // if TCP, put to queue 1
 		}
-		//nzh:收到了端上的cnp，也要更新cnp时间
-		if((ch.l3Prot == 0xFD || ch.l3Prot == 0xFC)&&((ch.ack.flags >> qbbHeader::FLAG_CNP) & 1))
-		{
-			CnpKey key(ch.udp.sport,ch.udp.dport,ch.sip,ch.dip,ch.udp.pg);
-			auto it = m_cnp_time.find(key);
-			if(it != m_cnp_time.end()){
-				Time now = Simulator::Now();
-				if(Simulator::Now()-it->second<MicroSeconds(50)){
-					m_cnp_time[key] = Simulator::Now();
-					//抹除ch.ack.flags中的CNP标记
-					qbbHeader ackh;
-					Ipv4Header h;
-					PppHeader ppp;
-					ackh.SetSeq(ch.ack.seq);
-					ackh.SetPG(ch.ack.pg);
-					ackh.SetSport(ch.ack.dport);
-					ackh.SetDport(ch.ack.sport);
-					ackh.SetIntHeader(ch.ack.ih);
-					ackh.RemoveCnp();
-					h.SetDestination(Ipv4Address(ch.sip));
-					h.SetSource(Ipv4Address(ch.dip));
-					h.SetProtocol(0xFD);
-					h.SetTtl(64);
-					h.SetPayloadSize(p->GetSize());
-					h.SetIdentification(ch.ack.seq);
-					p->RemoveHeader(ppp);
-					p->RemoveHeader(h);
-					p->RemoveHeader(ackh);
-					p->AddHeader(ackh);
-					p->AddHeader(h);
-					p->AddHeader(ppp);
-				}
-				else
-				{
-					m_cnp_time[key] = Simulator::Now();
-				}
-			}
-			else{
-				CNP_Handler cnp;
-				cnp.n = num;
-				cnp.rec_time = Simulator::Now();
-				(m_cnp_handler)[key] = cnp;
-			}
-		}
-
-
 
 		// admission control
 		FlowIdTag t;
@@ -218,20 +173,20 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 				CnpKey key(ch.ack.sport,ch.ack.dport,ch.sip,ch.dip,ch.ack.pg);
 				auto iter = m_cnp_handler.find(key);
 				//zxc: 如果没有被cnp命中则直接发走，被命中则进入下方控制逻辑
-				if(iter!=m_cnp_handler.end()){
+				if(iter!=m_cnp_handler.end() && (p->inter_DC > 0)){
 					//zxc:recycle_times_left==0表明这个包已经被减速并完成减速
 					if(p->recycle_times_left!=0){
 						//zxc:this packet is cnp-tergeted for the first time
 						if(p->recycle_times_left<0){
 							p->recycle_times_left = iter->second.n;
 							idx = loop_qbb_index;
-							std::cout<<"put one packet to decelerating loop and the left is "<<p->recycle_times_left<<"**********"<<"\n";
+							//std::cout<<"put one packet to decelerating loop and the left is "<<p->recycle_times_left<<"**********"<<"\n";
 						}
 						//zxc:this packet has been targeted and is in the loop
 						else{
 							p->recycle_times_left -= 1;
 							idx = loop_qbb_index;
-							std::cout<<"reduce loop times by one and the left is "<<p->recycle_times_left<<"\n";
+							//std::cout<<"reduce loop times by one and the left is "<<p->recycle_times_left<<"\n";
 						}
 					
 					}
@@ -301,35 +256,6 @@ bool SwitchNode::SwitchReceiveFromDevice(Ptr<NetDevice> device, Ptr<Packet> pack
 	SendToDev(packet, ch);
 	return true;
 }
-// void SwitchNode::CheckAndSendCnp(uint32_t ifIndex, uint32_t qIndex, Ptr<Packet> p) {
-// 	FlowIdTag t;
-// 	p->PeekPacketTag(t);
-// 	if (qIndex != 0){
-// 		uint32_t inDev = t.GetFlowId();
-// 		if (m_ecnEnabled){
-// 			bool egressCongested = m_mmu->ShouldSendCN(ifIndex, qIndex);
-// 			if (egressCongested){
-// 				CustomHeader ch(CustomHeader::L2_Header | CustomHeader::L3_Header | CustomHeader::L4_Header);
-// 				p->PeekHeader(ch);
-// 				//终端输出流的信息
-// 				std::cout << "ECN sent from " << m_devices[ifIndex]->GetNode()->GetId() << " to " << m_devices[inDev]->GetNode()->GetId() << std::endl;
-// 				if(ch.GetIpv4EcnBits()==0){
-// 					CheckAndSendCnp(ifIndex, qIndex, p);
-// 					Ipv4Header h;
-// 					PppHeader ppp;
-// 					p->RemoveHeader(ppp);
-// 					p->RemoveHeader(h);
-// 					h.SetEcn((Ipv4Header::EcnType)0x03);
-// 					p->AddHeader(h);
-// 					p->AddHeader(ppp);
-// 					Ptr<QbbNetDevice> device = DynamicCast<QbbNetDevice>(m_devices[inDev]);
-// 					device->SendCnp(p, ch);
-// 				}
-// 			}
-// 		}
-// 	}
-// }
-//设置ECN标记的地方
 int cnp_num=0;
 void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Packet> p){
 	FlowIdTag t;
@@ -343,28 +269,6 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 			CustomHeader ch(CustomHeader::L2_Header | CustomHeader::L3_Header | CustomHeader::L4_Header);
 			p->PeekHeader(ch);
 			bool egressCongested = m_mmu->ShouldSendCN(ifIndex, qIndex);
-			// if (egressCongested){
-			// 	//终端输出流的信息
-			// 	//printf("1.1\n");
-			// 	if(ch.GetIpv4EcnBits()==0){
-			// 		Ipv4Header h;
-			// 		PppHeader ppp;
-			// 		p->RemoveHeader(ppp);
-			// 		p->RemoveHeader(h);
-			// 		//printf("1.2\n");
-			// 		h.SetEcn((Ipv4Header::EcnType)0x03);
-			// 		p->AddHeader(h);
-			// 		p->AddHeader(ppp);
-			// 		//printf("1.3\n");
-			// 		Ptr<QbbNetDevice> device = DynamicCast<QbbNetDevice>(m_devices[inDev]);
-			// 		device->SendCnp(p, ch);
-			// 		cnp_num++;
-			// 		printf("cnp_num: %d\n", cnp_num);
-			// 		//输出交换机编号
-			// 		//std::cout << "SwitchNode ID: " << m_id << std::endl;
-			// 		//printf("1.4\n");
-			// 	}
-			// }
 			if (egressCongested){
 					Ipv4Header h;
 					PppHeader ppp;
@@ -386,31 +290,10 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 						h.SetEcn((Ipv4Header::EcnType)0x00);
 						p->AddHeader(h);
 						p->AddHeader(ppp);
-						// QbbNetDevice::CnpKey key(ch.udp.sport,ch.udp.dport,ch.sip,ch.dip,ch.udp.pg);
-						// auto it = m_cnp_time.find(key);
-						// if(it!=m_cnp_time.end()){
-						// 	//如果在50微秒内，就不发
-						// 	if(Simulator::Now()-it->second>MicroSeconds(50)){
-						// 		device->SendCnp(p, ch);
-						// 		cnp_num++;
-						// 		printf("cnp_num: %d\n", cnp_num);
-						// 		m_cnp_time[key] = Simulator::Now();
-						// 	}
-						// }
-						// else{
-						// 	device->SendCnp(p, ch);
-						// 	cnp_num++;
-						// 	printf("cnp_num: %d\n", cnp_num);
-						// 	m_cnp_time[key] = Simulator::Now();
-						// }
 						device->SendCnp(p, ch);
 
 					}
-			}
-				// CustomHeader ch(CustomHeader::L2_Header | CustomHeader::L3_Header | CustomHeader::L4_Header);
-				// p->PeekHeader(ch);
-				// std::cout << " dport " << ch.cnp.dport<<std::endl;
-			
+			}			
 		}
 		//CheckAndSendPfc(inDev, qIndex);
 		CheckAndSendResume(inDev, qIndex);
@@ -526,3 +409,79 @@ int SwitchNode::log2apprx(int x, int b, int m, int l){
 }
 
 } /* namespace ns3 */
+
+
+		// //nzh:收到了端上的cnp，也要更新cnp时间
+		// if((ch.l3Prot == 0xFD || ch.l3Prot == 0xFC)&&((ch.ack.flags >> qbbHeader::FLAG_CNP) & 1))
+		// {
+		// 	CnpKey key(ch.udp.sport,ch.udp.dport,ch.sip,ch.dip,ch.udp.pg);
+		// 	auto it = m_cnp_time.find(key);
+		// 	if(it != m_cnp_time.end()){
+		// 		Time now = Simulator::Now();
+		// 		if(Simulator::Now()-it->second<MicroSeconds(50)){
+		// 			m_cnp_time[key] = Simulator::Now();
+		// 			//抹除ch.ack.flags中的CNP标记
+		// 			qbbHeader ackh;
+		// 			Ipv4Header h;
+		// 			PppHeader ppp;
+		// 			ackh.SetSeq(ch.ack.seq);
+		// 			ackh.SetPG(ch.ack.pg);
+		// 			ackh.SetSport(ch.ack.dport);
+		// 			ackh.SetDport(ch.ack.sport);
+		// 			ackh.SetIntHeader(ch.ack.ih);
+		// 			ackh.RemoveCnp();
+		// 			h.SetDestination(Ipv4Address(ch.sip));
+		// 			h.SetSource(Ipv4Address(ch.dip));
+		// 			h.SetProtocol(0xFD);
+		// 			h.SetTtl(64);
+		// 			h.SetPayloadSize(p->GetSize());
+		// 			h.SetIdentification(ch.ack.seq);
+		// 			p->RemoveHeader(ppp);
+		// 			p->RemoveHeader(h);
+		// 			p->RemoveHeader(ackh);
+		// 			p->AddHeader(ackh);
+		// 			p->AddHeader(h);
+		// 			p->AddHeader(ppp);
+		// 		}
+		// 		else
+		// 		{
+		// 			m_cnp_time[key] = Simulator::Now();
+		// 		}
+		// 	}
+		// 	else{
+		// 		CNP_Handler cnp;
+		// 		cnp.n = num;
+		// 		cnp.rec_time = Simulator::Now();
+		// 		(m_cnp_handler)[key] = cnp;
+		// 	}
+		// }
+
+// void SwitchNode::CheckAndSendCnp(uint32_t ifIndex, uint32_t qIndex, Ptr<Packet> p) {
+// 	FlowIdTag t;
+// 	p->PeekPacketTag(t);
+// 	if (qIndex != 0){
+// 		uint32_t inDev = t.GetFlowId();
+// 		if (m_ecnEnabled){
+// 			bool egressCongested = m_mmu->ShouldSendCN(ifIndex, qIndex);
+// 			if (egressCongested){
+// 				CustomHeader ch(CustomHeader::L2_Header | CustomHeader::L3_Header | CustomHeader::L4_Header);
+// 				p->PeekHeader(ch);
+// 				//终端输出流的信息
+// 				std::cout << "ECN sent from " << m_devices[ifIndex]->GetNode()->GetId() << " to " << m_devices[inDev]->GetNode()->GetId() << std::endl;
+// 				if(ch.GetIpv4EcnBits()==0){
+// 					CheckAndSendCnp(ifIndex, qIndex, p);
+// 					Ipv4Header h;
+// 					PppHeader ppp;
+// 					p->RemoveHeader(ppp);
+// 					p->RemoveHeader(h);
+// 					h.SetEcn((Ipv4Header::EcnType)0x03);
+// 					p->AddHeader(h);
+// 					p->AddHeader(ppp);
+// 					Ptr<QbbNetDevice> device = DynamicCast<QbbNetDevice>(m_devices[inDev]);
+// 					device->SendCnp(p, ch);
+// 				}
+// 			}
+// 		}
+// 	}
+// }
+//设置ECN标记的地方

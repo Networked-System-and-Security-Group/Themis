@@ -703,7 +703,6 @@ int main(int argc, char *argv[])
 	}
 
 	//SeedManager::SetSeed(time(NULL));
-
 	// 
 	topof.open(topology_file.c_str());
 	flowf.open(flow_file.c_str());
@@ -861,7 +860,6 @@ int main(int argc, char *argv[])
 			// 对于交换机来说，其上的设备数为其连接的服务器有多少个
 			for (uint32_t j = 1; j < sw->GetNDevices(); j++){
 				Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(sw->GetDevice(j));
-				//std::cout<<"qbb: "<<i<<" "<<j<<" "<<"if loop? "<<dev->if_is_self_loop<<std::endl;
 				//nzh:在EW上开启第二个模块，cnp_handler存储经过的cnp（包括交换机发和端发，m_cnp_time存储收到cnp时间，re_queue1和2代表新端口的m_queue,放到dev的re_queue里
 				if (i == 48) 
 				{

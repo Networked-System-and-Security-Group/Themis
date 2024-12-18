@@ -210,6 +210,7 @@ class Packet : public SimpleRefCount<Packet>
 public:
 
 int recycle_times_left= -100 ;//ZXC:初始值为负数，需要被循环减速的包设置此项为循环次数，减为0后发送
+int inter_DC = 0;//zxc:用于标记packet是否是跨DC流量
 	//yibo
 	/*
 	inline void Unref (void) const

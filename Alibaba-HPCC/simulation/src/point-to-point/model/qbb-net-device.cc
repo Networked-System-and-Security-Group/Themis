@@ -52,7 +52,7 @@
 
 NS_LOG_COMPONENT_DEFINE("QbbNetDevice");
 // QbbNetDevice既表示网卡，也表示交换机
-
+//zxc:我对上一行持怀疑态度
 namespace ns3 {
 	
 	uint32_t RdmaEgressQueue::ack_q_idx = 3;
@@ -92,6 +92,7 @@ namespace ns3 {
 		}
 		return 0;
 	}
+
 	int RdmaEgressQueue::GetNextQindex(bool paused[]){
 		bool found = false;
 		uint32_t qIndex;
@@ -130,32 +131,39 @@ namespace ns3 {
 		return res;
 	}
 
+
 	int RdmaEgressQueue::GetLastQueue(){
 		return m_qlast;
 	}
+
 
 	uint32_t RdmaEgressQueue::GetNBytes(uint32_t qIndex){
 		NS_ASSERT_MSG(qIndex < m_qpGrp->GetN(), "RdmaEgressQueue::GetNBytes: qIndex >= m_qpGrp->GetN()");
 		return m_qpGrp->Get(qIndex)->GetBytesLeft();
 	}
 
+
 	uint32_t RdmaEgressQueue::GetFlowCount(void){
 		return m_qpGrp->GetN();
 	}
+
 
 	Ptr<RdmaQueuePair> RdmaEgressQueue::GetQp(uint32_t i){
 		return m_qpGrp->Get(i);
 	}
  
+
 	void RdmaEgressQueue::RecoverQueue(uint32_t i){
 		NS_ASSERT_MSG(i < m_qpGrp->GetN(), "RdmaEgressQueue::RecoverQueue: qIndex >= m_qpGrp->GetN()");
 		m_qpGrp->Get(i)->snd_nxt = m_qpGrp->Get(i)->snd_una;
 	}
 
+
 	void RdmaEgressQueue::EnqueueHighPrioQ(Ptr<Packet> p){
 		m_traceRdmaEnqueue(p, 0);
 		m_ackQ->Enqueue(p);
 	}
+
 
 	void RdmaEgressQueue::CleanHighPrio(TracedCallback<Ptr<const Packet>, uint32_t> dropCb){
 		while (m_ackQ->GetNPackets() > 0){
@@ -169,8 +177,7 @@ namespace ns3 {
 	 *****************/
 	NS_OBJECT_ENSURE_REGISTERED(QbbNetDevice);
 
-	TypeId
-		QbbNetDevice::GetTypeId(void)
+	TypeId QbbNetDevice::GetTypeId(void)
 	{
 		static TypeId tid = TypeId("ns3::QbbNetDevice")
 			.SetParent<PointToPointNetDevice>()
@@ -227,7 +234,6 @@ namespace ns3 {
 		for (uint32_t i = 0; i < qCnt; i++){
 			m_paused[i] = false;
 		}
-
 		m_rdmaEQ = CreateObject<RdmaEgressQueue>();
 	}
 
@@ -236,16 +242,13 @@ namespace ns3 {
 		NS_LOG_FUNCTION(this);
 	}
 
-	void
-		QbbNetDevice::DoDispose()
+	void QbbNetDevice::DoDispose()
 	{
 		NS_LOG_FUNCTION(this);
-
 		PointToPointNetDevice::DoDispose();
 	}
 
-	void
-		QbbNetDevice::TransmitComplete(void)
+	void QbbNetDevice::TransmitComplete(void)
 	{
 		NS_LOG_FUNCTION(this);
 		NS_ASSERT_MSG(m_txMachineState == BUSY, "Must be BUSY if transmitting");
@@ -319,29 +322,9 @@ void QbbNetDevice::DequeueAndTransmit(void)
 				CustomHeader ch(CustomHeader::L2_Header | CustomHeader::L3_Header | CustomHeader::L4_Header);
 				//ch.getInt = 1;
 				p->PeekHeader(ch);
-				//nzh:第二个模块的处理逻辑，若是有cnp，就发到新端口,此端口的re_queue指向新端口的m_queue
-				//zxc:re_queue机制已废弃，由于ns3采用事件驱动结构，通过指针将pkt送入qbb后，该qbb不会被调度
-
-
-				// if(m_queue->GetLastQueue()!=0){
-				// 	if(m_bps==1600000000000 ){//ZXC:inter-DC链路的处理逻辑
-				// 		CnpKey p_key(ch.udp.dport, ch.udp.sport, ch.dip, ch.sip, ch.udp.pg);
-				// 		auto iter = m_cnp_handler->find(p_key);
-				// 		if(iter!=m_cnp_handler->end()){//ZXC:如果被cnp匹配上，发给减速队列
-				// 			p->recycle_times_left = 10;//zxc:此数字代表被减速的包需要循环多少次
-				// 			std::cout<<"set p recycle time once*******************************"<<std::endl;				
-				// 		}
-				// 	}
-				// 	else if(if_is_self_loop == 1){//ZXC:自循环减速qbb的处理逻辑
-				// 		if(p->recycle_times_left > 0){
-				// 			p->recycle_times_left -= 1;//zxc:每循环一次该数字减一
-				// 			std::cout<<"recycle times left: "<<p->recycle_times_left<<std::endl;
-				// 		}
-				// 	}
-				// }
-
-
-
+				if(m_bps==1600000000000 ){
+					p->inter_DC = 1;
+				}
                 // zxc：这是本文件下方大量被注释掉的代码原先所处的行位置，为了编码方便我将注释移动至文件最下方，此行紧邻下一行的m_snifferTrace(p)，中间勿插入代码				
 				m_snifferTrace(p);
 				m_promiscSnifferTrace(p);
@@ -409,30 +392,17 @@ void QbbNetDevice::DequeueAndTransmit(void)
 			std::string str = std::to_string((Simulator::Now().GetNanoSeconds()-cnp.rec_time.GetNanoSeconds()))+"\n";
 			//WriteToFile(str);
 			//std::cout<<str<<std::endl;
-			cnp.rec_time = Simulator::Now();
-			
+			cnp.rec_time = Simulator::Now();		
 			return;
 		}
 		CNP_Handler cnp;
 		cnp.n = num;
-		//输出cnp.n
-		//std::cout<< cnp.n <<std::endl;
 		cnp.rec_time = Simulator::Now();
-		//std::cout<<"sip= "<<ch.dip<<"dip "<<sip<<" port= "<<port<<" qIndex= "<<qIndex<<std::endl;
 		(*m_cnp_handler)[key] = cnp;
-		//std::cout<<" finish "<<std::endl;
-		//(*m_cnp_handler)[key] = cnp;
-		//m_cnp_handler->insert(std::pair<CnpKey, CNP_Handler>(key, cnp));
-		//输出cnp_handler中的所有key
-		//  if(m_node->GetId()==80){
-		// 	std::cout<<"nd2 "<<m_node->GetId()<<" cnp received sip= "<<sip<<" port= "<<port<<" qIndex= "<<qIndex<<std::endl;
-		// 	std::cout << "m_cnp_handler size: " << m_cnp_handler->size() << std::endl;
-		//  }
 		return;
 	}
 
-	void
-		QbbNetDevice::Resume(unsigned qIndex)
+	void QbbNetDevice::Resume(unsigned qIndex)
 	{
 		NS_LOG_FUNCTION(this << qIndex);
 		NS_ASSERT_MSG(m_paused[qIndex], "Must be PAUSEd");
@@ -442,8 +412,7 @@ void QbbNetDevice::DequeueAndTransmit(void)
 		DequeueAndTransmit();
 	}
 
-	void
-		QbbNetDevice::Receive(Ptr<Packet> packet)
+	void QbbNetDevice::Receive(Ptr<Packet> packet)
 	{
 		NS_LOG_FUNCTION(this << packet);
 		if (!m_linkUp){
@@ -562,8 +531,8 @@ void QbbNetDevice::DequeueAndTransmit(void)
 		SwitchSend(0, newp, ch2);
 		//终端打印CNP
 	}
-	bool
-		QbbNetDevice::Attach(Ptr<QbbChannel> ch)
+
+	bool QbbNetDevice::Attach(Ptr<QbbChannel> ch)
 	{
 		NS_LOG_FUNCTION(this << &ch);
 		m_channel = ch;
@@ -572,8 +541,7 @@ void QbbNetDevice::DequeueAndTransmit(void)
 		return true;
 	}
 
-	bool
-		QbbNetDevice::TransmitStart(Ptr<Packet> p)
+	bool QbbNetDevice::TransmitStart(Ptr<Packet> p)
 	{
 		NS_LOG_FUNCTION(this << p);
 		NS_LOG_LOGIC("UID is " << p->GetUid() << ")");
@@ -599,8 +567,7 @@ void QbbNetDevice::DequeueAndTransmit(void)
 		return result;
 	}
 
-	Ptr<Channel>
-		QbbNetDevice::GetChannel(void) const
+	Ptr<Channel> QbbNetDevice::GetChannel(void) const
 	{
 		return m_channel;
 	}

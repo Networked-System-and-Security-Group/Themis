@@ -14,7 +14,7 @@ class Packet;
 
 class SwitchNode : public Node{
 
-  	static const uint32_t num = 1;
+  	static const uint32_t num = 20;
 	static const uint32_t pCnt = 257;	// Number of ports used
 	static const uint32_t qCnt = 8;	// Number of queues/priorities used
 	uint32_t m_ecmpSeed;
@@ -122,6 +122,43 @@ public:
 
 } /* namespace ns3 */
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #endif /* SWITCH_NODE_H */
 #ifndef SWITCH_NODE2_H
 #define SWITCH_NODE2_H
@@ -138,7 +175,7 @@ class Packet;
 
 class SwitchNode2 : public Node{
 	
-    static const uint32_t num = 1;
+    static const uint32_t num = 15;
 	static const uint32_t pCnt = 257;	// Number of ports used
 	static const uint32_t qCnt = 8;	// Number of queues/priorities used
 	uint32_t m_ecmpSeed;
