@@ -14,7 +14,7 @@ class Packet;
 
 class SwitchNode : public Node{
 
-  	static const uint32_t num = 20;
+  	static const uint32_t num = 100;
 	static const uint32_t pCnt = 257;	// Number of ports used
 	static const uint32_t qCnt = 8;	// Number of queues/priorities used
 	uint32_t m_ecmpSeed;

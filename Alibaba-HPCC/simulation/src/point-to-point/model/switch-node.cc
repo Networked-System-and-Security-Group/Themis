@@ -165,7 +165,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		}
 
 		//zxc:控制逻辑只在外部交换机上实现
-		if(ExternalSwitch){
+		if(ExternalSwitch && m_id==50){
 			//zxc：判断是否是cnp以及更新cnp_handler信息
 			int is_cnp = ReceiveCnp(p,ch);
 			//zxc:判断是否要循环减速，cnp直接发走，非cnp才需要执行此操作
@@ -174,6 +174,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 				auto iter = m_cnp_handler.find(key);
 				//zxc: 如果没有被cnp命中则直接发走，被命中则进入下方控制逻辑
 				if(iter!=m_cnp_handler.end() && (p->inter_DC > 0)){
+					
 					//zxc:recycle_times_left==0表明这个包已经被减速并完成减速
 					if(p->recycle_times_left!=0){
 						//zxc:this packet is cnp-tergeted for the first time
@@ -188,16 +189,15 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 							idx = loop_qbb_index;
 							//std::cout<<"reduce loop times by one and the left is "<<p->recycle_times_left<<"\n";
 						}
-					
 					}
 				}
-
 			}
 		}
 		//zxc:inDev是输入网卡，idx是目的网卡，qIndex是目的网卡接收此pkt的队列
 		m_bytes[inDev][idx][qIndex] += p->GetSize();
 		m_devices[idx]->SwitchSend(qIndex, p, ch);
-	}else
+	}
+	else
 		return; // Drop
 }
 uint32_t SwitchNode::EcmpHash(const uint8_t* key, size_t len, uint32_t seed) {

@@ -836,20 +836,21 @@ int main(int argc, char *argv[])
 
 	nic_rate = get_nic_rate(n);
 	//nzh:第二个模块的端口在这里开
-	//zxc:在此处把所有的自循环qbb的if_is_self_loop项设置为1
+	//zxc:在此处设置外部交换机标记和自循环qbb端口
 	Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n.Get(49));
-	Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(sw->GetDevice(7));
-	dev->if_is_self_loop =1;
+	Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(sw->GetDevice(6));
 	sw->ExternalSwitch = 1;
-	sw->loop_qbb_index = 7;
-	//Ptr<BEgressQueue> re_queue1 = dev->m_queue;
+	sw->loop_qbb_index = 6;
 
 	sw = DynamicCast<SwitchNode>(n.Get(48));
-	dev = DynamicCast<QbbNetDevice>(sw->GetDevice(7));
-	dev->if_is_self_loop =1;
+	dev = DynamicCast<QbbNetDevice>(sw->GetDevice(6));
 	sw->ExternalSwitch = 1;
-	sw->loop_qbb_index = 7;
-	//Ptr<BEgressQueue> re_queue2 = dev->m_queue;
+	sw->loop_qbb_index = 6;
+
+	sw = DynamicCast<SwitchNode>(n.Get(50));
+	dev = DynamicCast<QbbNetDevice>(sw->GetDevice(3));
+	sw->ExternalSwitch = 1;
+	sw->loop_qbb_index = 3;
 
 	// config switch
 	for (uint32_t i = 0; i < node_num; i++){
@@ -861,21 +862,9 @@ int main(int argc, char *argv[])
 			for (uint32_t j = 1; j < sw->GetNDevices(); j++){
 				Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(sw->GetDevice(j));
 				//nzh:在EW上开启第二个模块，cnp_handler存储经过的cnp（包括交换机发和端发，m_cnp_time存储收到cnp时间，re_queue1和2代表新端口的m_queue,放到dev的re_queue里
-				if (i == 48) 
+				if (i == 48 || i == 49 || i == 50) 
 				{
 					dev->enable_themis = true;
-					//dev->m_cnp_handler = &sw->m_cnp_handler;
-					//dev->re_queue = re_queue2;
-					// if(dev->m_cnp_handler == NULL)
-					// 	std::cout << "m_cnp_handler is NULL\n";
-				}
-				else if(i == 49)
-				{
-					dev->enable_themis = true;
-					//dev->m_cnp_handler = &sw->m_cnp_handler;
-					//dev->re_queue = re_queue1;
-					// if(dev->m_cnp_handler == NULL)
-					// 	std::cout << "m_cnp_handler is NULL\n";
 				}
 				// set ecn
 				uint64_t rate = dev->GetDataRate().GetBitRate();
