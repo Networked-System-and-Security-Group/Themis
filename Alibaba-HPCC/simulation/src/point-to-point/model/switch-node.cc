@@ -114,19 +114,20 @@ void SwitchNode::CheckAndSendResume(uint32_t inDev, uint32_t qIndex){
 
 //zxc:此函数用于判断是否收到cnp以及在收到cnp时更新m_cnp_handler信息
 int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
-	uint8_t c = (ch.ack.flags >> qbbHeader::FLAG_CNP) & 1; if(!c) return 0;//zxc:不是cnp的话返回0
-	uint16_t qIndex = ch.ack.pg;
-	uint16_t port = ch.ack.dport;
-	uint32_t sip = ch.sip;
+	uint8_t c = (ch.ack.flags >> qbbHeader::FLAG_CNP) & 1; 
+	if(!c) return 0;//zxc:不是cnp的话返回0
 	CnpKey key(ch.ack.sport,ch.ack.dport,ch.sip,ch.dip,ch.ack.pg);
 	auto iter = m_cnp_handler.find(key);
 	if(iter!=m_cnp_handler.end()){
 		CNP_Handler &cnp_handler = iter->second;
+		if(cnp_handler.loop_num < (response_times-1)*loop_increase_num + init_loop_num){
+			cnp_handler.loop_num += loop_increase_num;
+		}	
 		cnp_handler.rec_time = Simulator::Now();
 	}
 	else{
 		CNP_Handler cnp_handler;
-		cnp_handler.n =num;
+		cnp_handler.loop_num =init_loop_num;
 		cnp_handler.rec_time=Simulator::Now();
 		m_cnp_handler[key] = cnp_handler;
 	}
@@ -163,9 +164,20 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 			}
 			CheckAndSendPfc(inDev, qIndex);
 		}
-
 		//zxc:控制逻辑只在外部交换机上实现
 		if(ExternalSwitch && m_id==50){
+
+			if(init_loop_num>0){
+				if(p->recycle_times_left<0){
+					p->recycle_times_left = init_loop_num;
+					idx=loop_qbb_index;
+				}
+				else if(p->recycle_times_left>0){
+					p->recycle_times_left -= 1;
+					idx=loop_qbb_index;
+				}
+			}
+
 			//zxc：判断是否是cnp以及更新cnp_handler信息
 			int is_cnp = ReceiveCnp(p,ch);
 			//zxc:判断是否要循环减速，cnp直接发走，非cnp才需要执行此操作
@@ -173,21 +185,20 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 				CnpKey key(ch.ack.sport,ch.ack.dport,ch.sip,ch.dip,ch.ack.pg);
 				auto iter = m_cnp_handler.find(key);
 				//zxc: 如果没有被cnp命中则直接发走，被命中则进入下方控制逻辑
-				if(iter!=m_cnp_handler.end() && (p->inter_DC > 0)){
-					
+				if(iter!=m_cnp_handler.end() && (p->inter_DC > 0)){					
 					//zxc:recycle_times_left==0表明这个包已经被减速并完成减速
 					if(p->recycle_times_left!=0){
 						//zxc:this packet is cnp-tergeted for the first time
 						if(p->recycle_times_left<0){
-							p->recycle_times_left = iter->second.n;
+							p->recycle_times_left = iter->second.loop_num;
 							idx = loop_qbb_index;
-							//std::cout<<"put one packet to decelerating loop and the left is "<<p->recycle_times_left<<"**********"<<"\n";
+							std::cout<<"put one packet to decelerating loop and the left is "<<p->recycle_times_left<<"**********"<<"\n";
 						}
 						//zxc:this packet has been targeted and is in the loop
 						else{
 							p->recycle_times_left -= 1;
 							idx = loop_qbb_index;
-							//std::cout<<"reduce loop times by one and the left is "<<p->recycle_times_left<<"\n";
+							std::cout<<"reduce loop times by one and the left is "<<p->recycle_times_left<<"\n";
 						}
 					}
 				}

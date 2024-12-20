@@ -14,7 +14,9 @@ class Packet;
 
 class SwitchNode : public Node{
 
-  	static const uint32_t num = 100;
+  	static const uint32_t init_loop_num = 1000;
+	static const uint32_t loop_increase_num = 1;
+	static const uint32_t response_times = 100;
 	static const uint32_t pCnt = 257;	// Number of ports used
 	static const uint32_t qCnt = 8;	// Number of queues/priorities used
 	uint32_t m_ecmpSeed;
@@ -38,9 +40,7 @@ class SwitchNode : public Node{
     	Time finish_time;//
     	uint32_t first;//第一个序列号
     	uint32_t biggest;//最大序列号
-		uint32_t group_size;//zxc：用于恢复机制
-		uint32_t count;//zxc：用于恢复机制
-    	uint32_t n;//需要resubmit n遍
+    	uint32_t loop_num;//需要resubmit n遍
     	Time delay;//第一个包resubmit带来的延迟
     	bool finished;// n次resubmit是否完成
     	bool sended;//是否发送过
@@ -50,11 +50,9 @@ class SwitchNode : public Node{
       		delay = Time(0);
       		first = 0;
       		biggest = 0;
-      		n = num;
+      		loop_num = init_loop_num;
       		finished = false;
       		sended = true;
-			group_size = 50;
-			count = group_size;
     	}
  	};
 
