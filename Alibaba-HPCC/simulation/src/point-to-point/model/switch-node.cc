@@ -124,11 +124,13 @@ int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 			cnp_handler.loop_num += loop_increase_num;
 		}	
 		cnp_handler.rec_time = Simulator::Now();
+		cnp_handler.set_last_loop = Simulator::Now();
 	}
 	else{
 		CNP_Handler cnp_handler;
 		cnp_handler.loop_num =init_loop_num;
 		cnp_handler.rec_time=Simulator::Now();
+		cnp_handler.set_last_loop = Simulator::Now();
 		m_cnp_handler[key] = cnp_handler;
 	}
 	return 1;//更新m_cnp_handler信息后返回1
@@ -165,19 +167,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 			CheckAndSendPfc(inDev, qIndex);
 		}
 		//zxc:控制逻辑只在外部交换机上实现
-		if(ExternalSwitch && m_id==50){
-
-			if(init_loop_num>0){
-				if(p->recycle_times_left<0){
-					p->recycle_times_left = init_loop_num;
-					idx=loop_qbb_index;
-				}
-				else if(p->recycle_times_left>0){
-					p->recycle_times_left -= 1;
-					idx=loop_qbb_index;
-				}
-			}
-
+		if(ExternalSwitch && m_id==50 && qIndex!=0 && init_loop_num!=0){
 			//zxc：判断是否是cnp以及更新cnp_handler信息
 			int is_cnp = ReceiveCnp(p,ch);
 			//zxc:判断是否要循环减速，cnp直接发走，非cnp才需要执行此操作
@@ -190,15 +180,34 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 					if(p->recycle_times_left!=0){
 						//zxc:this packet is cnp-tergeted for the first time
 						if(p->recycle_times_left<0){
-							p->recycle_times_left = iter->second.loop_num;
-							idx = loop_qbb_index;
-							std::cout<<"put one packet to decelerating loop and the left is "<<p->recycle_times_left<<"**********"<<"\n";
+							Time now_time = Simulator::Now();
+							Time recover_time = NanoSeconds(1000+1000);
+							while(1){
+								if(iter->second.loop_num == 0){
+									break;
+								}
+								if(now_time - iter->second.set_last_loop >= recover_time){
+									iter->second.loop_num -= loop_increase_num;
+									iter->second.set_last_loop += recover_time;
+									std::cout<<"recover once and the loop times is:"<< iter->second.loop_num <<"\n";
+								}
+								else{
+									break;
+								}
+							}
+							if(iter->second.loop_num > 0){
+								p->recycle_times_left = iter->second.loop_num;
+								iter->second.set_last_loop = now_time;
+								idx = loop_qbb_index;
+								p->recycle_times_left -= 1;
+								//std::cout<<"put one packet to decelerating loop and the left is "<<p->recycle_times_left<<"**********"<<"\n";
+							}
 						}
 						//zxc:this packet has been targeted and is in the loop
 						else{
-							p->recycle_times_left -= 1;
 							idx = loop_qbb_index;
-							std::cout<<"reduce loop times by one and the left is "<<p->recycle_times_left<<"\n";
+							p->recycle_times_left -= 1;
+							//std::cout<<"reduce loop times by one and the left is "<<p->recycle_times_left<<"\n";
 						}
 					}
 				}

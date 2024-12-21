@@ -14,9 +14,9 @@ class Packet;
 
 class SwitchNode : public Node{
 
-  	static const uint32_t init_loop_num = 1000;
+  	static const uint32_t init_loop_num = 1;
 	static const uint32_t loop_increase_num = 1;
-	static const uint32_t response_times = 100;
+	static const uint32_t response_times = 40;
 	static const uint32_t pCnt = 257;	// Number of ports used
 	static const uint32_t qCnt = 8;	// Number of queues/priorities used
 	uint32_t m_ecmpSeed;
@@ -37,6 +37,7 @@ class SwitchNode : public Node{
 	class CNP_Handler{
   		public:
     	Time rec_time;//最后一次接到CNP的时间
+		Time set_last_loop;//zxc:最后一次为包打标记的时间
     	Time finish_time;//
     	uint32_t first;//第一个序列号
     	uint32_t biggest;//最大序列号
@@ -53,6 +54,7 @@ class SwitchNode : public Node{
       		loop_num = init_loop_num;
       		finished = false;
       		sended = true;
+			set_last_loop = Simulator::Now();
     	}
  	};
 
