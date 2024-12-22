@@ -344,7 +344,9 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 				}
 			}
 			//nzh:如果有Ecnbit，就发cnp
-			if(isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id == 48 && 0){
+			// rixin: 下面原本只写了判断有没有ECN标记，导致了一个问题，就是如果有ECN标记，但是不是数据包（ACK），
+			// 导致CNP发给了接收端，而接收端可能正在发送DC内部流，导致DC内部流的效果变差
+			if(isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id == 48){
 				//printf("module 1 is running\n");
 				int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
 				//printf("source node id = %d, dst node id = %d\n", sid, did);

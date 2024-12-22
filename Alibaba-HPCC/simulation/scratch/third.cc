@@ -839,6 +839,8 @@ int main(int argc, char *argv[])
 	//zxc:在此处设置外部交换机标记和自循环qbb端口
 	Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n.Get(49));
 	Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(sw->GetDevice(6));
+	printf("dev->GetDataRate().GetBitRate() = %lu\n", dev->GetDataRate().GetBitRate());
+	printf("dev->GetChannel())->GetDelay().GetTimeStep() = %lu\n", DynamicCast<QbbChannel>(dev->GetChannel())->GetDelay().GetTimeStep());
 	sw->ExternalSwitch = 1;
 	sw->loop_qbb_index = 6;
 
@@ -857,7 +859,7 @@ int main(int argc, char *argv[])
 		if (n.Get(i)->GetNodeType() == 1){ // is switch
 			Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n.Get(i));
 			uint32_t shift = 3; // by default 1/8
-			std::cout << "sw->GetNDevices() = " << sw->GetNDevices() << "\n";
+			printf("Switch %d sw->GetNDevices() = %d\n", sw->GetId() ,sw->GetNDevices());
 			// 对于交换机来说，其上的设备数为其连接的服务器有多少个
 			for (uint32_t j = 1; j < sw->GetNDevices(); j++){
 				Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(sw->GetDevice(j));
