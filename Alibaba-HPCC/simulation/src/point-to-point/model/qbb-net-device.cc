@@ -49,6 +49,7 @@
 #include "ns3/custom-header.h"
 
 #include <iostream>
+#include <chrono>
 
 NS_LOG_COMPONENT_DEFINE("QbbNetDevice");
 // QbbNetDevice既表示网卡，也表示交换机
@@ -449,11 +450,11 @@ void QbbNetDevice::DequeueAndTransmit(void)
 		else { // non-PFC packets (data, ACK, NACK, CNP...)
 			if (m_node->GetNodeType() > 0){ // switch
 			//nzh：非常重要的写死的参数，判断要不要处理cnp
-			if ((ch.l3Prot == 0xFC||ch.l3Prot==0xFD) && enable_themis) {
-				//std::cout<<m_bps.GetBitRate()<<std::endl;
-				ReceiveCnp(packet, ch);
-				//printf("finish receive cnp\n");
-			}
+			// if ((ch.l3Prot == 0xFC||ch.l3Prot==0xFD) && enable_themis) {
+			// 	//std::cout<<m_bps.GetBitRate()<<std::endl;
+			// 	ReceiveCnp(packet, ch);
+			// 	//printf("finish receive cnp\n");
+			// }
 				packet->AddPacketTag(FlowIdTag(m_ifIndex));
 				m_node->SwitchReceiveFromDevice(this, packet, ch);
 			}else { // NIC
@@ -543,6 +544,10 @@ void QbbNetDevice::DequeueAndTransmit(void)
 
 	bool QbbNetDevice::TransmitStart(Ptr<Packet> p)
 	{
+		// auto now1 = std::chrono::system_clock::now();
+		// auto duration1 = now1.time_since_epoch();
+		// auto timestamp1 = std::chrono::duration_cast<std::chrono::microseconds>(duration1).count();
+
 		NS_LOG_FUNCTION(this << p);
 		NS_LOG_LOGIC("UID is " << p->GetUid() << ")");
 		//
@@ -557,6 +562,7 @@ void QbbNetDevice::DequeueAndTransmit(void)
 		Time txTime = Seconds(m_bps.CalculateTxTime(p->GetSize()));
 		Time txCompleteTime = txTime + m_tInterframeGap;
 		NS_LOG_LOGIC("Schedule TransmitCompleteEvent in " << txCompleteTime.GetSeconds() << "sec");
+
 		Simulator::Schedule(txCompleteTime, &QbbNetDevice::TransmitComplete, this);
 
 		bool result = m_channel->TransmitStart(p, this, txTime);
@@ -564,6 +570,12 @@ void QbbNetDevice::DequeueAndTransmit(void)
 		{
 			m_phyTxDropTrace(p);
 		}
+
+		// auto now2 = std::chrono::system_clock::now();
+		// auto duration2 = now2.time_since_epoch();
+		// auto timestamp2 = std::chrono::duration_cast<std::chrono::microseconds>(duration2).count();
+
+		// printf("timestamp2 - timestamp1 = %d\n", timestamp2 - timestamp1);
 		return result;
 	}
 

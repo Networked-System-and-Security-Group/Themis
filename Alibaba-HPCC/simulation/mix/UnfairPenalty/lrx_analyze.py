@@ -6,11 +6,14 @@ intra_flow_cnt = 0
 inter_ratio_sum = 0
 inter_flow_cnt = 0
 
+max_inter_ratio = 0
+
 def read_and_classify(file_path):
     global intra_ratio_sum
     global intra_flow_cnt
     global inter_ratio_sum
     global inter_flow_cnt
+    global max_inter_ratio
     intra_dc_flow = []
     inter_dc_flow = []
     ratio_and_flow_size_record = []
@@ -52,6 +55,7 @@ def read_and_classify(file_path):
                 intra_dc_flow.append(line.strip())
 
             else:
+                max_inter_ratio = max(max_inter_ratio, ratio)
                 inter_ratio_sum += ratio
                 inter_flow_cnt += 1
                 inter_dc_flow.append(line.strip())
@@ -62,6 +66,7 @@ def read_and_classify(file_path):
             intra_dc_flow.append(f"Average intra_dc ratio: {intra_ratio_sum / intra_flow_cnt}")
         if inter_flow_cnt > 0:
             print(f"inter_ratio_sum = {inter_ratio_sum}, inter_flow_cnt = {inter_flow_cnt}, inter_ratio = {inter_ratio_sum / inter_flow_cnt}")
+            print(f"max_inter_ratio = {max_inter_ratio}")
             inter_dc_flow.append(f"Average intra_dc ratio: {inter_ratio_sum / inter_flow_cnt}")
 
     return intra_dc_flow, inter_dc_flow, ratio_and_flow_size_record

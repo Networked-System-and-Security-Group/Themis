@@ -12,8 +12,11 @@
 #include "ppp-header.h"
 #include "ns3/int-header.h"
 #include "rdma-hw.h"
+#include "ns3/random-variable.h"
 #include <cmath>
 #include<map>
+#include <algorithm>
+#include <chrono>
 
 namespace ns3 {
 
@@ -111,32 +114,41 @@ void SwitchNode::CheckAndSendResume(uint32_t inDev, uint32_t qIndex){
 	}
 }
 
-
+uint32_t max_cnp_num = 0;
 //zxc:此函数用于判断是否收到cnp以及在收到cnp时更新m_cnp_handler信息
 int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 	uint8_t c = (ch.ack.flags >> qbbHeader::FLAG_CNP) & 1; 
 	if(!c) return 0;//zxc:不是cnp的话返回0
-	CnpKey key(ch.ack.sport,ch.ack.dport,ch.sip,ch.dip,ch.ack.pg);
+	//printf("ch.ack.dport = %d, ch.ack.sport = %d,\n ch.sip = %d, ch.dip = %d,\n ch.ack.pg = %d, ch.cnp.dport = %d\n", ch.ack.dport, ch.ack.sport, ch.sip, ch.dip, ch.ack.pg, ch.cnp.dport);
+	CnpKey key(ch.dip, ch.sip, ch.ack.pg);
 	auto iter = m_cnp_handler.find(key);
 	if(iter!=m_cnp_handler.end()){
+		max_cnp_num = std::max(max_cnp_num, iter->second.cnp_num);
+		//printf("max	cnp_num = %d\n", max_cnp_num);
 		CNP_Handler &cnp_handler = iter->second;
-		if(cnp_handler.loop_num < (response_times-1)*loop_increase_num + init_loop_num){
-			cnp_handler.loop_num += loop_increase_num;
-		}	
 		cnp_handler.rec_time = Simulator::Now();
-		cnp_handler.set_last_loop = Simulator::Now();
+		cnp_handler.cnp_num += 1;
+		if (cnp_handler.loop_num <= 500)
+			cnp_handler.loop_num++;
 	}
 	else{
 		CNP_Handler cnp_handler;
-		cnp_handler.loop_num =init_loop_num;
+		cnp_handler.cnp_num = 1;
 		cnp_handler.rec_time=Simulator::Now();
 		cnp_handler.set_last_loop = Simulator::Now();
 		m_cnp_handler[key] = cnp_handler;
 	}
+	//printf("size of m_cnp_handler: %d\n", m_cnp_handler.size());
 	return 1;//更新m_cnp_handler信息后返回1
 }
 
+uint32_t ip_to_node_id(Ipv4Address ip){
+	return (ip.Get() >> 8) & 0xffff;
+}
 
+bool isDataPkt(CustomHeader &ch){
+	return !(ch.l3Prot == 0xFF || ch.l3Prot == 0xFE || ch.l3Prot == 0xFD || ch.l3Prot == 0xFC);
+}
 
 //nzh:非常重要的函数！！！important
 void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
@@ -166,50 +178,78 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 			}
 			CheckAndSendPfc(inDev, qIndex);
 		}
+
+		// auto now1 = std::chrono::system_clock::now();
+		// auto duration1 = now1.time_since_epoch();
+		// auto timestamp1 = std::chrono::duration_cast<std::chrono::microseconds>(duration1).count();
+
 		//zxc:控制逻辑只在外部交换机上实现
-		if(ExternalSwitch && m_id==50 && qIndex!=0 && init_loop_num!=0){
+		if(ExternalSwitch && m_id==50){
+			
+			int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
+			//printf("source node id = %d, dst node id = %d\n", sid, did);
+			if (sid > 15 && did > 15) {
+				//printf("GG\n");
+				// printf("source node id = %d, dst node id = %d\n", sid, did);
+				// printf("ch.l3Prot = %d\n", ch.l3Prot);
+			}
+			// if(init_loop_num>0){
+			// 	if(p->recycle_times_left<0){
+			// 		p->recycle_times_left = init_loop_num;
+			// 		idx=loop_qbb_index;
+			// 	}
+			// 	else if(p->recycle_times_left>0){
+			// 		p->recycle_times_left -= 1;
+			// 		idx=loop_qbb_index;
+			// 	}
+			// }
+
 			//zxc：判断是否是cnp以及更新cnp_handler信息
 			int is_cnp = ReceiveCnp(p,ch);
 			//zxc:判断是否要循环减速，cnp直接发走，非cnp才需要执行此操作
 			if(!is_cnp){
-				CnpKey key(ch.ack.sport,ch.ack.dport,ch.sip,ch.dip,ch.ack.pg);
+				// if (ch.l3Prot == 0x11) {
+				// 	printf("udp packet1111111111111111111\n");
+				// }
+				CnpKey key(ch.sip,ch.dip,ch.ack.pg);
 				auto iter = m_cnp_handler.find(key);
+				if (sid < 16 && did > 15) {
+					//printf("hello\n");
+				}
+				if(iter!=m_cnp_handler.end()) {
+					//printf("check\n");
+				}
 				//zxc: 如果没有被cnp命中则直接发走，被命中则进入下方控制逻辑
-				if(iter!=m_cnp_handler.end() && (p->inter_DC > 0)){					
-					//zxc:recycle_times_left==0表明这个包已经被减速并完成减速
-					if(p->recycle_times_left!=0){
-						//zxc:this packet is cnp-tergeted for the first time
-						if(p->recycle_times_left<0){
-							Time now_time = Simulator::Now();
-							Time recover_time = NanoSeconds(1000+1000);
-							while(1){
-								if(iter->second.loop_num == 0){
-									break;
-								}
-								if(now_time - iter->second.set_last_loop >= recover_time){
-									iter->second.loop_num -= loop_increase_num;
-									iter->second.set_last_loop += recover_time;
-									std::cout<<"recover once and the loop times is:"<< iter->second.loop_num <<"\n";
-								}
-								else{
-									break;
-								}
-							}
-							if(iter->second.loop_num > 0){
+				if(iter!=m_cnp_handler.end() && (sid < 16 && did > 15)){
+					//printf("1111111111111111111\n");
+					if (isDataPkt(ch)) {
+						//printf("hello\n");
+						//zxc:recycle_times_left==0表明这个包已经被减速并完成减速
+						if(p->recycle_times_left!=0){
+							//zxc:this packet is cnp-tergeted for the first time
+							if(p->recycle_times_left<0){
 								p->recycle_times_left = iter->second.loop_num;
-								iter->second.set_last_loop = now_time;
+								//printf("module 2 is running\n");
 								idx = loop_qbb_index;
-								p->recycle_times_left -= 1;
 								//std::cout<<"put one packet to decelerating loop and the left is "<<p->recycle_times_left<<"**********"<<"\n";
 							}
+							//zxc:this packet has been targeted and is in the loop
+							else{
+								p->recycle_times_left -= 1;
+								idx = loop_qbb_index;
+								//std::cout<<"reduce loop times by one and the left is "<<p->recycle_times_left<<"\n";
+							}
 						}
-						//zxc:this packet has been targeted and is in the loop
-						else{
-							idx = loop_qbb_index;
-							p->recycle_times_left -= 1;
-							//std::cout<<"reduce loop times by one and the left is "<<p->recycle_times_left<<"\n";
-						}
+
+						// if (p->cnp_id < iter->second.cnp_num){
+						// 	//std::cout << "iter->second.cnp_num = " << iter->second.cnp_num << "\n";
+						// 	p->recycle_times_left += iter->second.cnp_num - p->cnp_id;
+						// 	//std::cout << "this flow needed to be decelerate again, recycle_times_left added from " << p->cnp_id << "to " << iter->second.cnp_num << "\n";
+						// 	p->cnp_id = iter->second.cnp_num;
+						// 	idx = loop_qbb_index;
+						// }
 					}
+					
 				}
 			}
 		}
@@ -290,16 +330,24 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 			p->PeekHeader(ch);
 			bool egressCongested = m_mmu->ShouldSendCN(ifIndex, qIndex);
 			if (egressCongested){
-					Ipv4Header h;
-					PppHeader ppp;
-					p->RemoveHeader(ppp);
-					p->RemoveHeader(h);
-					h.SetEcn((Ipv4Header::EcnType)0x03);
-					p->AddHeader(h);
-					p->AddHeader(ppp);
+				Ipv4Header h;
+				PppHeader ppp;
+				p->RemoveHeader(ppp);
+				p->RemoveHeader(h);
+				h.SetEcn((Ipv4Header::EcnType)0x03);
+				p->AddHeader(h);
+				p->AddHeader(ppp);
+				if (m_id >= 32 && m_id <= 35 || m_id >=40 && m_id <= 43) {
+					//printf("switch %d in DC1 mark ECN\n", m_id);
+					int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
+					//printf("罪魁祸首是: source node id = %d, dst node id = %d\n", sid, did);
+				}
 			}
 			//nzh:如果有Ecnbit，就发cnp
-			if(ch.GetIpv4EcnBits()){
+			if(isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id == 48 && 0){
+				//printf("module 1 is running\n");
+				int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
+				//printf("source node id = %d, dst node id = %d\n", sid, did);
 				Ptr<QbbNetDevice> device = DynamicCast<QbbNetDevice>(m_devices[inDev]);
 					if(device->enable_themis){
 						Ipv4Header h;

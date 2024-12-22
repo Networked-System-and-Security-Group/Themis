@@ -209,6 +209,7 @@ class Packet : public SimpleRefCount<Packet>
 {
 public:
 
+int cnp_id = 0; //lrx: 当前这个packet对第几个cnp做出了响应
 int recycle_times_left= -100 ;//ZXC:初始值为负数，需要被循环减速的包设置此项为循环次数，减为0后发送
 int inter_DC = 0;//zxc:用于标记packet是否是跨DC流量
 	//yibo

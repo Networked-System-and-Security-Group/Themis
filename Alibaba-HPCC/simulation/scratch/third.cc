@@ -947,6 +947,20 @@ int main(int argc, char *argv[])
 	// setup routing
 	CalculateRoutes(n);
 	SetRoutingEntries();
+
+	// rixin: 打印路由表
+	int rixin_switch_no = 32;
+	printf("打印交换机 %d 的路由表\n", rixin_switch_no);
+	for (uint32_t i = 0; i < node_num; i++){
+		if (n.Get(i)->GetNodeType() == 1){ // is switch
+			Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n.Get(i));
+			if (sw->GetId() == rixin_switch_no) {
+				for(int i = 0; i < 32; i++ ) {
+					printf("通往 %d 号主机有 %d 个端口\n", i, sw->m_rtTable[node_id_to_ip(i).Get()].size());
+				}
+			}
+		}
+	}
 	//
 	// get BDP and delay
 	//

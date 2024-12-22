@@ -20,7 +20,6 @@ class SwitchNode : public Node{
 	static const uint32_t pCnt = 257;	// Number of ports used
 	static const uint32_t qCnt = 8;	// Number of queues/priorities used
 	uint32_t m_ecmpSeed;
-	std::unordered_map<uint32_t, std::vector<int> > m_rtTable; // map from ip address (u32) to possible ECMP port (index of dev)
 	// monitor of PFC
 	uint32_t m_bytes[pCnt][pCnt][qCnt]; // m_bytes[inDev][outDev][qidx] is the bytes from inDev enqueued for outDev at qidx
 	
@@ -30,12 +29,17 @@ class SwitchNode : public Node{
 	uint64_t m_lastPktTs[pCnt]; // ns
 	double m_u[pCnt];
 
+	public:
+	
+	std::unordered_map<uint32_t, std::vector<int> > m_rtTable; // map from ip address (u32) to possible ECMP port (index of dev)
+
 
 
 
 //zxc:以下是为switch_node新增的cnp-handler和cnp-key
 	class CNP_Handler{
   		public:
+		uint32_t cnp_num; // 这个流累计收到了多少cnp
     	Time rec_time;//最后一次接到CNP的时间
 		Time set_last_loop;//zxc:最后一次为包打标记的时间
     	Time finish_time;//
@@ -46,6 +50,7 @@ class SwitchNode : public Node{
     	bool finished;// n次resubmit是否完成
     	bool sended;//是否发送过
     	CNP_Handler(){
+			cnp_num = 0;
       		rec_time = Time(0);
       		finish_time = Time(0);
       		delay = Time(0);
@@ -59,8 +64,6 @@ class SwitchNode : public Node{
  	};
 
 	struct CnpKey {
-    	uint16_t sport;
-    	uint16_t dport;
     	uint32_t sip;
     	uint32_t dip;
     	uint16_t qindex;
@@ -72,17 +75,9 @@ class SwitchNode : public Node{
       		if (dip != other.dip) {
        			 return dip < other.dip;
       		}
-      		if (sport != other.sport) {
-        		return sport < other.sport;
-      		}
-      		if (dport != other.dport) {
-        		return dport < other.dport;
-      		}
       		return qindex < other.qindex;
     	}
-    	CnpKey(uint16_t sport, uint16_t dport, uint32_t sip, uint32_t dip, uint16_t qindex) {
-      	this->sport = sport;
-      	this->dport = dport;
+    	CnpKey(uint32_t sip, uint32_t dip, uint16_t qindex) {
       	this->sip = sip;
       	this->dip = dip;
       	this->qindex = qindex;
