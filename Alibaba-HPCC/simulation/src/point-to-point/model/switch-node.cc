@@ -153,6 +153,16 @@ bool isDataPkt(CustomHeader &ch){
 //nzh:非常重要的函数！！！important
 void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 	int idx = GetOutDev(p, ch);
+	int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
+	if (m_id == 32) {
+		if (sid == 1 && did == 18 && isDataPkt(ch)) {
+			//printf("0 -> 18 forwarded to qbb %d\n", idx);
+		}
+		if (sid == 0 && did == 28 && isDataPkt(ch)) {
+			//printf("1 -> 28 forwarded to qbb %d\n", idx);
+		}
+	}
+
 	if (idx >= 0){
 		NS_ASSERT_MSG(m_devices[idx]->IsLinkUp(), "The routing table look up should return link that is up");
 
@@ -184,7 +194,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		// auto timestamp1 = std::chrono::duration_cast<std::chrono::microseconds>(duration1).count();
 
 		//zxc:控制逻辑只在外部交换机上实现
-		if(ExternalSwitch && m_id==50){
+		if(ExternalSwitch && m_id==50 && 0){
 			
 			int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
 			//printf("source node id = %d, dst node id = %d\n", sid, did);
@@ -337,19 +347,22 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 				h.SetEcn((Ipv4Header::EcnType)0x03);
 				p->AddHeader(h);
 				p->AddHeader(ppp);
-				if (m_id >= 32 && m_id <= 35 || m_id >=40 && m_id <= 43) {
-					//printf("switch %d in DC1 mark ECN\n", m_id);
+				if (m_id >= 32 && m_id <= 35 || m_id >= 40 && m_id <= 43) {
+					printf("ifIndex = %d\n", ifIndex);
+					printf("egress_bytes[ifindex][qIndex] = %d\n kmax[ifindex] = %d\n kmin[ifindex] = %d\n", 
+							m_mmu->egress_bytes[ifIndex][qIndex], m_mmu->kmax[ifIndex], m_mmu->kmin[ifIndex]);
+					printf("switch %d in DC1 mark ECN\n", m_id);
 					int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
-					//printf("罪魁祸首是: source node id = %d, dst node id = %d\n", sid, did);
+					printf("罪魁祸首是: source node id = %d, dst node id = %d\n", sid, did);
 				}
 			}
 			//nzh:如果有Ecnbit，就发cnp
 			// rixin: 下面原本只写了判断有没有ECN标记，导致了一个问题，就是如果有ECN标记，但是不是数据包（ACK），
 			// 导致CNP发给了接收端，而接收端可能正在发送DC内部流，导致DC内部流的效果变差
 			if(isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id == 48){
-				//printf("module 1 is running\n");
+				printf("module 1 is running\n");
 				int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
-				//printf("source node id = %d, dst node id = %d\n", sid, did);
+				printf("source node id = %d, dst node id = %d\n", sid, did);
 				Ptr<QbbNetDevice> device = DynamicCast<QbbNetDevice>(m_devices[inDev]);
 					if(device->enable_themis){
 						Ipv4Header h;
