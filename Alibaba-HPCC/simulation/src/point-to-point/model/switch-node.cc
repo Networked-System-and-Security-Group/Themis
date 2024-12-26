@@ -119,6 +119,7 @@ uint32_t max_cnp_num = 0;
 int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 	uint8_t c = (ch.ack.flags >> qbbHeader::FLAG_CNP) & 1; 
 	if(!c) return 0;//zxc:不是cnp的话返回0
+	// printf("received a cnp\n");
 	//printf("ch.ack.dport = %d, ch.ack.sport = %d,\n ch.sip = %d, ch.dip = %d,\n ch.ack.pg = %d, ch.cnp.dport = %d\n", ch.ack.dport, ch.ack.sport, ch.sip, ch.dip, ch.ack.pg, ch.cnp.dport);
 	CnpKey key(ch.dip, ch.sip, ch.ack.pg);
 	auto iter = m_cnp_handler.find(key);
@@ -150,6 +151,8 @@ bool isDataPkt(CustomHeader &ch){
 	return !(ch.l3Prot == 0xFF || ch.l3Prot == 0xFE || ch.l3Prot == 0xFD || ch.l3Prot == 0xFC);
 }
 
+int pkt_num = 0;
+int recir_num = 0;
 //nzh:非常重要的函数！！！important
 void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 	int idx = GetOutDev(p, ch);
@@ -183,7 +186,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 			if (m_mmu->CheckIngressAdmission(inDev, qIndex, p->GetSize()) && m_mmu->CheckEgressAdmission(idx, qIndex, p->GetSize())){			// Admission control
 				m_mmu->UpdateIngressAdmission(inDev, qIndex, p->GetSize());
 				m_mmu->UpdateEgressAdmission(idx, qIndex, p->GetSize());
-			}else{
+			} else {
 				return; // Drop
 			}
 			CheckAndSendPfc(inDev, qIndex);
@@ -194,7 +197,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		// auto timestamp1 = std::chrono::duration_cast<std::chrono::microseconds>(duration1).count();
 
 		//zxc:控制逻辑只在外部交换机上实现
-		if(ExternalSwitch && m_id==50 && 0){
+		if(ExternalSwitch && m_id == 50){
 			
 			int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
 			//printf("source node id = %d, dst node id = %d\n", sid, did);
@@ -230,17 +233,25 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 					//printf("check\n");
 				}
 				//zxc: 如果没有被cnp命中则直接发走，被命中则进入下方控制逻辑
-				if(iter!=m_cnp_handler.end() && (sid < 16 && did > 15)){
+				// if(iter!=m_cnp_handler.end() && (sid < 16 && did > 15)){
+				if((sid < 16 && did > 15)){
 					//printf("1111111111111111111\n");
 					if (isDataPkt(ch)) {
-						//printf("hello\n");
+						// printf("a pkt need to be forwarded\n");
+						pkt_num++;
+						// printf("pkt_num = %d\n", pkt_num);
 						//zxc:recycle_times_left==0表明这个包已经被减速并完成减速
 						if(p->recycle_times_left!=0){
 							//zxc:this packet is cnp-tergeted for the first time
 							if(p->recycle_times_left<0){
-								p->recycle_times_left = iter->second.loop_num;
+								p->recycle_times_left = 1;
+								recir_num++;
+								// printf("recir_num = %d\n", recir_num);
+								// p->recycle_times_left = iter->second.loop_num;
 								//printf("module 2 is running\n");
+								// printf("a pkt is recirculated\n");
 								idx = loop_qbb_index;
+								p->recycle_times_left -= 1;
 								//std::cout<<"put one packet to decelerating loop and the left is "<<p->recycle_times_left<<"**********"<<"\n";
 							}
 							//zxc:this packet has been targeted and is in the loop
@@ -339,6 +350,10 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 			CustomHeader ch(CustomHeader::L2_Header | CustomHeader::L3_Header | CustomHeader::L4_Header);
 			p->PeekHeader(ch);
 			bool egressCongested = m_mmu->ShouldSendCN(ifIndex, qIndex);
+			if (m_id == 50 && ifIndex == 3) {
+				printf("ifIndex = %d\n", ifIndex);
+				printf("egress_bytes[ifindex][qIndex] = %d\n", m_mmu->egress_bytes[ifIndex][qIndex]);
+			}
 			if (egressCongested){
 				Ipv4Header h;
 				PppHeader ppp;
@@ -347,14 +362,12 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 				h.SetEcn((Ipv4Header::EcnType)0x03);
 				p->AddHeader(h);
 				p->AddHeader(ppp);
-				if (m_id >= 32 && m_id <= 35 || m_id >= 40 && m_id <= 43) {
-					// printf("ifIndex = %d\n", ifIndex);
-					// printf("egress_bytes[ifindex][qIndex] = %d\n kmax[ifindex] = %d\n kmin[ifindex] = %d\n", 
-					// 		m_mmu->egress_bytes[ifIndex][qIndex], m_mmu->kmax[ifIndex], m_mmu->kmin[ifIndex]);
-					// printf("switch %d in DC1 mark ECN\n", m_id);
-					int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
-					// printf("罪魁祸首是: source node id = %d, dst node id = %d\n", sid, did);
-				}
+				// printf("ifIndex = %d\n", ifIndex);
+				// printf("egress_bytes[ifindex][qIndex] = %d\n kmax[ifindex] = %d\n kmin[ifindex] = %d\n", 
+				// 		m_mmu->egress_bytes[ifIndex][qIndex], m_mmu->kmax[ifIndex], m_mmu->kmin[ifIndex]);
+				// printf("switch %d in DC1 mark ECN\n", m_id);
+				// int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
+				// printf("罪魁祸首是: source node id = %d, dst node id = %d\n", sid, did);
 			}
 			//nzh:如果有Ecnbit，就发cnp
 			// rixin: 下面原本只写了判断有没有ECN标记，导致了一个问题，就是如果有ECN标记，但是不是数据包（ACK），
