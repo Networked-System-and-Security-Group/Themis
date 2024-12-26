@@ -119,7 +119,7 @@ uint32_t max_cnp_num = 0;
 int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 	uint8_t c = (ch.ack.flags >> qbbHeader::FLAG_CNP) & 1; 
 	if(!c) return 0;//zxc:不是cnp的话返回0
-	// printf("received a cnp\n");
+	//printf("received a cnp\n");
 	//printf("ch.ack.dport = %d, ch.ack.sport = %d,\n ch.sip = %d, ch.dip = %d,\n ch.ack.pg = %d, ch.cnp.dport = %d\n", ch.ack.dport, ch.ack.sport, ch.sip, ch.dip, ch.ack.pg, ch.cnp.dport);
 	CnpKey key(ch.dip, ch.sip, ch.ack.pg);
 	auto iter = m_cnp_handler.find(key);
@@ -177,25 +177,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 			qIndex = (ch.l3Prot == 0x06 ? 1 : ch.udp.pg); // if TCP, put to queue 1
 		}
 
-		// admission control
-		FlowIdTag t;
-		p->PeekPacketTag(t);
-		uint32_t inDev = t.GetFlowId(); 
-		if (qIndex != 0){ //not highest priority
-			//交换机判断丢包逻辑
-			if (m_mmu->CheckIngressAdmission(inDev, qIndex, p->GetSize()) && m_mmu->CheckEgressAdmission(idx, qIndex, p->GetSize())){			// Admission control
-				m_mmu->UpdateIngressAdmission(inDev, qIndex, p->GetSize());
-				m_mmu->UpdateEgressAdmission(idx, qIndex, p->GetSize());
-			} else {
-				return; // Drop
-			}
-			CheckAndSendPfc(inDev, qIndex);
-		}
-
-		// auto now1 = std::chrono::system_clock::now();
-		// auto duration1 = now1.time_since_epoch();
-		// auto timestamp1 = std::chrono::duration_cast<std::chrono::microseconds>(duration1).count();
-
+		// rixin: 下面只是更新了idx，也就是要走哪个端口出去，此操作必须在Label1之前，不然循环qbb的egress_bytes会不对，导致产生ECN
 		//zxc:控制逻辑只在外部交换机上实现
 		if(ExternalSwitch && m_id == 50){
 			
@@ -274,6 +256,27 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 				}
 			}
 		}
+
+		// Label1：admission control
+		FlowIdTag t;
+		p->PeekPacketTag(t);
+		uint32_t inDev = t.GetFlowId(); 
+		if (qIndex != 0){ //not highest priority
+			//交换机判断丢包逻辑
+			if (m_mmu->CheckIngressAdmission(inDev, qIndex, p->GetSize()) && m_mmu->CheckEgressAdmission(idx, qIndex, p->GetSize())){			// Admission control
+				m_mmu->UpdateIngressAdmission(inDev, qIndex, p->GetSize());
+				m_mmu->UpdateEgressAdmission(idx, qIndex, p->GetSize());
+			} else {
+				return; // Drop
+			}
+			CheckAndSendPfc(inDev, qIndex);
+		}
+
+		// auto now1 = std::chrono::system_clock::now();
+		// auto duration1 = now1.time_since_epoch();
+		// auto timestamp1 = std::chrono::duration_cast<std::chrono::microseconds>(duration1).count();
+
+		
 		//zxc:inDev是输入网卡，idx是目的网卡，qIndex是目的网卡接收此pkt的队列
 		m_bytes[inDev][idx][qIndex] += p->GetSize();
 		m_devices[idx]->SwitchSend(qIndex, p, ch);
@@ -351,8 +354,8 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 			p->PeekHeader(ch);
 			bool egressCongested = m_mmu->ShouldSendCN(ifIndex, qIndex);
 			if (m_id == 50 && ifIndex == 3) {
-				printf("ifIndex = %d\n", ifIndex);
-				printf("egress_bytes[ifindex][qIndex] = %d\n", m_mmu->egress_bytes[ifIndex][qIndex]);
+				// printf("ifIndex = %d\n", ifIndex);
+				// printf("egress_bytes[ifindex][qIndex] = %d\n", m_mmu->egress_bytes[ifIndex][qIndex]);
 			}
 			if (egressCongested){
 				Ipv4Header h;
@@ -362,12 +365,12 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 				h.SetEcn((Ipv4Header::EcnType)0x03);
 				p->AddHeader(h);
 				p->AddHeader(ppp);
-				// printf("ifIndex = %d\n", ifIndex);
-				// printf("egress_bytes[ifindex][qIndex] = %d\n kmax[ifindex] = %d\n kmin[ifindex] = %d\n", 
-				// 		m_mmu->egress_bytes[ifIndex][qIndex], m_mmu->kmax[ifIndex], m_mmu->kmin[ifIndex]);
-				// printf("switch %d in DC1 mark ECN\n", m_id);
-				// int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
-				// printf("罪魁祸首是: source node id = %d, dst node id = %d\n", sid, did);
+				printf("ifIndex = %d\n", ifIndex);
+				printf("egress_bytes[ifindex][qIndex] = %d\n kmax[ifindex] = %d\n kmin[ifindex] = %d\n", 
+						m_mmu->egress_bytes[ifIndex][qIndex], m_mmu->kmax[ifIndex], m_mmu->kmin[ifIndex]);
+				printf("switch %d in DC1 mark ECN\n", m_id);
+				int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
+				printf("罪魁祸首是: source node id = %d, dst node id = %d\n", sid, did);
 			}
 			//nzh:如果有Ecnbit，就发cnp
 			// rixin: 下面原本只写了判断有没有ECN标记，导致了一个问题，就是如果有ECN标记，但是不是数据包（ACK），
