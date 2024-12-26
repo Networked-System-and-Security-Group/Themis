@@ -42,7 +42,7 @@ if __name__ == "__main__":
 	base_t = 2000000000
 
 	if not options.nhost:
-		print "please use -n to enter number of hosts"
+		print ("please use -n to enter number of hosts")
 		sys.exit(0)
 	nhost = int(options.nhost)
 	load = float(options.load)
@@ -50,7 +50,7 @@ if __name__ == "__main__":
 	time = float(options.time)*1e9 # translates to ns
 	output = options.output
 	if bandwidth == None:
-		print "bandwidth format incorrect"
+		print ("bandwidth format incorrect")
 		sys.exit(0)
 
 	fileName = options.cdf_file
@@ -65,7 +65,7 @@ if __name__ == "__main__":
 	# create a custom random generator, which takes a cdf, and generate number according to the cdf
 	customRand = CustomRand()
 	if not customRand.setCdf(cdf):
-		print "Error: Not valid cdf"
+		print ("Error: Not valid cdf")
 		sys.exit(0)
 
 	ofile = open(output, "w")
