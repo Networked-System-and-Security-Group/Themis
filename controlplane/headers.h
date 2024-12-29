@@ -84,6 +84,62 @@ typedef struct switch_s {
 
 } switch_t;
 
+typedef struct act_l3_table_list_tuple_s{
+	const char* ipv4_addr;
+	// char ipv4_addr[20];
+	uint64_t egress_port;
+} act_l3_table_list_tuple_t;
+
+typedef struct act_l3_table_info_s {
+    // Key field ids
+    bf_rt_id_t kid_ipv4_dst_ip;
+    // Action Ids
+    bf_rt_id_t aid_forward;
+    // Data field Ids for forward
+    bf_rt_id_t did_egress_port;
+    // Key and Data objects
+    bf_rt_table_key_hdl *key;
+    bf_rt_table_data_hdl *data;
+} act_l3_table_info_t;
+
+typedef struct act_l3_table_entry_s {
+    // Key value
+    uint32_t ipv4_addr;
+    // Action
+    char action[20];
+    // Data value
+    bf_dev_port_t egress_port;
+} act_l3_table_entry_t;
+
+
+typedef struct act_arp_table_list_tuple_s{
+	const char* ipv4_addr;
+	// char ipv4_addr[20];
+	uint64_t egress_port;
+} act_arp_table_list_tuple_t;
+
+typedef struct act_arp_table_info_s {
+    // Key field ids
+    bf_rt_id_t kid_ipv4_dst_ip;
+    // Action Ids
+    bf_rt_id_t aid_forward;
+    // Data field Ids for forward
+    bf_rt_id_t did_egress_port;
+    // Key and Data objects
+    bf_rt_table_key_hdl *key;
+    bf_rt_table_data_hdl *data;
+} act_arp_table_info_t;
+
+typedef struct act_arp_table_entry_s {
+    // Key value
+    uint32_t ipv4_addr;
+    // Action
+    char action[20];
+    // Data value
+    bf_dev_port_t egress_port;
+} act_arp_table_entry_t;
+
+
 typedef struct set_cnp_dstQPN_list_tuple_s{
 	const char* client_ip;
 	uint32_t client_udp_port;
@@ -112,6 +168,29 @@ typedef struct set_cnp_dstQPN_entry_s {
     // Data value
     uint32_t clientQPN;
 } set_cnp_dstQPN_entry_t;
+
+typedef struct detect_ecn_list_tuple_s{
+    uint32_t ecn_value;
+} detect_ecn_list_tuple_t;
+
+typedef struct detect_ecn_info_s {
+    // Key field ids
+    bf_rt_id_t kid_ecn_value;
+    // Action Ids
+    bf_rt_id_t aid_set_mirror_md;
+    // No Data field for set_mirror_md
+    // Key and Data objects
+    bf_rt_table_key_hdl *key;
+    bf_rt_table_data_hdl *data;
+} detect_ecn_info_t;
+
+typedef struct detect_ecn_entry_s {
+    // Key value
+    uint32_t ecn_value;
+    // Action
+    char action[20];
+    // No Data value
+} detect_ecn_entry_t;
 
 
 

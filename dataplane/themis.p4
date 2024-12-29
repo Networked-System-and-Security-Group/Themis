@@ -32,11 +32,20 @@ parser IngressParser(packet_in        pkt,
 
     state parse_ethernet {
         pkt.extract(hdr.ethernet);
-        transition parse_ipv4;
+        transition select(hdr.ethernet.ether_type) {
+            ETHERTYPE_IPV4:  parse_ipv4;
+	        ETHERTYPE_ARP:   parse_arp;
+            default: accept;
+        }
     }
 
     state parse_ipv4 {
         pkt.extract(hdr.ipv4);
+        transition accept;
+    }
+
+    state parse_arp {
+        pkt.extract(hdr.arp);
         transition accept;
     }
 }
@@ -52,17 +61,28 @@ control Ingress(
     inout ingress_intrinsic_metadata_for_deparser_t  ig_dprsr_md,
     inout ingress_intrinsic_metadata_for_tm_t        ig_tm_md) {
 
-    // rixin: 转发ipv4包的动作
-	action normal_forward(PortId_t egress_port) {
+    // rixin: 确保可通信
+    action forward(PortId_t egress_port) {
 	    ig_tm_md.ucast_egress_port = egress_port;
 	}
 
-	table ipv4_table {
+	table l3_table {
 	    key = {
 	    	hdr.ipv4.dst_addr : exact;
 	    }
 	    actions = {
-            normal_forward;
+            forward;
+            @defaultonly NoAction;
+	    }
+	    size = HOST_IF_NUM;
+	}
+
+	table arp_table {
+	    key = {
+	    	hdr.arp.dstIpv4Addr : exact;
+	    }
+	    actions = {
+            forward;
             @defaultonly NoAction;
 	    }
 	    size = HOST_IF_NUM;
@@ -72,7 +92,7 @@ control Ingress(
     // 下面是对origin pkt的处理
     action set_mirror_md() {
         // rixin: 设置一些信息，用于deparser进行mirror操作
-        meta.ing_mir_ses = CNP_SES_ID; // rixin: 这个session id应该按照ingress_port去选择的，但是目前我先不管
+        meta.ing_mir_ses =  CNP_SES_ID; // rixin: session id按照ingress_port选择
         meta.pkt_type = PKT_TYPE_MIRROR; // rixin: 这个包需要被mirror
         ig_dprsr_md.mirror_type = MIRROR_TYPE_I2E; // rixin: mirror类型告知deparser
     }
@@ -90,17 +110,23 @@ control Ingress(
     }
 
 	apply {
-        // rixin: 下面的table只会设定出端口
+        // rixin: 确保可通信
 	    if (hdr.ethernet.ether_type == ETHERTYPE_IPV4) {
-		    ipv4_table.apply();
+		    l3_table.apply();
 	    }
-        // rixin: 使用resubmit_flag（自带的），从而第二个模块不会对第一个模块产生影响
-        if (ig_intr_md.resubmit_flag == 0) {
-            // rixin: 如果检测到ecn
-            detect_ecn.apply();
-        }
+	    else {
+	   	    arp_table.apply();
+	    }
+        // rixin: TODO: 下面需要判断是否为循环包
+        // rixin: 如果检测到ecn
+        // bool flag = (bool)1;
+        // if (flag) {
+        //     detect_ecn.apply();
+        // }
+        set_mirror_md();
+
         // rixin: 设置mirrored pkt的bridge header (相关信息见Figure3 from "P4_16 Tofino Native Architecture")
-        // rixin: setValid + hdr.emit <==> 让bridged_md加入头部
+        // rixin: setValid + pkt.emit(hdr.bridged_md) <==> 让bridged_md加入头部
         hdr.bridged_md.setValid();
         hdr.bridged_md.pkt_type = PKT_TYPE_NORMAL;
 	}
@@ -153,7 +179,7 @@ parser EgressParser(packet_in        pkt,
     }
 
     state parse_metadata {
-        // rixin(tips): 读这块代码的reader可以自行查一查lookahead和extract的区别
+        // rixin: lookahead不移动指针，extract移动指针
         mirror_h mirror_md = pkt.lookahead<mirror_h>();
         transition select(mirror_md.pkt_type) {
             PKT_TYPE_MIRROR : parse_mirror_md;
@@ -168,40 +194,40 @@ parser EgressParser(packet_in        pkt,
     }
 
     state parse_mirror_md {
-        mirror_h mirror_md;
-        pkt.extract(mirror_md);
+        pkt.extract(hdr.mirror_md);
         meta.is_mirrored = 1;
         transition parse_ethernet;
     }
 
     state parse_ethernet {
         pkt.extract(hdr.ethernet);
-        transition accept;
+        transition parse_ipv4;
     }
 
     state parse_ipv4 {
         pkt.extract(hdr.ipv4);
-        transition select(hdr.ipv4.protocol) {
-            IP_PROTOCOLS_TCP:   parse_tcp;
-	        IP_PROTOCOLS_UDP:   parse_udp;
-            default: accept;
-        }
-    }
-
-    state parse_tcp {
-        pkt.extract(hdr.tcp);
-        transition parse_bth;
-    }
-
-    state parse_udp {
-        pkt.extract(hdr.udp);
-        transition parse_bth;
-    }
-
-    state parse_bth {
-        pkt.extract(hdr.bth);
         transition accept;
+        // transition select(hdr.ipv4.protocol) {
+        //     IP_PROTOCOLS_TCP:   parse_tcp;
+	    //     IP_PROTOCOLS_UDP:   parse_udp;
+        //     default: accept;
+        // }
     }
+
+    // state parse_tcp {
+    //     pkt.extract(hdr.tcp);
+    //     transition parse_bth;
+    // }
+
+    // state parse_udp {
+    //     pkt.extract(hdr.udp);
+    //     transition parse_bth;
+    // }
+
+    // state parse_bth {
+    //     pkt.extract(hdr.bth);
+    //     transition accept;
+    // }
 }
 
     /***************** M A T C H - A C T I O N  *********************/
@@ -216,38 +242,38 @@ control Egress(
     inout egress_intrinsic_metadata_for_deparser_t     eg_dprsr_md,
     inout egress_intrinsic_metadata_for_output_port_t  eg_oport_md)
 {
-    action set_dstQPN (bit<24> clientQPN) {
-        hdr.bth.dest_qp = clientQPN;
-    }
+    // action set_dstQPN (bit<24> clientQPN) {
+    //     hdr.bth.dest_qp = clientQPN;
+    // }
 
-    table set_cnp_dstQPN {
-        key = {
-            // rixin: 下面两个字段用来match需要修改dstQPN字段的CNP
-            hdr.ipv4.dst_addr: exact;
-            hdr.udp.src_port: exact;
-        }
-        actions = {
-            set_dstQPN;
-            @defaultonly NoAction;
-        }
-        size = MAX_NUM_CONGESTION_FLOW;
-    }
+    // table set_cnp_dstQPN {
+    //     key = {
+    //         // rixin: 下面两个字段用来match需要修改dstQPN字段的CNP
+    //         hdr.ipv4.dst_addr: exact;
+    //         hdr.udp.src_port: exact;
+    //     }
+    //     actions = {
+    //         set_dstQPN;
+    //         @defaultonly NoAction;
+    //     }
+    //     size = MAX_NUM_CONGESTION_FLOW;
+    // }
 
     apply {
         // rixin: 判断出当前是个mirrored pkt即cnp
         if (meta.is_mirrored == 1)
         {
             // rixin: 设置好cnp的mac地址
-            mac_addr_t tmp1 = hdr.ethernet.dst_addr;
-            hdr.ethernet.dst_addr = hdr.ethernet.src_addr;
-            hdr.ethernet.src_addr = tmp1;
+            // mac_addr_t tmp1 = hdr.ethernet.dst_addr;
+            // hdr.ethernet.dst_addr = hdr.ethernet.src_addr;
+            // hdr.ethernet.src_addr = tmp1;
             // rixin: 设置好cnp的ip地址
             ipv4_addr_t tmp2 = hdr.ipv4.dst_addr;
             hdr.ipv4.dst_addr = hdr.ipv4.src_addr;
             hdr.ipv4.src_addr = tmp2;
             // rixin: udp port不需要改变
             // rixin: BTH中的dstQPN字段应该等到后续的MAT修改
-            set_cnp_dstQPN.apply();
+            // set_cnp_dstQPN.apply();
         }
 
     }
@@ -262,8 +288,21 @@ control EgressDeparser(packet_out pkt,
     /* Intrinsic */
     in    egress_intrinsic_metadata_for_deparser_t  eg_dprsr_md)
 {
+    Checksum() ipv4_csum;
     apply {
-        pkt.emit(hdr);
+        if (hdr.ipv4.isValid()) {
+            hdr.ipv4.hdr_checksum = ipv4_csum.update({
+            hdr.ipv4.version, hdr.ipv4.ihl, hdr.ipv4.diffserv, hdr.ipv4.ecn,
+            hdr.ipv4.total_len,
+            hdr.ipv4.identification,
+            hdr.ipv4.flags, hdr.ipv4.frag_offset,
+            hdr.ipv4.ttl, hdr.ipv4.protocol,
+            /* skip hdr.ipv4.hdr_checksum, */
+            hdr.ipv4.src_addr,
+            hdr.ipv4.dst_addr});
+        }
+        pkt.emit(hdr.ethernet);
+        pkt.emit(hdr.ipv4);
     }
 }
 

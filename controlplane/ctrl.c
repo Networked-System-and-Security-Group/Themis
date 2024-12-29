@@ -22,6 +22,322 @@ uint32_t ipv4AddrToUint32(const char* ip_str) {
   return ntohl(ip_addr);
 }
 
+// table operation for act_l3_table
+static void act_l3_table_setup(const bf_rt_target_t *dev_tgt,
+                                const bf_rt_info_hdl *bfrt_info,
+                                const bf_rt_table_hdl **act_l3_table,
+                                act_l3_table_info_t *act_l3_table_info,
+                                const act_l3_table_list_tuple_t *act_l3_table_list,
+                                const uint8_t list_size) {
+    bf_status_t bf_status;
+
+    // Get table object from name
+    bf_status = bf_rt_table_from_name_get(bfrt_info,
+                                          "Ingress.l3_table",
+                                          act_l3_table);
+    assert(bf_status == BF_SUCCESS);
+
+    // Allocate key and data once, and use reset across different uses
+    bf_status = bf_rt_table_key_allocate(*act_l3_table,
+                                         &act_l3_table_info->key);
+    assert(bf_status == BF_SUCCESS);
+    bf_status = bf_rt_table_data_allocate(*act_l3_table,
+                                          &act_l3_table_info->data);
+    assert(bf_status == BF_SUCCESS);
+
+    // Get field-ids for key field
+
+	bf_status = bf_rt_key_field_id_get(*act_l3_table, "hdr.ipv4.dst_addr",
+										&act_l3_table_info->kid_ipv4_dst_ip);
+    assert(bf_status == BF_SUCCESS);
+
+    // Get action Ids for action forward
+    bf_status = bf_rt_action_name_to_id(*act_l3_table,
+                                        "Ingress.forward",
+                                        &act_l3_table_info->aid_forward);
+    assert(bf_status == BF_SUCCESS);
+
+    // Get field-ids for data field
+    bf_status = bf_rt_data_field_id_with_action_get(
+        *act_l3_table, "egress_port",
+        act_l3_table_info->aid_forward, &act_l3_table_info->did_egress_port
+    );
+    assert(bf_status == BF_SUCCESS);
+}
+
+static void act_l3_table_entry_add(const bf_rt_target_t *dev_tgt,
+                                    const bf_rt_session_hdl *session,
+                                    const bf_rt_table_hdl *act_l3_table,
+                                    act_l3_table_info_t *act_l3_table_info,
+                                    act_l3_table_entry_t *act_l3_table_entry) {
+    bf_status_t bf_status;
+
+    // Reset key before use
+    bf_rt_table_key_reset(act_l3_table, &act_l3_table_info->key);
+
+    // Fill in the Key object
+	bf_status = bf_rt_key_field_set_value(act_l3_table_info->key,
+										  act_l3_table_info->kid_ipv4_dst_ip,
+										  act_l3_table_entry->ipv4_addr); 
+    assert(bf_status == BF_SUCCESS);
+
+    if (strcmp(act_l3_table_entry->action, "forward") == 0) {
+        // Reset data before use
+        bf_rt_table_action_data_reset(act_l3_table,
+                                      act_l3_table_info->aid_forward,
+                                      &act_l3_table_info->data);
+        // Fill in the Data object
+        bf_status = bf_rt_data_field_set_value(act_l3_table_info->data,
+                                               act_l3_table_info->did_egress_port,
+                                               act_l3_table_entry->egress_port);
+        assert(bf_status == BF_SUCCESS);
+    }
+    // Call table entry add API
+    bf_status = bf_rt_table_entry_add(act_l3_table, session, dev_tgt,
+                                      act_l3_table_info->key,
+                                      act_l3_table_info->data);
+    assert(bf_status == BF_SUCCESS);
+    bf_status = bf_rt_session_complete_operations(session);
+    assert(bf_status == BF_SUCCESS);
+}
+
+// prefix: act_l3_table
+static void act_l3_table_deploy(const bf_rt_target_t *dev_tgt,
+                                 const bf_rt_info_hdl *bfrt_info,
+                                 const bf_rt_session_hdl *session,
+                                 const act_l3_table_list_tuple_t *act_l3_table_list,
+                                 const uint8_t list_size) {
+    bf_status_t bf_status;
+    const bf_rt_table_hdl *act_l3_table = NULL;
+    act_l3_table_info_t act_l3_table_info;
+
+    // Set up the act_l3_table
+    act_l3_table_setup(dev_tgt, bfrt_info, &act_l3_table,
+                        &act_l3_table_info, act_l3_table_list, list_size);
+    printf("act_l3_table is set up correctly!\n");
+
+    // Add act_l3_table entries
+    for (unsigned int idx = 0; idx < list_size; idx++) {
+
+		act_l3_table_entry_t act_l3_table_entry =  {
+			.ipv4_addr = ipv4AddrToUint32(act_l3_table_list[idx].ipv4_addr),
+			.action = "forward",
+			.egress_port = act_l3_table_list[idx].egress_port,
+		}; 
+        act_l3_table_entry_add(dev_tgt, session, act_l3_table,
+                                &act_l3_table_info, &act_l3_table_entry);
+    }
+    printf("act_l3_table is deployed correctly!\n");
+
+}
+
+static void act_arp_table_setup(const bf_rt_target_t *dev_tgt,
+                                const bf_rt_info_hdl *bfrt_info,
+                                const bf_rt_table_hdl **act_arp_table,
+                                act_arp_table_info_t *act_arp_table_info,
+                                const act_arp_table_list_tuple_t *act_arp_table_list,
+                                const uint8_t list_size) {
+    bf_status_t bf_status;
+
+    // Get table object from name
+    bf_status = bf_rt_table_from_name_get(bfrt_info,
+                                          "Ingress.arp_table",
+                                          act_arp_table);
+    assert(bf_status == BF_SUCCESS);
+
+    // Allocate key and data once, and use reset across different uses
+    bf_status = bf_rt_table_key_allocate(*act_arp_table,
+                                         &act_arp_table_info->key);
+    assert(bf_status == BF_SUCCESS);
+    bf_status = bf_rt_table_data_allocate(*act_arp_table,
+                                          &act_arp_table_info->data);
+    assert(bf_status == BF_SUCCESS);
+
+    // Get field-ids for key field
+
+	bf_status = bf_rt_key_field_id_get(*act_arp_table, "hdr.arp.dstIpv4Addr",
+										&act_arp_table_info->kid_ipv4_dst_ip);
+    assert(bf_status == BF_SUCCESS);
+
+    // Get action Ids for action forward
+    bf_status = bf_rt_action_name_to_id(*act_arp_table,
+                                        "Ingress.forward",
+                                        &act_arp_table_info->aid_forward);
+    assert(bf_status == BF_SUCCESS);
+
+    // Get field-ids for data field
+    bf_status = bf_rt_data_field_id_with_action_get(
+        *act_arp_table, "egress_port",
+        act_arp_table_info->aid_forward, &act_arp_table_info->did_egress_port
+    );
+    assert(bf_status == BF_SUCCESS);
+}
+
+static void act_arp_table_entry_add(const bf_rt_target_t *dev_tgt,
+                                    const bf_rt_session_hdl *session,
+                                    const bf_rt_table_hdl *act_arp_table,
+                                    act_arp_table_info_t *act_arp_table_info,
+                                    act_arp_table_entry_t *act_arp_table_entry) {
+    bf_status_t bf_status;
+
+    // Reset key before use
+    bf_rt_table_key_reset(act_arp_table, &act_arp_table_info->key);
+
+    // Fill in the Key object
+	bf_status = bf_rt_key_field_set_value(act_arp_table_info->key,
+										  act_arp_table_info->kid_ipv4_dst_ip,
+										  act_arp_table_entry->ipv4_addr); 
+    assert(bf_status == BF_SUCCESS);
+
+    if (strcmp(act_arp_table_entry->action, "forward") == 0) {
+        // Reset data before use
+        bf_rt_table_action_data_reset(act_arp_table,
+                                      act_arp_table_info->aid_forward,
+                                      &act_arp_table_info->data);
+        // Fill in the Data object
+        bf_status = bf_rt_data_field_set_value(act_arp_table_info->data,
+                                               act_arp_table_info->did_egress_port,
+                                               act_arp_table_entry->egress_port);
+        assert(bf_status == BF_SUCCESS);
+    }
+    // Call table entry add API
+    bf_status = bf_rt_table_entry_add(act_arp_table, session, dev_tgt,
+                                      act_arp_table_info->key,
+                                      act_arp_table_info->data);
+    assert(bf_status == BF_SUCCESS);
+    bf_status = bf_rt_session_complete_operations(session);
+    assert(bf_status == BF_SUCCESS);
+}
+
+// prefix: act_arp_table
+static void act_arp_table_deploy(const bf_rt_target_t *dev_tgt,
+                                 const bf_rt_info_hdl *bfrt_info,
+                                 const bf_rt_session_hdl *session,
+                                 const act_arp_table_list_tuple_t *act_arp_table_list,
+                                 const uint8_t list_size) {
+    bf_status_t bf_status;
+    const bf_rt_table_hdl *act_arp_table = NULL;
+    act_arp_table_info_t act_arp_table_info;
+
+    // Set up the act_arp_table
+    act_arp_table_setup(dev_tgt, bfrt_info, &act_arp_table,
+                        &act_arp_table_info, act_arp_table_list, list_size);
+    printf("act_arp_table is set up correctly!\n");
+
+    // Add act_arp_table entries
+    for (unsigned int idx = 0; idx < list_size; idx++) {
+
+		act_arp_table_entry_t act_arp_table_entry =  {
+			.ipv4_addr = ipv4AddrToUint32(act_arp_table_list[idx].ipv4_addr),
+			.action = "forward",
+			.egress_port = act_arp_table_list[idx].egress_port,
+		}; 
+        act_arp_table_entry_add(dev_tgt, session, act_arp_table,
+                                &act_arp_table_info, &act_arp_table_entry);
+    }
+    printf("act_arp_table is deployed correctly!\n");
+
+}
+
+// table operation for detect_ecn
+static void detect_ecn_setup(const bf_rt_target_t *dev_tgt,
+                                const bf_rt_info_hdl *bfrt_info,
+                                const bf_rt_table_hdl **detect_ecn,
+                                detect_ecn_info_t *detect_ecn_info,
+                                const detect_ecn_list_tuple_t *detect_ecn_list,
+                                const uint8_t list_size) {
+    bf_status_t bf_status;
+
+    // Get table object from name
+    bf_status = bf_rt_table_from_name_get(bfrt_info,
+                                          "Ingress.detect_ecn",
+                                          detect_ecn);
+    assert(bf_status == BF_SUCCESS);
+
+    // Allocate key and data once, and use reset across different uses
+    bf_status = bf_rt_table_key_allocate(*detect_ecn,
+                                         &detect_ecn_info->key);
+    assert(bf_status == BF_SUCCESS);
+    bf_status = bf_rt_table_data_allocate(*detect_ecn,
+                                          &detect_ecn_info->data);
+    assert(bf_status == BF_SUCCESS);
+
+    // Get field-ids for key field
+
+	bf_status = bf_rt_key_field_id_get(*detect_ecn, "hdr.ipv4.ecn",
+										&detect_ecn_info->kid_ecn_value);
+    assert(bf_status == BF_SUCCESS);
+
+    // Get action Ids for action set_mirror_md
+    bf_status = bf_rt_action_name_to_id(*detect_ecn,
+                                        "Ingress.set_mirror_md",
+                                        &detect_ecn_info->aid_set_mirror_md);
+    assert(bf_status == BF_SUCCESS);
+
+    // No data field needed to set
+}
+
+static void detect_ecn_entry_add(const bf_rt_target_t *dev_tgt,
+                                    const bf_rt_session_hdl *session,
+                                    const bf_rt_table_hdl *detect_ecn,
+                                    detect_ecn_info_t *detect_ecn_info,
+                                    detect_ecn_entry_t *detect_ecn_entry) {
+    bf_status_t bf_status;
+
+    // Reset key before use
+    bf_rt_table_key_reset(detect_ecn, &detect_ecn_info->key);
+
+    // Fill in the Key object
+	bf_status = bf_rt_key_field_set_value(detect_ecn_info->key,
+										  detect_ecn_info->kid_ecn_value,
+										  detect_ecn_entry->ecn_value); 
+    assert(bf_status == BF_SUCCESS);
+
+    if (strcmp(detect_ecn_entry->action, "set_mirror_md") == 0) {
+        // Reset data before use
+        bf_rt_table_action_data_reset(detect_ecn,
+                                      detect_ecn_info->aid_set_mirror_md,
+                                      &detect_ecn_info->data);
+        // No Data object needs to be filled
+    }
+    // Call table entry add API
+    bf_status = bf_rt_table_entry_add(detect_ecn, session, dev_tgt,
+                                      detect_ecn_info->key,
+                                      detect_ecn_info->data);
+    assert(bf_status == BF_SUCCESS);
+    bf_status = bf_rt_session_complete_operations(session);
+    assert(bf_status == BF_SUCCESS);
+}
+
+// prefix: detect_ecn
+static void detect_ecn_deploy(const bf_rt_target_t *dev_tgt,
+                                 const bf_rt_info_hdl *bfrt_info,
+                                 const bf_rt_session_hdl *session,
+                                 const detect_ecn_list_tuple_t *detect_ecn_list,
+                                 const uint8_t list_size) {
+    bf_status_t bf_status;
+    const bf_rt_table_hdl *detect_ecn = NULL;
+    detect_ecn_info_t detect_ecn_info;
+
+    // Set up the detect_ecn
+    detect_ecn_setup(dev_tgt, bfrt_info, &detect_ecn,
+                        &detect_ecn_info, detect_ecn_list, list_size);
+    printf("detect_ecn is set up correctly!\n");
+
+    // Add detect_ecn entries
+    for (unsigned int idx = 0; idx < list_size; idx++) {
+
+		detect_ecn_entry_t detect_ecn_entry =  {
+			.ecn_value = detect_ecn_list[idx].ecn_value,
+			.action = "set_mirror_md"
+		}; 
+        detect_ecn_entry_add(dev_tgt, session, detect_ecn,
+                                &detect_ecn_info, &detect_ecn_entry);
+    }
+    printf("detect_ecn is deployed correctly!\n");
+
+}
+
 const bf_rt_table_hdl *set_cnp_dstQPN = NULL;
 set_cnp_dstQPN_info_t set_cnp_dstQPN_info;
 static void set_cnp_dstQPN_setup(const bf_rt_target_t *dev_tgt,
@@ -300,6 +616,30 @@ void* poll_daemon_pkt(void* arg) {
     return NULL;
 }
 
+static void mirrorSetup(const bf_rt_target_t *dev_tgt) {
+	p4_pd_status_t pd_status;
+	p4_pd_sess_hdl_t mirror_session;
+	p4_pd_dev_target_t pd_dev_tgt = {dev_tgt->dev_id, dev_tgt->pipe_id};
+
+	pd_status = p4_pd_client_init(&mirror_session);
+    assert(pd_status == BF_SUCCESS);
+
+    p4_pd_mirror_session_info_t mirror_session_info = {
+        .type        = PD_MIRROR_TYPE_NORM, // Not sure
+        .dir         = PD_DIR_INGRESS,
+        .id          = CNP_SES_ID,
+        .egr_port    = ACT_198_PORT,
+        .egr_port_v  = true,
+        .max_pkt_len = 16384 // Refer to example in Barefoot Academy	
+    };
+
+    pd_status = p4_pd_mirror_session_create(mirror_session, pd_dev_tgt,
+                                        &mirror_session_info);
+    assert(pd_status == BF_SUCCESS);	
+    printf("Config I2E mirrror to PORT: %d, Session ID: %d\n", mirror_session_info.egr_port, mirror_session_info.id);
+}
+
+
 int main(void) {
     dev_tgt->dev_id = 0;
     dev_tgt->pipe_id = BF_DEV_PIPE_ALL;
@@ -322,10 +662,26 @@ int main(void) {
     // Set up the portable using C bf_pm api, instead of BF_RT CPP
 	port_setup(dev_tgt, PORT_LIST, ARRLEN(PORT_LIST));	
     printf("$PORT table is set up successfully!\n");
+
+    // Setup and install entries for act_l3_table (C-style)
+	act_l3_table_deploy(dev_tgt, bfrt_info, *session,
+                        act_l3_table_list, ARRLEN(act_l3_table_list));
+
+    // Setup and install entries for act_l3_table (C-style)
+	act_arp_table_deploy(dev_tgt, bfrt_info, *session,
+                        act_arp_table_list, ARRLEN(act_l3_table_list));
     
-    // Set up the set_cnp_dstQPN
-    set_cnp_dstQPN_setup(dev_tgt, bfrt_info, &set_cnp_dstQPN,
-                        &set_cnp_dstQPN_info);
+    // // Set up the set_cnp_dstQPN table in Egress
+    // set_cnp_dstQPN_setup(dev_tgt, bfrt_info, &set_cnp_dstQPN,
+    //                     &set_cnp_dstQPN_info);
+
+    // Set up detect_ecn table in Ingress
+    // detect_ecn_deploy(dev_tgt, bfrt_info, *session,
+    //                     detect_ecn_list, ARRLEN(detect_ecn_list));
+
+    // Set up I2E Mirror
+    mirrorSetup(dev_tgt);
+	printf("Mirror Setup finished\n");
 
     pthread_t poll_thread;
 

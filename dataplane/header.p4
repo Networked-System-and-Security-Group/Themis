@@ -11,6 +11,7 @@ typedef bit<16> l4_port_t;
 
 typedef bit<16> ether_type_t;
 const ether_type_t ETHERTYPE_IPV4 = 16w0x0800;
+const bit<16> ETHERTYPE_ARP = 16w0x0806;
 
 typedef bit<8> ip_protocol_t;
 const ip_protocol_t IP_PROTOCOLS_TCP = 6;
@@ -18,8 +19,8 @@ const ip_protocol_t IP_PROTOCOLS_UDP = 17;
 
 // rixin: 由于使用了mirror，所以需要区分
 typedef bit<8>  pkt_type_t;
-const pkt_type_t PKT_TYPE_NORMAL = 1;
-const pkt_type_t PKT_TYPE_MIRROR = 2;
+const pkt_type_t PKT_TYPE_NORMAL = 6;
+const pkt_type_t PKT_TYPE_MIRROR = 9;
 
 #if __TARGET_TOFINO__ == 1
 typedef bit<3> mirror_type_t;
@@ -120,10 +121,12 @@ struct my_ingress_headers_t {
     mirror_bridged_metadata_h bridged_md;
     ethernet_h ethernet;
     ipv4_h ipv4;
+    arp_h arp;
 }
 
 struct my_egress_headers_t {
     mirror_bridged_metadata_h bridged_md;
+    mirror_h mirror_md;
     ethernet_h ethernet;
     ipv4_h ipv4;
     tcp_h tcp;
