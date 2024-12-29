@@ -17,6 +17,8 @@
 #include<map>
 #include <algorithm>
 #include <chrono>
+#include <fstream>
+
 
 namespace ns3 {
 
@@ -129,7 +131,7 @@ int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 		CNP_Handler &cnp_handler = iter->second;
 		cnp_handler.rec_time = Simulator::Now();
 		cnp_handler.cnp_num += 1;
-		if (cnp_handler.loop_num <= 10)
+		if (cnp_handler.loop_num <= 30 && cnp_handler.cnp_num % 3 == 1)
 			cnp_handler.loop_num++;
 	}
 	else{
@@ -153,8 +155,19 @@ bool isDataPkt(CustomHeader &ch){
 
 int pkt_num = 0;
 int recir_num = 0;
+// int init_log = 0;
 //nzh:非常重要的函数！！！important
 void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
+	// std::ofstream logFile;
+	// if (!init_log) {
+	// 	logFile.open("log.txt", std::ios::app);
+	// 	if (!logFile.is_open()) {
+	// 		std::cerr << "无法打开文件!" << std::endl;
+	// 		return;
+	// 	}
+	// 	init_log = 1;
+	// }
+
 	int idx = GetOutDev(p, ch);
 	int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
 	if (m_id == 32) {
@@ -179,6 +192,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 
 		// rixin: 下面只是更新了idx，也就是要走哪个端口出去，此操作必须在Label1之前，不然循环qbb的egress_bytes会不对，导致产生ECN
 		//zxc:控制逻辑只在外部交换机上实现
+		// rixin: 第二个模块
 		if(ExternalSwitch && m_id == 50){
 			
 			int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
@@ -215,8 +229,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 					//printf("check\n");
 				}
 				//zxc: 如果没有被cnp命中则直接发走，被命中则进入下方控制逻辑
-				// if(iter!=m_cnp_handler.end() && (sid < 16 && did > 15)){
-				if((sid < 16 && did > 15)){
+				if(iter!=m_cnp_handler.end() && (sid < 16 && did > 15)){
 					//printf("1111111111111111111\n");
 					if (isDataPkt(ch)) {
 						// printf("a pkt need to be forwarded\n");
@@ -225,8 +238,9 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 						//zxc:recycle_times_left==0表明这个包已经被减速并完成减速
 						if(p->recycle_times_left!=0){
 							//zxc:this packet is cnp-tergeted for the first time
-							if(p->recycle_times_left<0){
-								p->recycle_times_left = 1;
+							if(p->recycle_times_left < 0){
+								p->recycle_times_left = iter->second.loop_num;
+								// printf("p->recycle_times_left = %d\n", p->recycle_times_left);
 								recir_num++;
 								// printf("recir_num = %d\n", recir_num);
 								// p->recycle_times_left = iter->second.loop_num;
@@ -238,8 +252,9 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 							}
 							//zxc:this packet has been targeted and is in the loop
 							else{
-								p->recycle_times_left -= 1;
+								// printf("222222222222a pkt is recirculated\n");
 								idx = loop_qbb_index;
+								p->recycle_times_left -= 1;
 								//std::cout<<"reduce loop times by one and the left is "<<p->recycle_times_left<<"\n";
 							}
 						}
@@ -354,10 +369,9 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 			p->PeekHeader(ch);
 			bool egressCongested = m_mmu->ShouldSendCN(ifIndex, qIndex);
 			if (m_id == 50 && ifIndex == 3) {
-				// printf("ifIndex = %d\n", ifIndex);
-				// printf("egress_bytes[ifindex][qIndex] = %d\n", m_mmu->egress_bytes[ifIndex][qIndex]);
+				// do nothing
 			}
-			if (egressCongested){
+			else if (egressCongested){
 				Ipv4Header h;
 				PppHeader ppp;
 				p->RemoveHeader(ppp);
@@ -365,17 +379,21 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 				h.SetEcn((Ipv4Header::EcnType)0x03);
 				p->AddHeader(h);
 				p->AddHeader(ppp);
-				printf("ifIndex = %d\n", ifIndex);
-				printf("egress_bytes[ifindex][qIndex] = %d\n kmax[ifindex] = %d\n kmin[ifindex] = %d\n", 
-						m_mmu->egress_bytes[ifIndex][qIndex], m_mmu->kmax[ifIndex], m_mmu->kmin[ifIndex]);
-				printf("switch %d in DC1 mark ECN\n", m_id);
-				int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
-				printf("罪魁祸首是: source node id = %d, dst node id = %d\n", sid, did);
+				if (m_id == 50) {
+					printf("switch 50 marked an ECN\n");
+				}
+				// printf("ifIndex = %d\n", ifIndex);
+				// printf("egress_bytes[ifindex][qIndex] = %d\n kmax[ifindex] = %d\n kmin[ifindex] = %d\n", 
+				// 		m_mmu->egress_bytes[ifIndex][qIndex], m_mmu->kmax[ifIndex], m_mmu->kmin[ifIndex]);
+				// printf("switch %d in DC1 mark ECN\n", m_id);
+				// int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
+				// printf("罪魁祸首是: source node id = %d, dst node id = %d\n", sid, did);
 			}
 			//nzh:如果有Ecnbit，就发cnp
 			// rixin: 下面原本只写了判断有没有ECN标记，导致了一个问题，就是如果有ECN标记，但是不是数据包（ACK），
 			// 导致CNP发给了接收端，而接收端可能正在发送DC内部流，导致DC内部流的效果变差
-			if(isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id == 48 && 0){
+			// rixin: 第一个模块
+			if(isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id == 48){
 				// printf("module 1 is running\n");
 				int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
 				// printf("source node id = %d, dst node id = %d\n", sid, did);

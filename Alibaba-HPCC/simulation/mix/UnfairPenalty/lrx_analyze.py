@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-MODE = True # MODE为False表示单独分析intra或inter流量
-prefix = "inter"
+MODE = False # MODE为False表示单独分析intra或inter流量
+prefix = "intra"
 intra_ratio_sum = 0
 intra_flow_cnt = 0
 inter_ratio_sum = 0
 inter_flow_cnt = 0
 
 max_inter_ratio = 0
+max_intra_ratio = 0
 
 def read_and_classify(file_path):
     global intra_ratio_sum
@@ -14,6 +15,7 @@ def read_and_classify(file_path):
     global inter_ratio_sum
     global inter_flow_cnt
     global max_inter_ratio
+    global max_intra_ratio
     intra_dc_flow = []
     inter_dc_flow = []
     ratio_and_flow_size_record = []
@@ -50,6 +52,7 @@ def read_and_classify(file_path):
             # print(dst_third_field)
 
             if (src_third_field < 16 and dst_third_field < 16) or (src_third_field > 15 and dst_third_field > 15):
+                max_intra_ratio = max(max_intra_ratio, ratio)
                 intra_ratio_sum += ratio
                 intra_flow_cnt += 1
                 intra_dc_flow.append(line.strip())
@@ -63,6 +66,7 @@ def read_and_classify(file_path):
     if MODE: 
         if intra_flow_cnt > 0: 
             print(f"intra_ratio_sum = {intra_ratio_sum}, intra_flow_cnt = {intra_flow_cnt}, intra_ratio = {intra_ratio_sum / intra_flow_cnt}")
+            print(f"max_intra_ratio = {max_intra_ratio}")
             intra_dc_flow.append(f"Average intra_dc ratio: {intra_ratio_sum / intra_flow_cnt}")
         if inter_flow_cnt > 0:
             print(f"inter_ratio_sum = {inter_ratio_sum}, inter_flow_cnt = {inter_flow_cnt}, inter_ratio = {inter_ratio_sum / inter_flow_cnt}")
