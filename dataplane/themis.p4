@@ -156,6 +156,7 @@ control IngressDeparser(packet_out pkt,
     /********  G L O B A L   E G R E S S   M E T A D A T A  *********/
 struct my_egress_metadata_t {
     bit<1> is_mirrored; // rixin: parser告知pipeline处理的是一个cnp
+    bit<16> udp_tmp_checksum;
 }
 
     /***********************  P A R S E R  **************************/
@@ -167,6 +168,8 @@ parser EgressParser(packet_in        pkt,
     /* Intrinsic */
     out egress_intrinsic_metadata_t  eg_intr_md)
 {
+    Checksum() udp_csum;
+   
     TofinoEgressParser() tofino_parser;
 
     state start {
@@ -216,6 +219,10 @@ parser EgressParser(packet_in        pkt,
 
     state parse_udp {
         pkt.extract(hdr.udp);
+        // rixin: udp和tcp都是把payload算进checksum里了，下面是增量式的checksum更新
+        udp_csum.subtract({hdr.udp.checksum});
+        udp_csum.subtract({hdr.udp.src_port, hdr.udp.dst_port});
+        meta.udp_tmp_checksum = udp_csum.get();
         transition accept;
     }
 
@@ -267,12 +274,12 @@ control Egress(
             hdr.ipv4.dst_addr = hdr.ipv4.src_addr;
             hdr.ipv4.src_addr = tmp2;
             // rixin: udp port不需要改变
-            hdr.udp.src_port = 6666;
-            hdr.udp.dst_port = 5555;
+            hdr.udp.src_port = 7777;
+            hdr.udp.dst_port = 6666;
             // rixin: BTH中的dstQPN字段应该等到后续的MAT修改
             // set_cnp_dstQPN.apply();
         }
-
+        hdr.udp.dst_port = 6666;
     }
 }
 
@@ -286,6 +293,7 @@ control EgressDeparser(packet_out pkt,
     in    egress_intrinsic_metadata_for_deparser_t  eg_dprsr_md)
 {
     Checksum() ipv4_csum;
+    Checksum() udp_csum;
     apply {
         if (hdr.ipv4.isValid()) {
             hdr.ipv4.hdr_checksum = ipv4_csum.update({
@@ -297,6 +305,11 @@ control EgressDeparser(packet_out pkt,
             /* skip hdr.ipv4.hdr_checksum, */
             hdr.ipv4.src_addr,
             hdr.ipv4.dst_addr});
+        }
+        if (hdr.udp.isValid()) {
+            hdr.udp.checksum = udp_csum.update({
+            hdr.udp.src_port,
+            hdr.udp.dst_port, meta.udp_tmp_checksum}, true);
         }
         pkt.emit(hdr.ethernet);
         pkt.emit(hdr.ipv4);
