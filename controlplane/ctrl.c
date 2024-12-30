@@ -676,8 +676,8 @@ int main(void) {
     //                     &set_cnp_dstQPN_info);
 
     // Set up detect_ecn table in Ingress
-    // detect_ecn_deploy(dev_tgt, bfrt_info, *session,
-    //                     detect_ecn_list, ARRLEN(detect_ecn_list));
+    detect_ecn_deploy(dev_tgt, bfrt_info, *session,
+                        detect_ecn_list, ARRLEN(detect_ecn_list));
 
     // Set up I2E Mirror
     mirrorSetup(dev_tgt);

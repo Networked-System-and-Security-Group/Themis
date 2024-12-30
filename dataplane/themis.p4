@@ -119,11 +119,7 @@ control Ingress(
 	    }
         // rixin: TODO: 下面需要判断是否为循环包
         // rixin: 如果检测到ecn
-        // bool flag = (bool)1;
-        // if (flag) {
-        //     detect_ecn.apply();
-        // }
-        set_mirror_md();
+        detect_ecn.apply();
 
         // rixin: 设置mirrored pkt的bridge header (相关信息见Figure3 from "P4_16 Tofino Native Architecture")
         // rixin: setValid + pkt.emit(hdr.bridged_md) <==> 让bridged_md加入头部
@@ -206,28 +202,27 @@ parser EgressParser(packet_in        pkt,
 
     state parse_ipv4 {
         pkt.extract(hdr.ipv4);
-        transition accept;
-        // transition select(hdr.ipv4.protocol) {
-        //     IP_PROTOCOLS_TCP:   parse_tcp;
-	    //     IP_PROTOCOLS_UDP:   parse_udp;
-        //     default: accept;
-        // }
+        transition select(hdr.ipv4.protocol) {
+            IP_PROTOCOLS_TCP:   parse_tcp;
+	        IP_PROTOCOLS_UDP:   parse_udp;
+            default: accept;
+        }
     }
 
-    // state parse_tcp {
-    //     pkt.extract(hdr.tcp);
-    //     transition parse_bth;
-    // }
+    state parse_tcp {
+        pkt.extract(hdr.tcp);
+        transition accept;
+    }
 
-    // state parse_udp {
-    //     pkt.extract(hdr.udp);
-    //     transition parse_bth;
-    // }
+    state parse_udp {
+        pkt.extract(hdr.udp);
+        transition accept;
+    }
 
-    // state parse_bth {
-    //     pkt.extract(hdr.bth);
-    //     transition accept;
-    // }
+    state parse_bth {
+        pkt.extract(hdr.bth);
+        transition accept;
+    }
 }
 
     /***************** M A T C H - A C T I O N  *********************/
@@ -264,14 +259,16 @@ control Egress(
         if (meta.is_mirrored == 1)
         {
             // rixin: 设置好cnp的mac地址
-            // mac_addr_t tmp1 = hdr.ethernet.dst_addr;
-            // hdr.ethernet.dst_addr = hdr.ethernet.src_addr;
-            // hdr.ethernet.src_addr = tmp1;
+            mac_addr_t tmp1 = hdr.ethernet.dst_addr;
+            hdr.ethernet.dst_addr = hdr.ethernet.src_addr;
+            hdr.ethernet.src_addr = tmp1;
             // rixin: 设置好cnp的ip地址
             ipv4_addr_t tmp2 = hdr.ipv4.dst_addr;
             hdr.ipv4.dst_addr = hdr.ipv4.src_addr;
             hdr.ipv4.src_addr = tmp2;
             // rixin: udp port不需要改变
+            hdr.udp.src_port = 6666;
+            hdr.udp.dst_port = 5555;
             // rixin: BTH中的dstQPN字段应该等到后续的MAT修改
             // set_cnp_dstQPN.apply();
         }
@@ -303,6 +300,7 @@ control EgressDeparser(packet_out pkt,
         }
         pkt.emit(hdr.ethernet);
         pkt.emit(hdr.ipv4);
+        pkt.emit(hdr.udp);
     }
 }
 
