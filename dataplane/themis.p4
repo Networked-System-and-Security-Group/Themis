@@ -330,6 +330,7 @@ control EgressDeparser(packet_out pkt,
         }
         pkt.emit(hdr.ethernet);
         pkt.emit(hdr.ipv4);
+        pkt.emit(hdr.tcp);
         pkt.emit(hdr.udp);
     }
 }

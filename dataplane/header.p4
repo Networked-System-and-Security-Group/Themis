@@ -76,6 +76,7 @@ header tcp_h {
     bit<16> window;
     bit<16> checksum;
     bit<16> urgent_ptr;
+    bit<96> options;
 }
 
 header udp_h {
