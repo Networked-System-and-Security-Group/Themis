@@ -148,8 +148,9 @@ typedef struct set_cnp_dstQPN_list_tuple_s{
 
 typedef struct set_cnp_dstQPN_info_s {
     // Key field ids
+    bf_rt_id_t kid_server_ip;
     bf_rt_id_t kid_client_ip;
-    bf_rt_id_t kid_client_udp_port;
+    bf_rt_id_t kid_serverQPN;
     // Action Ids
     bf_rt_id_t aid_set_dstQPN;
     // Data field Ids for forward
@@ -161,8 +162,9 @@ typedef struct set_cnp_dstQPN_info_s {
 
 typedef struct set_cnp_dstQPN_entry_s {
     // Key value
+	uint32_t server_ip;
 	uint32_t client_ip;
-	uint32_t client_udp_port;
+	uint32_t serverQPN;
     // Action
     char action[20];
     // Data value

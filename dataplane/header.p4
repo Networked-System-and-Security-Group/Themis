@@ -17,6 +17,8 @@ typedef bit<8> ip_protocol_t;
 const ip_protocol_t IP_PROTOCOLS_TCP = 6;
 const ip_protocol_t IP_PROTOCOLS_UDP = 17;
 
+const l4_port_t UDP_ROCE_DST_PORT = 4791;
+
 // rixin: 由于使用了mirror，所以需要区分
 typedef bit<8>  pkt_type_t;
 const pkt_type_t PKT_TYPE_NORMAL = 6;
@@ -91,7 +93,7 @@ header bth_h {
     bit<4> header_v;
     bit<16> parti_key;
     bit<8> reserved1;
-    bit<24> dest_qp;
+    bit<24> dst_qpn;
     bit<1> ack_req;
     bit<7> reserved2;
     bit<24> psn;
@@ -122,6 +124,8 @@ struct my_ingress_headers_t {
     ethernet_h ethernet;
     ipv4_h ipv4;
     arp_h arp;
+    tcp_h tcp;
+    udp_h udp;
 }
 
 struct my_egress_headers_t {

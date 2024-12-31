@@ -41,13 +41,27 @@ parser IngressParser(packet_in        pkt,
 
     state parse_ipv4 {
         pkt.extract(hdr.ipv4);
-        transition accept;
+        transition select(hdr.ipv4.protocol) {
+            IP_PROTOCOLS_TCP:   parse_tcp;
+	        IP_PROTOCOLS_UDP:   parse_udp;
+            default: accept;
+        }
     }
-
+    
     state parse_arp {
         pkt.extract(hdr.arp);
         transition accept;
     }
+
+    state parse_tcp {
+        pkt.extract(hdr.tcp);
+        transition accept;
+    }
+
+    state parse_udp {
+        pkt.extract(hdr.udp);
+    }
+
 }
 
     /***********************  M A U  **************************/
@@ -119,7 +133,9 @@ control Ingress(
 	    }
         // rixin: TODO: 下面需要判断是否为循环包
         // rixin: 如果检测到ecn
-        detect_ecn.apply();
+        if (hdr.udp.dst_port == 4791) {
+            detect_ecn.apply();
+        }
 
         // rixin: 设置mirrored pkt的bridge header (相关信息见Figure3 from "P4_16 Tofino Native Architecture")
         // rixin: setValid + pkt.emit(hdr.bridged_md) <==> 让bridged_md加入头部
@@ -223,7 +239,10 @@ parser EgressParser(packet_in        pkt,
         udp_csum.subtract({hdr.udp.checksum});
         udp_csum.subtract({hdr.udp.src_port, hdr.udp.dst_port});
         meta.udp_tmp_checksum = udp_csum.get();
-        transition accept;
+        transition select(hdr.udp.dst_port) {
+            UDP_ROCE_DST_PORT:   parse_bth;
+            default: accept;
+        }
     }
 
     state parse_bth {
@@ -244,22 +263,23 @@ control Egress(
     inout egress_intrinsic_metadata_for_deparser_t     eg_dprsr_md,
     inout egress_intrinsic_metadata_for_output_port_t  eg_oport_md)
 {
-    // action set_dstQPN (bit<24> clientQPN) {
-    //     hdr.bth.dest_qp = clientQPN;
-    // }
+    action set_dstQPN (bit<24> clientQPN) {
+        hdr.bth.dst_qpn = clientQPN;
+    }
 
-    // table set_cnp_dstQPN {
-    //     key = {
-    //         // rixin: 下面两个字段用来match需要修改dstQPN字段的CNP
-    //         hdr.ipv4.dst_addr: exact;
-    //         hdr.udp.src_port: exact;
-    //     }
-    //     actions = {
-    //         set_dstQPN;
-    //         @defaultonly NoAction;
-    //     }
-    //     size = MAX_NUM_CONGESTION_FLOW;
-    // }
+    table set_cnp_dstQPN {
+        key = {
+            // rixin: 下面两个字段用来match需要修改dstQPN字段的CNP
+            hdr.ipv4.src_addr: exact;
+            hdr.ipv4.dst_addr: exact;
+            hdr.bth.dst_qpn: exact;
+        }
+        actions = {
+            set_dstQPN;
+            @defaultonly NoAction;
+        }
+        size = MAX_NUM_CONGESTION_FLOW;
+    }
 
     apply {
         // rixin: 判断出当前是个mirrored pkt即cnp
@@ -274,12 +294,9 @@ control Egress(
             hdr.ipv4.dst_addr = hdr.ipv4.src_addr;
             hdr.ipv4.src_addr = tmp2;
             // rixin: udp port不需要改变
-            hdr.udp.src_port = 7777;
-            hdr.udp.dst_port = 6666;
             // rixin: BTH中的dstQPN字段应该等到后续的MAT修改
-            // set_cnp_dstQPN.apply();
+            set_cnp_dstQPN.apply();
         }
-        hdr.udp.dst_port = 6666;
     }
 }
 

@@ -7,10 +7,10 @@ bf_rt_target_t *dev_tgt = &iswitch.dev_tgt;
 const bf_rt_info_hdl *bfrt_info = NULL;
 bf_rt_session_hdl **session = &iswitch.session;
 
-// ibv_destroy_qp中只有cQPN，计算不出来udp_sport，
+// ibv_destroy_qp中只有cQPN，没有dIP
 // 所以为了找到要删哪一个table entry，需要在controlPlane维护这么一个映射
 // C里面没有unordered_map，追求完美就要把代码重构为C++然后用unordered_map，懒得重构了
-uint16_t sIP_and_cQPN_to_udp_sport_mapping[100][1000];
+uint16_t sIP_and_cQPN_to_dIP_mapping[100][1000];
 
 uint32_t ipv4AddrToUint32(const char* ip_str) {
   uint32_t ip_addr;
@@ -359,14 +359,18 @@ static void set_cnp_dstQPN_setup(const bf_rt_target_t *dev_tgt,
     bf_status = bf_rt_table_data_allocate(*set_cnp_dstQPN,
                                           &set_cnp_dstQPN_info->data);
     assert(bf_status == BF_SUCCESS);
+    
+	bf_status = bf_rt_key_field_id_get(*set_cnp_dstQPN, "hdr.ipv4.src_addr",
+										&set_cnp_dstQPN_info->kid_server_ip);
+    assert(bf_status == BF_SUCCESS);
 
     // Get field-ids for key field
 	bf_status = bf_rt_key_field_id_get(*set_cnp_dstQPN, "hdr.ipv4.dst_addr",
 										&set_cnp_dstQPN_info->kid_client_ip);
     assert(bf_status == BF_SUCCESS);
 
-	bf_status = bf_rt_key_field_id_get(*set_cnp_dstQPN, "hdr.udp.src_port",
-										&set_cnp_dstQPN_info->kid_client_udp_port);
+	bf_status = bf_rt_key_field_id_get(*set_cnp_dstQPN, "hdr.bth.dst_qpn",
+										&set_cnp_dstQPN_info->kid_serverQPN);
     assert(bf_status == BF_SUCCESS);
 
     // Get action Ids for action forward
@@ -392,6 +396,11 @@ static void set_cnp_dstQPN_entry_add(const bf_rt_target_t *dev_tgt,
 
     // Reset key before use
     bf_rt_table_key_reset(set_cnp_dstQPN, &set_cnp_dstQPN_info->key);
+    
+	bf_status = bf_rt_key_field_set_value(set_cnp_dstQPN_info->key,
+										  set_cnp_dstQPN_info->kid_server_ip,
+										  set_cnp_dstQPN_entry->server_ip); 
+    assert(bf_status == BF_SUCCESS);
 
     // Fill in the Key object
 	bf_status = bf_rt_key_field_set_value(set_cnp_dstQPN_info->key,
@@ -401,8 +410,8 @@ static void set_cnp_dstQPN_entry_add(const bf_rt_target_t *dev_tgt,
 
     // Fill in the Key object
 	bf_status = bf_rt_key_field_set_value(set_cnp_dstQPN_info->key,
-										  set_cnp_dstQPN_info->kid_client_udp_port,
-										  set_cnp_dstQPN_entry->client_udp_port); 
+										  set_cnp_dstQPN_info->kid_serverQPN,
+										  set_cnp_dstQPN_entry->serverQPN); 
     assert(bf_status == BF_SUCCESS);
 
     if (strcmp(set_cnp_dstQPN_entry->action, "set_dstQPN") == 0) {
@@ -432,6 +441,11 @@ static void set_cnp_dstQPN_entry_del(const bf_rt_target_t *dev_tgt,
                                     set_cnp_dstQPN_entry_t *set_cnp_dstQPN_entry) {
     bf_status_t bf_status;
 
+	bf_status = bf_rt_key_field_set_value(set_cnp_dstQPN_info->key,
+										  set_cnp_dstQPN_info->kid_server_ip,
+										  set_cnp_dstQPN_entry->server_ip); 
+    assert(bf_status == BF_SUCCESS);
+
     // Fill in the Key object
 	bf_status = bf_rt_key_field_set_value(set_cnp_dstQPN_info->key,
 										  set_cnp_dstQPN_info->kid_client_ip,
@@ -440,8 +454,8 @@ static void set_cnp_dstQPN_entry_del(const bf_rt_target_t *dev_tgt,
 
     // Fill in the Key object
 	bf_status = bf_rt_key_field_set_value(set_cnp_dstQPN_info->key,
-										  set_cnp_dstQPN_info->kid_client_udp_port,
-										  set_cnp_dstQPN_entry->client_udp_port); 
+										  set_cnp_dstQPN_info->kid_serverQPN,
+										  set_cnp_dstQPN_entry->serverQPN); 
     assert(bf_status == BF_SUCCESS);
 
     // Call table entry del API
@@ -567,6 +581,7 @@ void* poll_daemon_pkt(void* arg) {
             if (len < 0) {
                 perror("recvfrom failed");
             } else {
+                printf("------------------------------------------------\n");
                 printf("GetcQPN Thread: Received %d bytes from %s:%d\n", len,
                        inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
                 printf("Polled Daemon Pkt here:\n");
@@ -577,36 +592,41 @@ void* poll_daemon_pkt(void* arg) {
                 }
                 printf("\n");
                 // 解析数据包
-                uint16_t udp_source_port = (uint8_t)buffer[0] << 8 | (uint8_t)buffer[1];
-                uint32_t cQPN = ((uint8_t)buffer[3] << 16) + ((uint8_t)buffer[4] << 8) + (uint8_t)buffer[5];
-                uint32_t sQPN = ((uint8_t)buffer[7] << 16) + ((uint8_t)buffer[8] << 8) + (uint8_t)buffer[9];
-                uint8_t flag = (uint8_t)buffer[10];
+                uint32_t dIP = ((uint8_t)buffer[0] << 24) + ((uint8_t)buffer[1] << 16) + ((uint8_t)buffer[2] << 8) + (uint8_t)buffer[3];
+                uint32_t cQPN = ((uint8_t)buffer[5] << 16) + ((uint8_t)buffer[6] << 8) + (uint8_t)buffer[7];
+                uint32_t sQPN = ((uint8_t)buffer[9] << 16) + ((uint8_t)buffer[10] << 8) + (uint8_t)buffer[11];
+                uint8_t flag = (uint8_t)buffer[12];
+                uint32_t sIP = ipv4AddrToUint32(inet_ntoa(client_addr.sin_addr));
+                printf("dIP = %u\n", dIP);
+                printf("cQPN = %u\n", cQPN);
+                printf("sQPN = %u\n", sQPN);
                 // 下发流表
                 if (flag == 1) {
-                    uint32_t sIP = ipv4AddrToUint32(inet_ntoa(client_addr.sin_addr));
+                    printf("Add a new entry\n");
                     set_cnp_dstQPN_entry_t set_cnp_dstQPN_entry =  {
+                        .server_ip = dIP,
                         .client_ip = sIP,
-                        .client_udp_port = udp_source_port,
+                        .serverQPN = sQPN,
                         .action = "set_cnp_dstQPN",
                         .clientQPN = cQPN,
                     }; 
                     set_cnp_dstQPN_entry_add(dev_tgt, *session, set_cnp_dstQPN, 
                                             &set_cnp_dstQPN_info, &set_cnp_dstQPN_entry);
                     // 将映射写入 sIP_and_cQPN_to_udp_sport_mapping
-                    sIP_and_cQPN_to_udp_sport_mapping[sIP][cQPN] = udp_source_port;
+                    sIP_and_cQPN_to_dIP_mapping[sIP][cQPN] = dIP;
                 }
                 else {
-                    uint32_t cQPN = ((uint8_t)buffer[1] << 16) + ((uint8_t)buffer[2] << 8) + (uint8_t)buffer[3];
-                    uint32_t sIP = ipv4AddrToUint32(inet_ntoa(client_addr.sin_addr));
+                    printf("Delete a new entry\n");
                     set_cnp_dstQPN_entry_t set_cnp_dstQPN_entry =  {
+                        .server_ip = sIP_and_cQPN_to_dIP_mapping[sIP][cQPN],
                         .client_ip = sIP,
-                        .client_udp_port = sIP_and_cQPN_to_udp_sport_mapping[sIP][cQPN],
                         .action = "set_cnp_dstQPN",
                         .clientQPN = cQPN,
                     }; 
                     set_cnp_dstQPN_entry_del(dev_tgt, *session, set_cnp_dstQPN, 
                                             &set_cnp_dstQPN_info, &set_cnp_dstQPN_entry);
                 }
+                printf("------------------------------------------------\n");
             }
         }
     }
@@ -671,9 +691,9 @@ int main(void) {
 	act_arp_table_deploy(dev_tgt, bfrt_info, *session,
                         act_arp_table_list, ARRLEN(act_l3_table_list));
     
-    // // Set up the set_cnp_dstQPN table in Egress
-    // set_cnp_dstQPN_setup(dev_tgt, bfrt_info, &set_cnp_dstQPN,
-    //                     &set_cnp_dstQPN_info);
+    // Set up the set_cnp_dstQPN table in Egress
+    set_cnp_dstQPN_setup(dev_tgt, bfrt_info, &set_cnp_dstQPN,
+                        &set_cnp_dstQPN_info);
 
     // Set up detect_ecn table in Ingress
     detect_ecn_deploy(dev_tgt, bfrt_info, *session,
