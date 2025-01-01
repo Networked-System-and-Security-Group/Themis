@@ -158,7 +158,7 @@ control IngressDeparser(packet_out pkt,
         if (ig_dprsr_md.mirror_type == MIRROR_TYPE_I2E) {
             // rixin: 此处，是真正的创建mirror包的地方，把meta.pkt_type作为头部加进去
             // NOTE: 我只用了一个字节，还有31个字节可以使用
-            mirror.emit<mirror_h>(meta.ing_mir_ses, {meta.pkt_type});
+            // mirror.emit<mirror_h>(meta.ing_mir_ses, {meta.pkt_type});
         }
         // rixin: 此处是对original pkt的deparse
         pkt.emit(hdr);

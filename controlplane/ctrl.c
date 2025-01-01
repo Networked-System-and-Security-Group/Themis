@@ -648,7 +648,7 @@ static void mirrorSetup(const bf_rt_target_t *dev_tgt) {
         .type        = PD_MIRROR_TYPE_NORM, // Not sure
         .dir         = PD_DIR_INGRESS,
         .id          = CNP_SES_ID,
-        .egr_port    = ACT_198_PORT,
+        .egr_port    = ACT_196_PORT,
         .egr_port_v  = true,
         .max_pkt_len = 16384 // Refer to example in Barefoot Academy	
     };
