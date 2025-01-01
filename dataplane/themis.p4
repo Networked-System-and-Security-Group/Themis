@@ -60,6 +60,7 @@ parser IngressParser(packet_in        pkt,
 
     state parse_udp {
         pkt.extract(hdr.udp);
+        transition accept;
     }
 
 }
@@ -332,6 +333,7 @@ control EgressDeparser(packet_out pkt,
         pkt.emit(hdr.ipv4);
         pkt.emit(hdr.tcp);
         pkt.emit(hdr.udp);
+        pkt.emit(hdr.bth);
     }
 }
 
