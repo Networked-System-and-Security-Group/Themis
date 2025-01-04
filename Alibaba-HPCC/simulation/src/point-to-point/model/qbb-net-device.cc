@@ -319,10 +319,6 @@ void QbbNetDevice::DequeueAndTransmit(void)
 		}else{   //switch, doesn't care about qcn, just send
 			p = m_queue->DequeueRR(m_paused);		//this is round-robin
 			if (p != 0){
-				//检查p是否符合m_cnp_handler中的条件，如果符合则更新seq，并放到队尾
-				CustomHeader ch(CustomHeader::L2_Header | CustomHeader::L3_Header | CustomHeader::L4_Header);
-				//ch.getInt = 1;
-				p->PeekHeader(ch);
 				if(m_bps==1600000000000 ){
 					p->inter_DC = 1;
 				}
@@ -502,7 +498,7 @@ void QbbNetDevice::DequeueAndTransmit(void)
 		//发送CNP
 		//新建包，设置l3Prot为0xFF，设置sip,dport,qIndex
 		//输出当前交换机的编号
-		//std::cout << "CNP sent from " << m_node->GetId() << " to " << ch.sip << " port " << ch.udp.dport << " pg "<< ch.udp.pg<< std::endl;
+		//std::cout << "CNP sent from " << m_node->GetId() << " to " << ch.sip << " port " << ch.udp.dport << " pg "<< ch.udp.pg<< "l3port:"<< ch.l3Prot<< std::endl;
 		CnHeader seqh;
 		if(ch.udp.sport==100)return;
 		seqh.SetPG(ch.udp.pg);
@@ -527,8 +523,7 @@ void QbbNetDevice::DequeueAndTransmit(void)
 		// send
 		CustomHeader ch2(CustomHeader::L2_Header | CustomHeader::L3_Header | CustomHeader::L4_Header);
 		newp->PeekHeader(ch2);
-		//std::cout << "ch2 " << ch2.cnp.dport << std::endl;
-		//std::cout << ch2.l3Prot << std::endl;
+		//std::cout<<ch2.l3Prot<<std::endl;
 		SwitchSend(0, newp, ch2);
 		//终端打印CNP
 	}

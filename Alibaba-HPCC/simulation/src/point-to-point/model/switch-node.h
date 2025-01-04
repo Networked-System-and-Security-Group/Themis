@@ -49,6 +49,7 @@ class SwitchNode : public Node{
     	Time delay;//第一个包resubmit带来的延迟
     	bool finished;// n次resubmit是否完成
     	bool sended;//是否发送过
+		int recover[105];
     	CNP_Handler(){
 			cnp_num = 0;
       		rec_time = Time(0);
@@ -60,6 +61,7 @@ class SwitchNode : public Node{
       		finished = false;
       		sended = true;
 			set_last_loop = Simulator::Now();
+			memset(recover, 0, sizeof(recover));
     	}
  	};
 

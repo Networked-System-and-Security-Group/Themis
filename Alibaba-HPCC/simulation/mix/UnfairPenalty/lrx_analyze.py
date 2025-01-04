@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-MODE = False # MODE为False表示单独分析intra或inter流量
+MODE = True # MODE为False表示单独分析intra或inter流量
 prefix = "intra"
 intra_ratio_sum = 0
 intra_flow_cnt = 0
 inter_ratio_sum = 0
 inter_flow_cnt = 0
-
+inter_fct = 0
+intra_fct = 0
 max_inter_ratio = 0
 max_intra_ratio = 0
-
 def read_and_classify(file_path):
     global intra_ratio_sum
     global intra_flow_cnt
@@ -16,10 +16,12 @@ def read_and_classify(file_path):
     global inter_flow_cnt
     global max_inter_ratio
     global max_intra_ratio
+    global inter_fct 
+    global intra_fct
     intra_dc_flow = []
     inter_dc_flow = []
     ratio_and_flow_size_record = []
-
+    fct_sum = 0
     with open(file_path, 'r') as file:
         lines = file.readlines()  # 读取所有行到一个列表中
 
@@ -36,6 +38,7 @@ def read_and_classify(file_path):
             measured_fct = int(row[6])
             perfect_fct = int(row[7])
             ratio = measured_fct / perfect_fct
+            fct_sum += measured_fct
 
             if (ratio > 2):
                 flow_size = flow_size / 1000000
@@ -55,24 +58,29 @@ def read_and_classify(file_path):
                 max_intra_ratio = max(max_intra_ratio, ratio)
                 intra_ratio_sum += ratio
                 intra_flow_cnt += 1
+                intra_fct += measured_fct
                 intra_dc_flow.append(line.strip())
 
             else:
                 max_inter_ratio = max(max_inter_ratio, ratio)
                 inter_ratio_sum += ratio
                 inter_flow_cnt += 1
+                inter_fct += measured_fct
                 inter_dc_flow.append(line.strip())
     
     if MODE: 
         if intra_flow_cnt > 0: 
             print(f"intra_ratio_sum = {intra_ratio_sum}, intra_flow_cnt = {intra_flow_cnt}, intra_ratio = {intra_ratio_sum / intra_flow_cnt}")
             print(f"max_intra_ratio = {max_intra_ratio}")
+            print(f"intra_average_fct = {intra_fct/intra_flow_cnt}")
             intra_dc_flow.append(f"Average intra_dc ratio: {intra_ratio_sum / intra_flow_cnt}")
         if inter_flow_cnt > 0:
             print(f"inter_ratio_sum = {inter_ratio_sum}, inter_flow_cnt = {inter_flow_cnt}, inter_ratio = {inter_ratio_sum / inter_flow_cnt}")
             print(f"max_inter_ratio = {max_inter_ratio}")
+            print(f"inter_average_fct = {inter_fct/inter_flow_cnt}")
             inter_dc_flow.append(f"Average intra_dc ratio: {inter_ratio_sum / inter_flow_cnt}")
-
+        print(f"Average rattio: {(intra_ratio_sum+inter_ratio_sum)/(intra_flow_cnt+inter_flow_cnt)}")
+        print(f"Average fct: {fct_sum/(intra_flow_cnt+inter_flow_cnt)}")
     return intra_dc_flow, inter_dc_flow, ratio_and_flow_size_record
 
 def write_to_file(data, file_path):

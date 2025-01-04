@@ -129,10 +129,13 @@ int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 		max_cnp_num = std::max(max_cnp_num, iter->second.cnp_num);
 		//printf("max	cnp_num = %d\n", max_cnp_num);
 		CNP_Handler &cnp_handler = iter->second;
-		cnp_handler.rec_time = Simulator::Now();
-		cnp_handler.cnp_num += 1;
-		if (cnp_handler.loop_num <= 30 && cnp_handler.cnp_num % 3 == 1)
-			cnp_handler.loop_num++;
+		if(Simulator::Now()-cnp_handler.rec_time>=ns3::NanoSeconds(100)){
+			//std::cout<<"time"<<Simulator::Now()-cnp_handler.rec_time<<std::endl;
+			cnp_handler.rec_time = Simulator::Now();
+			cnp_handler.cnp_num += 1;
+			if (cnp_handler.loop_num <= 60 && cnp_handler.cnp_num %3  == 1)
+				cnp_handler.loop_num++;
+		}
 	}
 	else{
 		CNP_Handler cnp_handler;
@@ -239,22 +242,41 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 						if(p->recycle_times_left!=0){
 							//zxc:this packet is cnp-tergeted for the first time
 							if(p->recycle_times_left < 0){
+								if(Simulator::Now()-iter->second.rec_time>=ns3::MicroSeconds(10000)){
+									for(int i=101; i>=0; i--)
+									{
+										if(iter->second.recover[i]&&iter->second.loop_num!=i)
+										{
+											//std::cout<<iter->second.loop_num<<" ";
+											iter->second.loop_num=i;
+											//std::cout<<i<<" "<<sid<<std::endl;
+											break;
+										}
+									}
+								}
 								p->recycle_times_left = iter->second.loop_num;
 								// printf("p->recycle_times_left = %d\n", p->recycle_times_left);
-								recir_num++;
-								// printf("recir_num = %d\n", recir_num);
-								// p->recycle_times_left = iter->second.loop_num;
-								//printf("module 2 is running\n");
-								// printf("a pkt is recirculated\n");
-								idx = loop_qbb_index;
-								p->recycle_times_left -= 1;
+								if(p->recycle_times_left){
+									recir_num++;
+									// printf("recir_num = %d\n", recir_num);
+									// p->recycle_times_left = iter->second.loop_num;
+									//printf("module 2 is running\n");
+									// printf("a pkt is recirculated\n");
+									idx = loop_qbb_index;
+									p->recycle_times_left -= 1;
+									iter->second.recover[p->recycle_times_left]++;
+									//std::cout<<" index "<<p->recycle_times_left<<" value "<<iter->second.recover[p->recycle_times_left]<<std::endl;
+									
+								}
 								//std::cout<<"put one packet to decelerating loop and the left is "<<p->recycle_times_left<<"**********"<<"\n";
 							}
 							//zxc:this packet has been targeted and is in the loop
 							else{
 								// printf("222222222222a pkt is recirculated\n");
 								idx = loop_qbb_index;
+								iter->second.recover[p->recycle_times_left]--;
 								p->recycle_times_left -= 1;
+								iter->second.recover[p->recycle_times_left]++;
 								//std::cout<<"reduce loop times by one and the left is "<<p->recycle_times_left<<"\n";
 							}
 						}
