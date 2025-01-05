@@ -24,6 +24,8 @@ typedef bit<8>  pkt_type_t;
 const pkt_type_t PKT_TYPE_NORMAL = 6;
 const pkt_type_t PKT_TYPE_MIRROR = 9;
 
+const PortId_t RECIRC_PORT = 196;
+
 #if __TARGET_TOFINO__ == 1
 typedef bit<3> mirror_type_t;
 #else
@@ -112,6 +114,10 @@ header arp_h {
     bit<32> dstIpv4Addr;
 }
 
+header recir_h {
+    bit<32> cnt;
+}
+
 header mirror_bridged_metadata_h {
     pkt_type_t pkt_type;
 }
@@ -121,6 +127,7 @@ header mirror_h {
 }
 
 struct my_ingress_headers_t {
+    recir_h recir;
     mirror_bridged_metadata_h bridged_md;
     ethernet_h ethernet;
     ipv4_h ipv4;

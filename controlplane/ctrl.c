@@ -530,6 +530,19 @@ static void bfrt_setup( const bf_rt_target_t *dev_tgt,
     printf("bfrt_info is got and session is created correctly!\n");
 }
 
+void ip_to_string(uint32_t ip, char *ip_str, size_t str_size) {
+    if (ip_str == NULL || str_size < 16) { // 确保缓冲区足够大
+        return;
+    }
+
+    // 将每个字节解析为十进制
+    snprintf(ip_str, str_size, "%u.%u.%u.%u",
+             (ip >> 24) & 0xFF,  // 高位字节
+             (ip >> 16) & 0xFF,  // 次高位字节
+             (ip >> 8) & 0xFF,   // 次低位字节
+             ip & 0xFF);         // 低位字节
+}
+
 // 当前不考虑batch（不过主机端上batch发Daemon Pkt的话应该弊远大于利）
 void* poll_daemon_pkt(void* arg) {
     int sockfd;
@@ -592,12 +605,21 @@ void* poll_daemon_pkt(void* arg) {
                 }
                 printf("\n");
                 // 解析数据包
-                uint32_t dIP = ((uint8_t)buffer[0] << 24) + ((uint8_t)buffer[1] << 16) + ((uint8_t)buffer[2] << 8) + (uint8_t)buffer[3];
-                uint32_t cQPN = ((uint8_t)buffer[5] << 16) + ((uint8_t)buffer[6] << 8) + (uint8_t)buffer[7];
-                uint32_t sQPN = ((uint8_t)buffer[9] << 16) + ((uint8_t)buffer[10] << 8) + (uint8_t)buffer[11];
+                uint32_t dIP = ((uint8_t)buffer[3] << 24) + ((uint8_t)buffer[2] << 16) + ((uint8_t)buffer[1] << 8) + (uint8_t)buffer[0];
+                uint32_t cQPN = ((uint8_t)buffer[6] << 16) + ((uint8_t)buffer[5] << 8) + (uint8_t)buffer[4];
+                uint32_t sQPN = ((uint8_t)buffer[10] << 16) + ((uint8_t)buffer[9] << 8) + (uint8_t)buffer[8];
                 uint8_t flag = (uint8_t)buffer[12];
-                uint32_t sIP = ipv4AddrToUint32(inet_ntoa(client_addr.sin_addr));
+
+                uint32_t sIP = 3232286979;
+                char sip_str[16];          // IP 地址字符串缓冲区
+                ip_to_string(sIP, sip_str, sizeof(sip_str));
+                printf("sIP Address: %s\n", sip_str); 
+
                 printf("dIP = %u\n", dIP);
+                char dip_str[16];          // IP 地址字符串缓冲区
+                ip_to_string(dIP, dip_str, sizeof(dip_str));
+                printf("dIP Address: %s\n", dip_str); 
+
                 printf("cQPN = %u\n", cQPN);
                 printf("sQPN = %u\n", sQPN);
                 // 下发流表
@@ -607,20 +629,22 @@ void* poll_daemon_pkt(void* arg) {
                         .server_ip = dIP,
                         .client_ip = sIP,
                         .serverQPN = sQPN,
-                        .action = "set_cnp_dstQPN",
+                        .action = "set_dstQPN",
                         .clientQPN = cQPN,
                     }; 
+                    printf("check1\n");
                     set_cnp_dstQPN_entry_add(dev_tgt, *session, set_cnp_dstQPN, 
                                             &set_cnp_dstQPN_info, &set_cnp_dstQPN_entry);
+                    printf("check2\n");
                     // 将映射写入 sIP_and_cQPN_to_udp_sport_mapping
-                    sIP_and_cQPN_to_dIP_mapping[sIP][cQPN] = dIP;
+                    // sIP_and_cQPN_to_dIP_mapping[sIP][cQPN] = dIP;
                 }
                 else {
                     printf("Delete a new entry\n");
                     set_cnp_dstQPN_entry_t set_cnp_dstQPN_entry =  {
                         .server_ip = sIP_and_cQPN_to_dIP_mapping[sIP][cQPN],
                         .client_ip = sIP,
-                        .action = "set_cnp_dstQPN",
+                        .action = "set_dstQPN",
                         .clientQPN = cQPN,
                     }; 
                     set_cnp_dstQPN_entry_del(dev_tgt, *session, set_cnp_dstQPN, 
@@ -648,7 +672,7 @@ static void mirrorSetup(const bf_rt_target_t *dev_tgt) {
         .type        = PD_MIRROR_TYPE_NORM, // Not sure
         .dir         = PD_DIR_INGRESS,
         .id          = CNP_SES_ID,
-        .egr_port    = ACT_196_PORT,
+        .egr_port    = ACT_198_PORT,
         .egr_port_v  = true,
         .max_pkt_len = 16384 // Refer to example in Barefoot Academy	
     };

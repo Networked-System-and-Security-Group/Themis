@@ -27,6 +27,14 @@ parser IngressParser(packet_in        pkt,
 
     state start {
         tofino_parser.apply(pkt, ig_intr_md);
+        transition select(ig_intr_md.ingress_port) {
+            RECIRC_PORT: parse_recir;
+            default: parse_ethernet;
+        }
+    }
+
+    state parse_recir {
+        pkt.extract(hdr.recir);
         transition parse_ethernet;
     }
 
@@ -75,6 +83,9 @@ control Ingress(
     in    ingress_intrinsic_metadata_from_parser_t   ig_prsr_md,
     inout ingress_intrinsic_metadata_for_deparser_t  ig_dprsr_md,
     inout ingress_intrinsic_metadata_for_tm_t        ig_tm_md) {
+        
+    // rixin: P4中，一个table只能被apply一次
+    bool apply_l3 = false;
 
     // rixin: 确保可通信
     action forward(PortId_t egress_port) {
@@ -123,25 +134,86 @@ control Ingress(
         }
 	    size = HOST_IF_NUM;
     }
+    
+    action init_recir() {
+        apply_l3 = false;
+
+        hdr.recir.setValid();
+        hdr.recir.cnt = 3;
+        hdr.recir.cnt = hdr.recir.cnt - 1;
+
+        ig_tm_md.ucast_egress_port = RECIRC_PORT;
+        ig_tm_md.bypass_egress = 1;
+    }
+
+    // Rixin: action很难用，最好不要加if-else语句，不然编译会出现奇奇怪怪的问题
+    // Rixin: Conditions in an action must be simple comparisons of an action data parameter
+    action decrease_recir(bit<32> recir_cnt) {
+        if (recir_cnt == 0) {
+            apply_l3 = true;
+            hdr.recir.setInvalid();
+        }
+        else {
+            hdr.recir.cnt = hdr.recir.cnt - 1;
+            apply_l3 = false;
+            ig_tm_md.ucast_egress_port = RECIRC_PORT;
+            ig_tm_md.bypass_egress = 1;
+        }
+    }
 
 	apply {
         // rixin: 确保可通信
 	    if (hdr.ethernet.ether_type == ETHERTYPE_IPV4) {
-		    l3_table.apply();
+		    apply_l3 = true;
 	    }
 	    else {
 	   	    arp_table.apply();
 	    }
-        // rixin: TODO: 下面需要判断是否为循环包
-        // rixin: 如果检测到ecn
-        if (hdr.udp.dst_port == 4791) {
+
+        // rixin: 判断是否为循环包
+        // rixin: 只对RoCE包检测ECN标记
+        if (ig_tm_md.ucast_egress_port != RECIRC_PORT && hdr.udp.dst_port == 4791) {
             detect_ecn.apply();
+        }
+        
+        // rixin: 开始循环
+        if (hdr.recir.isValid()) {
+            // decrease_recir(hdr.recir.cnt);
+            if (hdr.recir.cnt == 0) {
+                apply_l3 = true;
+                hdr.recir.setInvalid();
+            }
+            else {
+                hdr.recir.cnt = hdr.recir.cnt - 1;
+                apply_l3 = false;
+                ig_tm_md.ucast_egress_port = RECIRC_PORT;
+                ig_tm_md.bypass_egress = 1;
+            }
+        }
+        else {
+            // init_recir();
+            apply_l3 = false;
+
+            hdr.recir.setValid();
+            hdr.recir.cnt = 3;
+            hdr.recir.cnt = hdr.recir.cnt - 1;
+
+            ig_tm_md.ucast_egress_port = RECIRC_PORT;
+            ig_tm_md.bypass_egress = 1;
+        }
+
+        // rixin: 只调用一次 l3_table.apply()
+        if (apply_l3) {
+            l3_table.apply();
         }
 
         // rixin: 设置mirrored pkt的bridge header (相关信息见Figure3 from "P4_16 Tofino Native Architecture")
         // rixin: setValid + pkt.emit(hdr.bridged_md) <==> 让bridged_md加入头部
-        hdr.bridged_md.setValid();
-        hdr.bridged_md.pkt_type = PKT_TYPE_NORMAL;
+        // rixin: 循环包直接bypass egress，所以不要加bridged_md
+        if (ig_tm_md.ucast_egress_port != RECIRC_PORT) {
+            hdr.bridged_md.setValid();
+            hdr.bridged_md.pkt_type = PKT_TYPE_NORMAL;
+        }
 	}
 }
 
@@ -159,7 +231,7 @@ control IngressDeparser(packet_out pkt,
         if (ig_dprsr_md.mirror_type == MIRROR_TYPE_I2E) {
             // rixin: 此处，是真正的创建mirror包的地方，把meta.pkt_type作为头部加进去
             // NOTE: 我只用了一个字节，还有31个字节可以使用
-            // mirror.emit<mirror_h>(meta.ing_mir_ses, {meta.pkt_type});
+            mirror.emit<mirror_h>(meta.ing_mir_ses, {meta.pkt_type});
         }
         // rixin: 此处是对original pkt的deparse
         pkt.emit(hdr);
@@ -266,6 +338,7 @@ control Egress(
 {
     action set_dstQPN (bit<24> clientQPN) {
         hdr.bth.dst_qpn = clientQPN;
+        hdr.bth.opcode = 129;
     }
 
     table set_cnp_dstQPN {
