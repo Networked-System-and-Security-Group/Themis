@@ -12,6 +12,7 @@
 
     /******  G L O B A L   M E T A D A T A  *********/
 struct my_ingress_metadata_t {
+    bit<8> is_last_recir_pkt; // rixin: 对于最后一次recirculate的包，recir_h 头部还在hdr里，所以mirror出来的包也会包含recir_h，此变量是为了告知egress需要extract recir_h header
     MirrorId_t ing_mir_ses; // rixin: mirror session id
     pkt_type_t pkt_type; // rixin: 用于让ingress pipeline告诉ingress deparser是什么类型
 }
@@ -28,6 +29,7 @@ parser IngressParser(packet_in        pkt,
     state start {
         tofino_parser.apply(pkt, ig_intr_md);
         transition select(ig_intr_md.ingress_port) {
+            // rixin: 当前正在parse一个已循环的包
             RECIRC_PORT: parse_recir;
             default: parse_ethernet;
         }
@@ -139,14 +141,14 @@ control Ingress(
         apply_l3 = false;
 
         hdr.recir.setValid();
-        hdr.recir.cnt = 3;
+        hdr.recir.cnt = INIT_RECIR_CNT;
         hdr.recir.cnt = hdr.recir.cnt - 1;
 
         ig_tm_md.ucast_egress_port = RECIRC_PORT;
         ig_tm_md.bypass_egress = 1;
     }
 
-    // Rixin: action很难用，最好不要加if-else语句，不然编译会出现奇奇怪怪的问题
+    // Rixin: action很难用，最好不要加if-else语句，不然编译会出现奇奇怪怪的问题（下面这个action是用不了的）
     // Rixin: Conditions in an action must be simple comparisons of an action data parameter
     action decrease_recir(bit<32> recir_cnt) {
         if (recir_cnt == 0) {
@@ -169,19 +171,16 @@ control Ingress(
 	    else {
 	   	    arp_table.apply();
 	    }
-
-        // rixin: 判断是否为循环包
-        // rixin: 只对RoCE包检测ECN标记
-        if (ig_tm_md.ucast_egress_port != RECIRC_PORT && hdr.udp.dst_port == 4791) {
-            detect_ecn.apply();
-        }
         
         // rixin: 开始循环
         if (hdr.recir.isValid()) {
             // decrease_recir(hdr.recir.cnt);
             if (hdr.recir.cnt == 0) {
                 apply_l3 = true;
+                meta.is_last_recir_pkt = 1;
                 hdr.recir.setInvalid();
+                // rixin: 这里不能bypass egress，不然bridged_md会被emit到包头里
+                // ig_tm_md.bypass_egress = 1;
             }
             else {
                 hdr.recir.cnt = hdr.recir.cnt - 1;
@@ -195,7 +194,7 @@ control Ingress(
             apply_l3 = false;
 
             hdr.recir.setValid();
-            hdr.recir.cnt = 3;
+            hdr.recir.cnt = INIT_RECIR_CNT;
             hdr.recir.cnt = hdr.recir.cnt - 1;
 
             ig_tm_md.ucast_egress_port = RECIRC_PORT;
@@ -205,6 +204,12 @@ control Ingress(
         // rixin: 只调用一次 l3_table.apply()
         if (apply_l3) {
             l3_table.apply();
+        }
+        
+        // rixin: 判断是否为循环包
+        // rixin: 只对RoCE包检测ECN标记
+        if (ig_tm_md.ucast_egress_port != RECIRC_PORT && hdr.udp.dst_port == 4791) {
+            detect_ecn.apply();
         }
 
         // rixin: 设置mirrored pkt的bridge header (相关信息见Figure3 from "P4_16 Tofino Native Architecture")
@@ -229,9 +234,9 @@ control IngressDeparser(packet_out pkt,
 
     apply {
         if (ig_dprsr_md.mirror_type == MIRROR_TYPE_I2E) {
-            // rixin: 此处，是真正的创建mirror包的地方，把meta.pkt_type作为头部加进去
-            // NOTE: 我只用了一个字节，还有31个字节可以使用
-            mirror.emit<mirror_h>(meta.ing_mir_ses, {meta.pkt_type});
+            // rixin: 此处，是真正的创建mirror包的地方，把meta.pkt_type和meta.is_last_recir_pkt作为头部加进去
+            // NOTE: 我只用了2个字节，还有31个字节可以使用
+            mirror.emit<mirror_h>(meta.ing_mir_ses, {meta.pkt_type, meta.is_last_recir_pkt});
         }
         // rixin: 此处是对original pkt的deparse
         pkt.emit(hdr);
@@ -284,6 +289,17 @@ parser EgressParser(packet_in        pkt,
     state parse_mirror_md {
         pkt.extract(hdr.mirror_md);
         meta.is_mirrored = 1;
+        transition select(hdr.mirror_md.is_last_recir_pkt) {
+            // rixin: egress目前正在处理已完成循环的包所mirror出来的包，所以其中会有recir_h header
+            1: parse_recir;
+            default: parse_ethernet;
+        }
+    }
+
+    state parse_recir {
+        recir_h tmp;
+        // rixin: 丢了就好
+        pkt.extract(tmp);
         transition parse_ethernet;
     }
 
