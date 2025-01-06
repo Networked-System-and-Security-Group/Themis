@@ -49,7 +49,8 @@ class SwitchNode : public Node{
     	Time delay;//第一个包resubmit带来的延迟
     	bool finished;// n次resubmit是否完成
     	bool sended;//是否发送过
-		int recover[105];
+		uint32_t recovered;
+		int recover[505];
     	CNP_Handler(){
 			cnp_num = 0;
       		rec_time = Time(0);
@@ -61,6 +62,7 @@ class SwitchNode : public Node{
       		finished = false;
       		sended = true;
 			set_last_loop = Simulator::Now();
+			recovered = 0;
 			memset(recover, 0, sizeof(recover));
     	}
  	};
@@ -77,13 +79,13 @@ class SwitchNode : public Node{
       		if (dip != other.dip) {
        			 return dip < other.dip;
       		}
-      		return qindex < other.qindex;
+			return qindex < other.qindex;
     	}
     	CnpKey(uint32_t sip, uint32_t dip, uint16_t qindex) {
-      	this->sip = sip;
-      	this->dip = dip;
-      	this->qindex = qindex;
-    	}
+	  		this->sip = sip;
+	  		this->dip = dip;
+	  		this->qindex = qindex;
+		}
 	};
 
 

@@ -37,7 +37,9 @@
 #include <ns3/switch-node.h>
 
 #include <ns3/sim-setting.h>
-
+#include <random>
+#include <cstdlib>
+#include <ctime> 
 using namespace ns3;
 using namespace std;
 
@@ -350,7 +352,8 @@ uint64_t get_nic_rate(NodeContainer &n){
 
 int main(int argc, char *argv[])
 {
-	
+	    std::srand(static_cast<unsigned>(std::time(0)));
+
 #ifndef PGO_TRAINING
 	if (argc > 1)
 #else

@@ -277,7 +277,7 @@ void WriteToFile(std::string str){
 	out<<str;
 	out.close();
 }
-
+int expired = 0;
 void QbbNetDevice::DequeueAndTransmit(void)
 	{
 		NS_LOG_FUNCTION(this);
@@ -350,6 +350,8 @@ void QbbNetDevice::DequeueAndTransmit(void)
 				return;
 			}else{ //No queue can deliver any packet
 				NS_LOG_INFO("PAUSE prohibits send at node " << m_node->GetId());
+				//expired++;
+				//std::cout<<expired<<std::endl;
 				if (m_node->GetNodeType() == 0 && m_qcnEnabled){ //nothing to send, possibly due to qcn flow control, if so reschedule sending
 					Time t = Simulator::GetMaximumSimulationTime();
 					for (uint32_t i = 0; i < m_rdmaEQ->GetFlowCount(); i++){

@@ -12,7 +12,9 @@
 #include "ppp-header.h"
 #include "qbb-header.h"
 #include "cn-header.h"
-
+#include <random>
+#include <cstdlib>
+#include <ctime> 
 namespace ns3{
 
 TypeId RdmaHw::GetTypeId (void)
@@ -300,24 +302,30 @@ void RdmaHw::DeleteRxQp(uint32_t dip, uint16_t pg, uint16_t dport){
 //发送ACK的函数
 int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch){
 	uint8_t ecnbits = ch.GetIpv4EcnBits();
-
 	uint32_t payload_size = p->GetSize() - ch.GetSerializedSize();
 
 	// TODO find corresponding rx queue pair
 	Ptr<RdmaRxQueuePair> rxQp = GetRxQp(ch.dip, ch.sip, ch.udp.dport, ch.udp.sport, ch.udp.pg, true);
 	rxQp->m_ecn_source.total++;
-	rxQp->m_milestone_rx = m_ack_interval;
+	if(rxQp->m_milestone_rx==0)
+		rxQp->m_milestone_rx = m_ack_interval;
 
 	int x = ReceiverCheckSeq(ch.udp.seq, rxQp, payload_size);
+
 	if (x == 1 || x == 2){ //generate ACK or NACK
+
 		qbbHeader seqh;
 		seqh.SetSeq(rxQp->ReceiverNextExpectedSeq);
 		seqh.SetPG(ch.udp.pg);
 		seqh.SetSport(ch.udp.dport);
 		seqh.SetDport(ch.udp.sport);
 		seqh.SetIntHeader(ch.udp.ih);
-		if (ecnbits)
-			seqh.SetCnp();
+		//每2个ack设置一次cnp标记
+		if (ecnbits) {
+			rxQp->cnp_milestone++;
+			if(rxQp->cnp_milestone<5||rxQp->cnp_milestone%3==1)
+				seqh.SetCnp();
+		}
 		Ptr<Packet> newp = Create<Packet>(std::max(60-14-20-(int)seqh.GetSerializedSize(), 0));
 		newp->AddHeader(seqh);
 
@@ -328,9 +336,11 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch){
 		head.SetTtl(64);
 		head.SetPayloadSize(newp->GetSize());
 		head.SetIdentification(rxQp->m_ipid++);
-
 		newp->AddHeader(head);
 		AddHeader(newp, 0x800);	// Attach PPP header
+		//CustomHeader ch2;
+		//newp->PeekHeader(ch2);
+		//std::cout<<"send ack from " << ch2.sip << " to " << ch2.dip << "sport "<< ch2.udp.sport << " dport " << ch2.udp.dport << " pg " << ch2.udp.pg << "cnp bits "<< ((ch2.ack.flags >> qbbHeader::FLAG_CNP) & 1) << std::endl;
 		// send
 		//输出rxQp的信息
 		//std::cout << "rxQp: " << rxQp->dip << " " << rxQp->sip << " " << rxQp->sport << " " << rxQp->dport << " " << rxQp->m_ecn_source.qIndex << std::endl;
@@ -421,13 +431,16 @@ int RdmaHw::Receive(Ptr<Packet> p, CustomHeader &ch){
 	}
 	return 0;
 }
-
+// int a1=0;
 int RdmaHw::ReceiverCheckSeq(uint32_t seq, Ptr<RdmaRxQueuePair> q, uint32_t size){
 	uint32_t expected = q->ReceiverNextExpectedSeq;
 	if (seq == expected){
+		//std::cout<<m_node->GetId()<<" ack: "<<seq<<" "<<expected<<std::endl;
 		q->ReceiverNextExpectedSeq = expected + size;
 		if (q->ReceiverNextExpectedSeq >= q->m_milestone_rx){
 			q->m_milestone_rx += m_ack_interval;
+			// a1++;
+			// std::cout<<a1<<std::endl;
 			return 1; //Generate ACK
 		}else if (q->ReceiverNextExpectedSeq % m_chunk == 0){
 			return 1;
@@ -442,6 +455,8 @@ int RdmaHw::ReceiverCheckSeq(uint32_t seq, Ptr<RdmaRxQueuePair> q, uint32_t size
 			if (m_backto0){
 				q->ReceiverNextExpectedSeq = q->ReceiverNextExpectedSeq / m_chunk*m_chunk;
 			}
+
+			std::cout<<m_node->GetId()<<" nack: "<<seq<<" "<<expected<<std::endl;
 			return 2;
 		}else
 			return 4;
