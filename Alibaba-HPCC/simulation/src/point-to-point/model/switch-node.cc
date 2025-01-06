@@ -315,7 +315,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 							else{
 								// printf("222222222222a pkt is recirculated\n");
 								iter->second.recover[p->recycle_times_left]--;
-								if(Simulator::Now()-iter->second.rec_time>=ns3::MicroSeconds(1500)){
+								if(Simulator::Now()-iter->second.rec_time>=ns3::MicroSeconds(2000)){
 									for(int i = p->recycle_times_left; i >0;i--)
 									{
 										if(iter->second.recover[i])
