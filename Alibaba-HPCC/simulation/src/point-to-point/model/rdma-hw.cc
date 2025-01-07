@@ -320,7 +320,7 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch){
 		seqh.SetSport(ch.udp.dport);
 		seqh.SetDport(ch.udp.sport);
 		seqh.SetIntHeader(ch.udp.ih);
-		//每2个ack设置一次cnp标记
+		//每3个ack设置一次cnp标记
 		if (ecnbits) {
 			rxQp->cnp_milestone++;
 			if(rxQp->cnp_milestone<5||rxQp->cnp_milestone%3==1)

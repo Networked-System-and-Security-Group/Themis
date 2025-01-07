@@ -315,7 +315,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 							else{
 								// printf("222222222222a pkt is recirculated\n");
 								iter->second.recover[p->recycle_times_left]--;
-								if(Simulator::Now()-iter->second.rec_time>=ns3::MicroSeconds(2000)){
+								if(Simulator::Now()-iter->second.rec_time>=ns3::MicroSeconds(3000)){
 									for(int i = p->recycle_times_left; i >0;i--)
 									{
 										if(iter->second.recover[i])
@@ -324,7 +324,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 											goto Minus;
 										}
 									}
-									std::cout<<"send "<<p->recycle_times_left<<std::endl;
+									//std::cout<<"send "<<p->recycle_times_left<<std::endl;
 									p->recycle_times_left=0;
 									goto Send;
 								}
@@ -474,7 +474,7 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 			// rixin: 下面原本只写了判断有没有ECN标记，导致了一个问题，就是如果有ECN标记，但是不是数据包（ACK），
 			// 导致CNP发给了接收端，而接收端可能正在发送DC内部流，导致DC内部流的效果变差
 			// rixin: 第一个模块
-			if(1&&isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id == 48){
+			if(0&&isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id == 48){
 				// printf("module 1 is running\n");
 				int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
 				// printf("source node id = %d, dst node id = %d\n", sid, did);
