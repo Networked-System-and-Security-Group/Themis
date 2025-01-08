@@ -126,53 +126,43 @@ int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 	int did = ip_to_node_id(Ipv4Address(ch.dip));
 	if(!c) 
 	{
-		if(ch.ack.pg)
-		{
-			CnpKey key(ch.dip, ch.sip, ch.ack.pg);
-			auto iter = m_cnp_handler.find(key);
-			if(iter!=m_cnp_handler.end()){
-				CNP_Handler &cnp_handler = iter->second;
-				cnp_handler.recovered++;
-				//std::cout<<"recovered: "<<cnp_handler.recovered<<std::endl;
-			}
-		}
 		return 0;//zxc:不是cnp的话返回0
 	}
 	
 	//printf("received a cnp\n");
 	//printf("ch.ack.dport = %d, ch.ack.sport = %d,\n ch.sid = %d, ch.did = %d,\n ch.ack.pg = %d, ch.ack.dport = %d, ch.ack.sport = %d\n", ch.ack.dport, ch.ack.sport, sid, did, ch.ack.pg, ch.ack.dport,ch.ack.sport);
-	CnpKey key(ch.dip, ch.sip, ch.ack.pg);
+	CnpKey key(ch.dip, ch.sip, ch.ack.pg, ch.ack.dport, ch.ack.sport);
 	auto iter = m_cnp_handler.find(key);
 	if(iter!=m_cnp_handler.end()){
 		max_cnp_num = std::max(max_cnp_num, iter->second.cnp_num);
 		//printf("max	cnp_num = %d\n", max_cnp_num);
 		CNP_Handler &cnp_handler = iter->second;
 		cnp_handler.recovered=0;
-		if(Simulator::Now()-cnp_handler.rec_time>=ns3::NanoSeconds(100)){
+		if(Simulator::Now()-cnp_handler.rec_time>=ns3::NanoSeconds(1)){
 			//std::cout<<"time"<<Simulator::Now()-cnp_handler.rec_time<<std::endl;
 			cnp_handler.rec_time = Simulator::Now();
 			cnp_handler.cnp_num += 1;
 			//nzh:重要的参数设计
-			if (cnp_handler.loop_num < 20)
+			if (cnp_handler.loop_num < 5000)
 			{
 				//if(cnp_handler.cnp_num % 2 == 1){
-					cnp_handler.loop_num+=1;
-					cnp_handler.biggest+=1;
+					cnp_handler.loop_num+=2;
+					cnp_handler.biggest+=2;
 				//}
 			}
-			else if (cnp_handler.loop_num < 100)
+			else if (cnp_handler.loop_num < 25000)
 			{
-				if(cnp_handler.cnp_num % (cnp_handler.loop_num/4) == 1)
+				//if(cnp_handler.cnp_num % (cnp_handler.loop_num/100) == 1)
 				{
 					cnp_handler.loop_num++;
 					cnp_handler.biggest++;
 				}
 			}
-			else if(cnp_handler.loop_num < 500 && cnp_handler.cnp_num % cnp_handler.loop_num == 0)
-			{
-				cnp_handler.loop_num++;
-				cnp_handler.biggest++;
-			}
+			// else if(cnp_handler.loop_num < 2000 && cnp_handler.cnp_num % (cnp_handler.loop_num/20) == 0)
+			// {
+			// 	cnp_handler.loop_num++;
+			// 	cnp_handler.biggest++;
+			// }
 		}
 	}
 	else{
@@ -261,7 +251,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 				// 	printf("udp packet1111111111111111111\n");
 				// }
 				//std::cout<<"source node id = "<<sid<<" dst node id = "<<did<<"sport = "<<ch.udp.sport<<" dport = "<<ch.udp.dport<<" pg = "<<ch.udp.pg<<std::endl;
-				CnpKey key(ch.sip,ch.dip,ch.ack.pg);
+				CnpKey key(ch.sip,ch.dip,ch.ack.pg,ch.udp.sport,ch.udp.dport);
 				auto iter = m_cnp_handler.find(key);
 				if (sid < 16 && did > 15) {
 					//printf("hello\n");
@@ -315,19 +305,19 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 							else{
 								// printf("222222222222a pkt is recirculated\n");
 								iter->second.recover[p->recycle_times_left]--;
-								if(Simulator::Now()-iter->second.rec_time>=ns3::MicroSeconds(3000)){
-									for(int i = p->recycle_times_left; i >0;i--)
-									{
-										if(iter->second.recover[i])
-										{
-											//std::cout<<p->recycle_times_left<<" "<<i<<std::endl;
-											goto Minus;
-										}
-									}
-									//std::cout<<"send "<<p->recycle_times_left<<std::endl;
-									p->recycle_times_left=0;
-									goto Send;
-								}
+								// if(Simulator::Now()-iter->second.rec_time>=ns3::MicroSeconds(8000)){
+								// 	for(int i = p->recycle_times_left; i >0;i--)
+								// 	{
+								// 		if(iter->second.recover[i])
+								// 		{
+								// 			//std::cout<<p->recycle_times_left<<" "<<i<<std::endl;
+								// 			goto Minus;
+								// 		}
+								// 	}
+								// 	//std::cout<<"send "<<p->recycle_times_left<<std::endl;
+								// 	p->recycle_times_left=0;
+								// 	goto Send;
+								// }
 								Minus:
 								p->recycle_times_left -= 1;
 								Send:
@@ -474,7 +464,7 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 			// rixin: 下面原本只写了判断有没有ECN标记，导致了一个问题，就是如果有ECN标记，但是不是数据包（ACK），
 			// 导致CNP发给了接收端，而接收端可能正在发送DC内部流，导致DC内部流的效果变差
 			// rixin: 第一个模块
-			if(0&&isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id == 48){
+			if(1&&isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id == 48){
 				// printf("module 1 is running\n");
 				int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
 				// printf("source node id = %d, dst node id = %d\n", sid, did);

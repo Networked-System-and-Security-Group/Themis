@@ -323,7 +323,7 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch){
 		//每3个ack设置一次cnp标记
 		if (ecnbits) {
 			rxQp->cnp_milestone++;
-			if(rxQp->cnp_milestone<5||rxQp->cnp_milestone%3==1)
+			//if(rxQp->cnp_milestone<5||rxQp->cnp_milestone%3==1)
 				seqh.SetCnp();
 		}
 		Ptr<Packet> newp = Create<Packet>(std::max(60-14-20-(int)seqh.GetSerializedSize(), 0));

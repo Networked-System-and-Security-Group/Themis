@@ -1,7 +1,16 @@
+import sys
 import random
+import math
+import heapq
+from optparse import OptionParser
+from custom_rand import CustomRand
 
-output = "tmp_traffic.txt"
-
+#output = "tmp_traffic.txt"
+port = 80
+parser = OptionParser()
+parser.add_option("-o", "--output", dest = "output", help = "the output file", default = "tmp_traffic.txt")
+options,args = parser.parse_args()
+output = options.output
 # 打开文件读取数据
 with open(output, "r") as file:
     lines = file.readlines()
