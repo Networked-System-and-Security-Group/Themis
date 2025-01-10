@@ -143,26 +143,26 @@ int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 			cnp_handler.rec_time = Simulator::Now();
 			cnp_handler.cnp_num += 1;
 			//nzh:重要的参数设计
-			if (cnp_handler.loop_num < 5000)
+			if (cnp_handler.loop_num < 100)
 			{
 				//if(cnp_handler.cnp_num % 2 == 1){
-					cnp_handler.loop_num+=2;
-					cnp_handler.biggest+=2;
+					cnp_handler.loop_num+=1;
+					cnp_handler.biggest+=1;
 				//}
 			}
-			else if (cnp_handler.loop_num < 25000)
+			else if (cnp_handler.loop_num < 500)
 			{
-				//if(cnp_handler.cnp_num % (cnp_handler.loop_num/100) == 1)
+				if(cnp_handler.cnp_num % (cnp_handler.loop_num/100) == 1)
 				{
 					cnp_handler.loop_num++;
 					cnp_handler.biggest++;
 				}
 			}
-			// else if(cnp_handler.loop_num < 2000 && cnp_handler.cnp_num % (cnp_handler.loop_num/20) == 0)
-			// {
-			// 	cnp_handler.loop_num++;
-			// 	cnp_handler.biggest++;
-			// }
+			else if(cnp_handler.loop_num < 3000 && (cnp_handler.cnp_num % cnp_handler.loop_num/500) == 0)
+			{
+				cnp_handler.loop_num++;
+				cnp_handler.biggest++;
+			}
 		}
 	}
 	else{
@@ -270,21 +270,6 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 						if(p->recycle_times_left!=0){
 							//zxc:this packet is cnp-tergeted for the first time
 							if(p->recycle_times_left < 0){
-								// if(Simulator::Now()-iter->second.rec_time>=ns3::MicroSeconds(51)){
-								// //if(iter->second.recovered>200){
-									
-								// 	for(int i=iter->second.loop_num; i>=0; i--)
-								// 	{
-								// 		if(iter->second.recover[i]&&iter->second.loop_num>(i+1))
-								// 		{
-								// 			std::cout<<iter->second.loop_num<<" ";
-								// 			iter->second.loop_num=i+1;
-								// 			std::cout<<i<<" "<<sid<<std::endl;
-								// 			iter->second.recovered=0;
-								// 			break;
-								// 		}
-								// 	}
-								// }
 								p->recycle_times_left = iter->second.loop_num;
 								// printf("p->recycle_times_left = %d\n", p->recycle_times_left);
 								if(p->recycle_times_left){

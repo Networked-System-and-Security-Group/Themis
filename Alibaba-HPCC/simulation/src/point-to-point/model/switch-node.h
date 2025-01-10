@@ -50,7 +50,7 @@ class SwitchNode : public Node{
     	bool finished;// n次resubmit是否完成
     	bool sended;//是否发送过
 		uint32_t recovered;
-		int recover[25005];
+		int recover[3005];
     	CNP_Handler(){
 			cnp_num = 0;
       		rec_time = Time(0);

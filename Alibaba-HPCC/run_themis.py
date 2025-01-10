@@ -21,21 +21,22 @@ def modify_config(base_config_path, new_config_path, xxx):
         file.writelines(lines)
 
 def run_simulation(xxx):
+        os.chdir("./simulation")
     """Run the entire simulation pipeline for a given xxx value."""
-    base_config_path = "./simulation/mix/config.txt"
-    new_config_path = f"./simulation/mix/config_Ali_{xxx}.txt"
+    base_config_path = "./mix/config.txt"
+    new_config_path = f"./mix/config_Ali_{xxx}.txt"
 
     # Step 1: Generate flow file
     flow_file_cmd = (
-        f"python ./traffic_gen/pure_near_dst.py -c AliStorage2019.txt -n 32 -l {xxx} "
-        f"-b 100G -t 0.03 -o ./simulation/mix/UnfairPenalty/Inter-DC/ExprGroup/flow_Ali_{xxx}.txt"
+        f"python ../traffic_gen/pure_near_dst.py -c AliStorage2019.txt -n 32 -l {xxx} "
+        f"-b 100G -t 0.03 -o ./mix/UnfairPenalty/Inter-DC/ExprGroup/flow_Ali_{xxx}.txt"
     )
     #execute_command(flow_file_cmd)
 
     # Step 2: Trim the flow file
     trim_cmd = (
-        f"python3 ./traffic_gen/trim-pure-dst.py -o "
-        f"./simulation/mix/UnfairPenalty/Inter-DC/ExprGroup/flow_Ali_{xxx}.txt"
+        f"python3 ../traffic_gen/trim-pure-dst.py -o "
+        f"./mix/UnfairPenalty/Inter-DC/ExprGroup/flow_Ali_{xxx}.txt"
     )
     #execute_command(trim_cmd)
 
@@ -43,10 +44,12 @@ def run_simulation(xxx):
     modify_config(base_config_path, new_config_path, xxx)
 
     # Step 4: Run the simulation
-    os.chdir("./simulation")
+
     simulation_cmd = f"./waf --run 'scratch/third {new_config_path}'"
     execute_command(simulation_cmd)
     os.chdir("..")
+
+    os.chdir("./mix/UnfairPenalty")
 
 if __name__ == "__main__":
     xxx_values = [0.3, 0.5, 0.7]
