@@ -21,7 +21,7 @@ def modify_config(base_config_path, new_config_path, xxx):
         file.writelines(lines)
 
 def run_simulation(xxx):
-        os.chdir("./simulation")
+    os.chdir("./simulation")
     """Run the entire simulation pipeline for a given xxx value."""
     base_config_path = "./mix/config.txt"
     new_config_path = f"./mix/config_Ali_{xxx}.txt"

@@ -10,7 +10,7 @@ int IntHeader::pint_bytes = 2;
 
 IntHeader::IntHeader() : nhop(0) {
 	for (uint32_t i = 0; i < maxHop; i++)
-		hop[i] = {0};
+		memset(&hop[i], 0, sizeof(hop[i]));
 }
 
 uint32_t IntHeader::GetStaticSize(){
