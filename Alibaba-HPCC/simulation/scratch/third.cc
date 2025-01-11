@@ -895,6 +895,7 @@ int main(int argc, char *argv[])
 			// switch buffer大小单位为MB
 			sw->m_mmu->ConfigBufferSize(buffer_size* 1024 * 1024);
 			sw->m_mmu->node_id = sw->GetId();
+			sw->SetAttribute("AckHighPrio", UintegerValue(ack_high_prio));
 			// if(sw->GetId() == 48 || sw->GetId() == 49)
 			// 	sw->m_mmu->ConfigBufferSize(200 * 1024 * 1024);
 		}
