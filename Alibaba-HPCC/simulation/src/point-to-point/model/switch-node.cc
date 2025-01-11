@@ -143,7 +143,7 @@ int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 			cnp_handler.rec_time = Simulator::Now();
 			cnp_handler.cnp_num += 1;
 			//nzh:重要的参数设计
-			if (cnp_handler.loop_num < 100)
+			if (cnp_handler.loop_num < 150)
 			{
 				//if(cnp_handler.cnp_num % 2 == 1){
 					cnp_handler.loop_num+=1;
@@ -152,13 +152,13 @@ int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 			}
 			else if (cnp_handler.loop_num < 500)
 			{
-				if(cnp_handler.cnp_num % (cnp_handler.loop_num/100) == 1)
+				if(cnp_handler.cnp_num % (2) == 1)
 				{
 					cnp_handler.loop_num++;
 					cnp_handler.biggest++;
 				}
 			}
-			else if(cnp_handler.loop_num < 3000 && (cnp_handler.cnp_num % cnp_handler.loop_num/500) == 0)
+			else if(cnp_handler.loop_num < 3000 && cnp_handler.loop_num%(40) == 0)
 			{
 				cnp_handler.loop_num++;
 				cnp_handler.biggest++;
@@ -184,6 +184,7 @@ bool isDataPkt(CustomHeader &ch){
 
 int pkt_num = 0;
 int recir_num = 0;
+
 // int init_log = 0;
 //nzh:非常重要的函数！！！important
 void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
@@ -232,25 +233,10 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 				// printf("source node id = %d, dst node id = %d\n", sid, did);
 				// printf("ch.l3Prot = %d\n", ch.l3Prot);
 			}
-			// if(init_loop_num>0){
-			// 	if(p->recycle_times_left<0){
-			// 		p->recycle_times_left = init_loop_num;
-			// 		idx=loop_qbb_index;
-			// 	}
-			// 	else if(p->recycle_times_left>0){
-			// 		p->recycle_times_left -= 1;
-			// 		idx=loop_qbb_index;
-			// 	}
-			// }
-
 			//zxc：判断是否是cnp以及更新cnp_handler信息
 			int is_cnp = ReceiveCnp(p,ch);
 			//zxc:判断是否要循环减速，cnp直接发走，非cnp才需要执行此操作
 			if(!is_cnp){
-				// if (ch.l3Prot == 0x11) {
-				// 	printf("udp packet1111111111111111111\n");
-				// }
-				//std::cout<<"source node id = "<<sid<<" dst node id = "<<did<<"sport = "<<ch.udp.sport<<" dport = "<<ch.udp.dport<<" pg = "<<ch.udp.pg<<std::endl;
 				CnpKey key(ch.sip,ch.dip,ch.ack.pg,ch.udp.sport,ch.udp.dport);
 				auto iter = m_cnp_handler.find(key);
 				if (sid < 16 && did > 15) {
@@ -263,65 +249,42 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 				if(iter!=m_cnp_handler.end() && (sid < 16 && did > 15)){
 					//printf("1111111111111111111\n");
 					if (isDataPkt(ch)) {
-						//printf("a pkt need to be forwarded\n");
 						pkt_num++;
-						// printf("pkt_num = %d\n", pkt_num);
 						//zxc:recycle_times_left==0表明这个包已经被减速并完成减速
 						if(p->recycle_times_left!=0){
 							//zxc:this packet is cnp-tergeted for the first time
 							if(p->recycle_times_left < 0){
 								p->recycle_times_left = iter->second.loop_num;
-								// printf("p->recycle_times_left = %d\n", p->recycle_times_left);
 								if(p->recycle_times_left){
-									recir_num++;
-									// printf("recir_num = %d\n", recir_num);
-									// p->recycle_times_left = iter->second.loop_num;
-									//printf("module 2 is running\n");
-									// printf("a pkt is recirculated\n");
 									idx = loop_qbb_index;
 									p->recycle_times_left -= 1;
 									iter->second.recover[p->recycle_times_left]++;
-									//std::cout<<" index "<<p->recycle_times_left<<" value "<<iter->second.recover[p->recycle_times_left]<<std::endl;
 									
 								}
-								//std::cout<<"put one packet to decelerating loop and the left is "<<p->recycle_times_left<<"**********"<<"\n";
 							}
 							//zxc:this packet has been targeted and is in the loop
 							else{
-								// printf("222222222222a pkt is recirculated\n");
 								iter->second.recover[p->recycle_times_left]--;
-								// if(Simulator::Now()-iter->second.rec_time>=ns3::MicroSeconds(8000)){
-								// 	for(int i = p->recycle_times_left; i >0;i--)
-								// 	{
-								// 		if(iter->second.recover[i])
-								// 		{
-								// 			//std::cout<<p->recycle_times_left<<" "<<i<<std::endl;
-								// 			goto Minus;
-								// 		}
-								// 	}
-								// 	//std::cout<<"send "<<p->recycle_times_left<<std::endl;
-								// 	p->recycle_times_left=0;
-								// 	goto Send;
-								// }
+								if(Simulator::Now()-iter->second.rec_time>=ns3::MicroSeconds(8000)){
+									for(int i = p->recycle_times_left; i >0;i--)
+									{
+										if(iter->second.recover[i])
+										{
+											goto Minus;
+										}
+									}
+									p->recycle_times_left=0;
+									goto Send;
+								}
 								Minus:
 								p->recycle_times_left -= 1;
 								Send:
 								idx = loop_qbb_index;
 								iter->second.recover[p->recycle_times_left]++;
-								//std::cout<<"reduce loop times by one and the left is "<<p->recycle_times_left<<"\n";
 							}
 						}
 						else{
-							//std::cout<<"biggest: "<<iter->second.biggest<<std::endl;
 						}
-
-						// if (p->cnp_id < iter->second.cnp_num){
-						// 	//std::cout << "iter->second.cnp_num = " << iter->second.cnp_num << "\n";
-						// 	p->recycle_times_left += iter->second.cnp_num - p->cnp_id;
-						// 	//std::cout << "this flow needed to be decelerate again, recycle_times_left added from " << p->cnp_id << "to " << iter->second.cnp_num << "\n";
-						// 	p->cnp_id = iter->second.cnp_num;
-						// 	idx = loop_qbb_index;
-						// }
 					}
 					
 				}

@@ -4,7 +4,7 @@ USE_DYNAMIC_PFC_THRESHOLD 1
 PACKET_PAYLOAD_SIZE 1000
 
 TOPOLOGY_FILE mix/UnfairPenalty/Inter-DC/ExprGroup/topology.txt
-FLOW_FILE mix/UnfairPenalty/Inter-DC/ExprGroup/flow_Ali_0.3_1:10.txt
+FLOW_FILE mix/UnfairPenalty/Inter-DC/ExprGroup/flow_Ali_0.7_1:10.txt
 FCT_OUTPUT_FILE mix/UnfairPenalty/Inter-DC/ExprGroup/fct.txt
 PFC_OUTPUT_FILE mix/UnfairPenalty/Inter-DC/ExprGroup/pfc.txt
 TRACE_FILE mix/trace.txt
