@@ -211,7 +211,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		// rixin: 下面只是更新了idx，也就是要走哪个端口出去，此操作必须在Label1之前，不然循环qbb的egress_bytes会不对，导致产生ECN
 		//zxc:控制逻辑只在外部交换机上实现
 		// rixin: 第二个模块
-		if(1&&ExternalSwitch && (m_id == 50||m_id == 49)){
+		if(0&&ExternalSwitch && (m_id == 50||m_id == 49)){
 			
 			int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
 
@@ -381,7 +381,7 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 			// rixin: 下面原本只写了判断有没有ECN标记，导致了一个问题，就是如果有ECN标记，但是不是数据包（ACK），
 			// 导致CNP发给了接收端，而接收端可能正在发送DC内部流，导致DC内部流的效果变差
 			// rixin: 第一个模块
-			if(1&&isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id == 48){
+			if(0&&isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id == 48){
 				// printf("module 1 is running\n");
 				int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
 				// printf("source node id = %d, dst node id = %d\n", sid, did);

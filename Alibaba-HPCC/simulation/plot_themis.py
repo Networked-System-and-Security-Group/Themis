@@ -115,7 +115,7 @@ def plot_data(ratio_and_flow_size_record, output_file):
 def main():
     ratios = [0.3, 0.5, 0.7]
     for ratio in ratios:
-        file_path = f"mix/UnfairPenalty/Inter-DC/ExprGroup/flow_Ali_{ratio}/fct.txt"
+        file_path = f"mix/UnfairPenalty/Inter-DC/ExprGroup/flow_Web_{ratio}/fct.txt"
         output_file = f"plot_Ali_{ratio}.png"
         _, _, ratio_and_flow_size_record = read_and_classify(file_path)
         # plot_data(ratio_and_flow_size_record, output_file)

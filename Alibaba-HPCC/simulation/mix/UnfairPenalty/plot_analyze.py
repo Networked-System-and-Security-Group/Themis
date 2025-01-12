@@ -119,12 +119,12 @@ def write_to_file(data, file_path):
 
 if __name__ == "__main__":
     if MODE:
-        input_file = './Inter-DC/ExprGroup/fct.txt'
+        input_file = './Inter-DC/ExprGroup/flow_Ali_0.7/fct.txt'
     else:
-        input_file = f'./Inter-DC/ExprGroup/fct_{prefix}_dc.txt'
-    intra_dc_flow_file = './Inter-DC/ExprGroup/fct_intra_dc.txt'
-    inter_dc_flow_file = './Inter-DC/ExprGroup/fct_inter_dc.txt'
-    ratio_and_flow_size_file = f'./Inter-DC/ExprGroup/{prefix}_ratio_and_flow_size_record.txt'
+        input_file = f'./Inter-DC/ExprGroup/flow_Ali_0.7/fct_{prefix}_dc.txt'
+    intra_dc_flow_file = './Inter-DC/ExprGroup/flow_Ali_0.7/fct_intra_dc.txt'
+    inter_dc_flow_file = './Inter-DC/ExprGroup/flow_Ali_0.7/fct_inter_dc.txt'
+    ratio_and_flow_size_file = f'./Inter-DC/ExprGroup/flow_Ali_0.7/{prefix}_ratio_and_flow_size_record.txt'
 
     intra_dc_flow, inter_dc_flow, ratio_and_flow_size_record = read_and_classify(input_file)
 
