@@ -50,7 +50,7 @@ class SwitchNode : public Node{
     	bool finished;// n次resubmit是否完成 废弃
     	bool sended;//是否发送过 废弃
 		uint32_t recovered;//被废弃
-		int recover[505];//还差n次循环的包数量
+		int recover[3005];//还差n次循环的包数量
     	CNP_Handler(){
 			cnp_num = 0;
       		rec_time = Time(0);
@@ -70,6 +70,8 @@ class SwitchNode : public Node{
 	struct CnpKey {
     	uint32_t sip;
     	uint32_t dip;
+		uint32_t sport;
+		uint32_t dport;
     	uint16_t qindex;
     	// 重载小于运算符，用于 map 的键比较
     	bool operator<(const CnpKey& other) const {
@@ -81,10 +83,12 @@ class SwitchNode : public Node{
       		}
 			return qindex < other.qindex;
     	}
-    	CnpKey(uint32_t sip, uint32_t dip, uint16_t qindex) {
+    	CnpKey(uint32_t sip, uint32_t dip, uint16_t qindex, uint32_t sport, uint32_t dport) {
 	  		this->sip = sip;
 	  		this->dip = dip;
 	  		this->qindex = qindex;
+			this->sport = sport;
+			this->dport = dport;
 		}
 	};
 

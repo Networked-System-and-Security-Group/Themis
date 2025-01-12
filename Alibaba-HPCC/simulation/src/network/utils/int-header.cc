@@ -9,8 +9,10 @@ IntHeader::Mode IntHeader::mode = NONE;
 int IntHeader::pint_bytes = 2;
 
 IntHeader::IntHeader() : nhop(0) {
-	for (uint32_t i = 0; i < maxHop; i++)
+	for (uint32_t i = 0; i < maxHop; i++){
 		hop[i] = {0};
+	}
+
 }
 
 uint32_t IntHeader::GetStaticSize(){
