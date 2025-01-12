@@ -41,16 +41,16 @@ class SwitchNode : public Node{
   		public:
 		uint32_t cnp_num; // 这个流累计收到了多少cnp
     	Time rec_time;//最后一次接到CNP的时间
-		Time set_last_loop;//zxc:最后一次为包打标记的时间
-    	Time finish_time;//
-    	uint32_t first;//第一个序列号
-    	uint32_t biggest;//最大序列号
+		Time set_last_loop;//zxc:最后一次为包打标记的时间 调试
+    	Time finish_time;// 调试
+    	uint32_t first;//第一个序列号 废弃
+    	uint32_t biggest;//最大序列号 废弃
     	uint32_t loop_num;//需要resubmit n遍
-    	Time delay;//第一个包resubmit带来的延迟
-    	bool finished;// n次resubmit是否完成
-    	bool sended;//是否发送过
-		uint32_t recovered;
-		int recover[505];
+    	Time delay;//第一个包resubmit带来的延迟 废弃
+    	bool finished;// n次resubmit是否完成 废弃
+    	bool sended;//是否发送过 废弃
+		uint32_t recovered;//被废弃
+		int recover[505];//还差n次循环的包数量
     	CNP_Handler(){
 			cnp_num = 0;
       		rec_time = Time(0);

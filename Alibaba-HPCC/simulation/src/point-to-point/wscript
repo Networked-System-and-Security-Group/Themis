@@ -24,6 +24,7 @@ def build(bld):
         'model/switch-node2.cc',
 		'model/switch-mmu.cc',
 		'model/pint.cc',
+        'model/global-settings.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('point-to-point')
@@ -56,6 +57,7 @@ def build(bld):
 		'model/switch-mmu.h',
 		'model/pint.h',
 		'helper/sim-setting.h',
+        'model/global-settings.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

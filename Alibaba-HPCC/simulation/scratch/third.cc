@@ -35,6 +35,7 @@
 #include <ns3/rdma-client-helper.h>
 #include <ns3/rdma-driver.h>
 #include <ns3/switch-node.h>
+#include <ns3/global-settings.h>
 
 #include <ns3/sim-setting.h>
 #include <random>
@@ -138,6 +139,8 @@ void ReadFlowInput(){
 void ScheduleFlowInputs(){
 	while (flow_input.idx < flow_num && Seconds(flow_input.start_time) == Simulator::Now()){
 		uint32_t port = portNumder[flow_input.src][flow_input.dst]++; // get a new port number 
+		assert(GlobalSettings::PacketId2FlowId.find(std::make_tuple(flow_input.src, flow_input.dst, port, flow_input.dport)) == GlobalSettings::PacketId2FlowId.end());
+		GlobalSettings::PacketId2FlowId[std::make_tuple(flow_input.src, flow_input.dst, port, flow_input.dport)] = flow_input.idx;
 		// RDMA Client在这里创建
 		RdmaClientHelper clientHelper(flow_input.pg, serverAddress[flow_input.src], serverAddress[flow_input.dst], port, flow_input.dport, flow_input.maxPacketCount, has_win?(global_t==1?maxBdp:pairBdp[n.Get(flow_input.src)][n.Get(flow_input.dst)]):0, global_t==1?maxRtt:pairRtt[flow_input.src][flow_input.dst]);
   		// std::cout << "m_size = " << clientHelper.m_size << "\n";
@@ -176,7 +179,8 @@ void qp_finish(FILE* fout, Ptr<RdmaQueuePair> q){
 	//std::cout << "base_rtt = " << base_rtt << "\n";
 	// fct计算：从建立qp到收到ACK
 	// standalonefct计算：链路固有延迟 + 每个交换机增加的延迟 + 发送端发出所有数据所需延迟
-	fprintf(fout, "%08x %08x %u %u %lu %lu %lu %lu\n", q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->m_size, q->startTime.GetTimeStep(), (Simulator::Now() - q->startTime).GetTimeStep(), standalone_fct);
+	fprintf(fout, "%u %u %u %u %lu %lu %lu %lu %u\n", q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->m_size, q->startTime.GetTimeStep(), (Simulator::Now() - q->startTime).GetTimeStep(), standalone_fct, 
+		GlobalSettings::PacketId2FlowId[std::make_tuple(sid, did, q->sport, q->dport)]);
 	fflush(fout);
 
 	// remove rxQp from the receiver
@@ -825,6 +829,9 @@ int main(int argc, char *argv[])
 		nbr2if[dnode][snode].up = true;
 		nbr2if[dnode][snode].delay = DynamicCast<QbbChannel>(DynamicCast<QbbNetDevice>(d.Get(1))->GetChannel())->GetDelay().GetTimeStep();
 		nbr2if[dnode][snode].bw = DynamicCast<QbbNetDevice>(d.Get(1))->GetDataRate().GetBitRate();
+		
+        GlobalSettings::if2id[snode][nbr2if[snode][dnode].idx] = dnode->GetId();
+        GlobalSettings::if2id[dnode][nbr2if[dnode][snode].idx] = snode->GetId();
 
 		// This is just to set up the connectivity between nodes. The IP addresses are useless
 		char ipstring[16];
@@ -890,7 +897,8 @@ int main(int argc, char *argv[])
 					rate /= 2;
 				}
 			}
-
+			
+			sw->SetAttribute("AckHighPrio", UintegerValue(ack_high_prio));
 			sw->m_mmu->ConfigNPort(sw->GetNDevices()-1);
 			// switch buffer大小单位为MB
 			sw->m_mmu->ConfigBufferSize(buffer_size* 1024 * 1024);
@@ -1074,6 +1082,9 @@ int main(int argc, char *argv[])
 	//
 	clock_t begint, endt;
 	begint = clock();
+
+	FILE* flow_distribution_file = fopen("/home/zj/themis/Themis/Alibaba-HPCC/simulation/mix/UnfairPenalty/Inter-DC/ExprGroup/flow_distribution.txt", "w");
+	Simulator::Schedule(Seconds(2), &GlobalSettings::print_flow_distribution, flow_distribution_file, MicroSeconds(50));
 
 	std::cout << "Running Simulation.\n";
 	fflush(stdout);
