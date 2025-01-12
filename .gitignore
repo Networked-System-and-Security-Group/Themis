@@ -2,3 +2,4 @@ Alibaba-HPCC/simulation/build/
 *.tr
 *.pyc
 *.trgdb
+*flow_distribution.txt

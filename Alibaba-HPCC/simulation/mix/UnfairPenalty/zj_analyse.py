@@ -57,8 +57,8 @@ def parse_fct_file():
     with open('/home/zj/themis/Themis/Alibaba-HPCC/simulation/mix/UnfairPenalty/Inter-DC/ExprGroup/fct.txt', 'r') as file:
         for line in file:
             data = line.split()
-            if len(data) != 9:
-                continue
+            # if len(data) != 9:
+            #     continue
             sip_id = ((int(data[0])) >> 8) & 0xFF
             dip_id = ((int(data[1])) >> 8) & 0xFF
             sport = int(data[2])
