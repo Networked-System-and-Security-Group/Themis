@@ -5,12 +5,12 @@
 #define DAEMON_PKT_BUFFER_SIZE 1024
 #define CPU_PORT 192
 #define RECIRC_PORT 196
-#define CNP_SES_ID 1
 #define ACT_196_PORT 141
 #define ACT_197_PORT 135
 #define ACT_198_PORT 142
 #define ACT_199_PORT 132
 
+#define CNP_SES_ID 1
 
 
 

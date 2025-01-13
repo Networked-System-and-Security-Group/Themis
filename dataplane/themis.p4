@@ -171,6 +171,18 @@ control Ingress(
 	    else {
 	   	    arp_table.apply();
 	    }
+
+        // rixin: This is a dummy packets
+        if (DUMMY_PKT_GEN && hdr.udp.dst_port == 10043) {
+            // init_recir();
+            apply_l3 = false;
+
+            hdr.recir.setValid();
+            hdr.recir.cnt = INIT_RECIR_CNT;
+
+            ig_tm_md.ucast_egress_port = RECIRC_PORT;
+            ig_tm_md.bypass_egress = 1;
+        }
         
         // rixin: 开始循环
         if (hdr.recir.isValid()) {
@@ -181,6 +193,17 @@ control Ingress(
                 hdr.recir.setInvalid();
                 // rixin: 这里不能bypass egress，不然bridged_md会被emit到包头里
                 // ig_tm_md.bypass_egress = 1;
+                if (MEASURE_RECIR_DELAY) {
+                    if (hdr.udp.dst_port == 54321) {
+                        hdr.tstamp2.setValid();
+                        hdr.tstamp2.time = ig_intr_md.ingress_mac_tstamp;
+                    }
+                }
+            }
+            else if (DUMMY_PKT_GEN && hdr.udp.dst_port == 10043) {
+                apply_l3 = false;
+                ig_tm_md.ucast_egress_port = RECIRC_PORT;
+                ig_tm_md.bypass_egress = 1;
             }
             else {
                 hdr.recir.cnt = hdr.recir.cnt - 1;
@@ -189,7 +212,7 @@ control Ingress(
                 ig_tm_md.bypass_egress = 1;
             }
         }
-        else {
+        else if (INIT_RECIR_CNT != 0){
             // init_recir();
             apply_l3 = false;
 
@@ -199,13 +222,26 @@ control Ingress(
 
             ig_tm_md.ucast_egress_port = RECIRC_PORT;
             ig_tm_md.bypass_egress = 1;
+
+            if (MEASURE_RECIR_DELAY) {
+                if (hdr.udp.dst_port == 54321) {
+                    hdr.tstamp1.setValid();
+                    hdr.tstamp1.time = ig_intr_md.ingress_mac_tstamp;
+                }
+            }
+        }
+
+        if (MEASURE_RECIR_DELAY) {
+            if (hdr.udp.dst_port == 54321) {
+                ig_tm_md.bypass_egress = 1;
+            }
         }
 
         // rixin: 只调用一次 l3_table.apply()
         if (apply_l3) {
             l3_table.apply();
         }
-        
+
         // rixin: 判断是否为循环包
         // rixin: 只对RoCE包检测ECN标记
         if (ig_tm_md.ucast_egress_port != RECIRC_PORT && hdr.udp.dst_port == 4791) {
@@ -215,7 +251,13 @@ control Ingress(
         // rixin: 设置mirrored pkt的bridge header (相关信息见Figure3 from "P4_16 Tofino Native Architecture")
         // rixin: setValid + pkt.emit(hdr.bridged_md) <==> 让bridged_md加入头部
         // rixin: 循环包直接bypass egress，所以不要加bridged_md
-        if (ig_tm_md.ucast_egress_port != RECIRC_PORT) {
+        if (!MEASURE_RECIR_DELAY) {
+            if (ig_tm_md.ucast_egress_port != RECIRC_PORT) {
+                hdr.bridged_md.setValid();
+                hdr.bridged_md.pkt_type = PKT_TYPE_NORMAL;
+            }
+        }
+        else if (hdr.udp.dst_port != 54321 && ig_tm_md.ucast_egress_port != RECIRC_PORT) {
             hdr.bridged_md.setValid();
             hdr.bridged_md.pkt_type = PKT_TYPE_NORMAL;
         }

@@ -26,7 +26,10 @@ const pkt_type_t PKT_TYPE_MIRROR = 9;
 
 const PortId_t RECIRC_PORT = 196;
 
-const bit<32> INIT_RECIR_CNT = 3;
+const bit<32> INIT_RECIR_CNT = 1;
+
+const bool MEASURE_RECIR_DELAY = (bool)0;
+const bool DUMMY_PKT_GEN = (bool)0;
 
 #if __TARGET_TOFINO__ == 1
 typedef bit<3> mirror_type_t;
@@ -129,6 +132,10 @@ header mirror_h {
     bit<8> is_last_recir_pkt;
 }
 
+header tstamp_h {
+    bit<48> time;
+}
+
 struct my_ingress_headers_t {
     mirror_bridged_metadata_h bridged_md;
     recir_h recir;
@@ -137,6 +144,8 @@ struct my_ingress_headers_t {
     arp_h arp;
     tcp_h tcp;
     udp_h udp;
+    tstamp_h tstamp1;
+    tstamp_h tstamp2;
 }
 
 struct my_egress_headers_t {
