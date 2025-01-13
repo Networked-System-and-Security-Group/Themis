@@ -28,8 +28,8 @@ const PortId_t RECIRC_PORT = 196;
 
 const bit<32> INIT_RECIR_CNT = 1;
 
-const bool MEASURE_RECIR_DELAY = (bool)0;
-const bool DUMMY_PKT_GEN = (bool)0;
+const bool MEASURE_RECIR_DELAY = (bool)1;
+const bool DUMMY_PKT_GEN = (bool)1;
 
 #if __TARGET_TOFINO__ == 1
 typedef bit<3> mirror_type_t;
