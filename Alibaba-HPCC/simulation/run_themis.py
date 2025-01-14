@@ -28,17 +28,17 @@ def run_simulation(xxx):
 
     # Step 1: Generate flow file
     flow_file_cmd = (
-        f"python ../traffic_gen/pure_near_dst.py -c ../traffic_gen/WebSearch_distribution.txt -n 32 -l {xxx} "
-        f"-b 100G -t 0.03 -o ./mix/UnfairPenalty/Inter-DC/ExprGroup/flow_Web_{xxx}_1:10.txt"
+        f"python ../traffic_gen/mix_gen.py -c ../traffic_gen/WebSearch_distribution.txt -n 32 -l {xxx} "
+        f"-b 100G -t 0.03 -o ./mix/UnfairPenalty/Inter-DC/ExprGroup/flow_mix_{xxx}_1:10.txt"
     )
-    # execute_command(flow_file_cmd)
+    execute_command(flow_file_cmd)
 
     # Step 2: Trim the flow file
     trim_cmd = (
-        f"python3 ../traffic_gen/trim-pure-dst.py -o "
-        f"./mix/UnfairPenalty/Inter-DC/ExprGroup/flow_Web_{xxx}_1:10.txt"
+        f"python3 ../traffic_gen/trim-mix.py -o "
+        f"./mix/UnfairPenalty/Inter-DC/ExprGroup/flow_mix_{xxx}_1:10.txt"
     )
-    # execute_command(trim_cmd)
+    execute_command(trim_cmd)
 
     # Step 3: Modify the configuration file
     modify_config(base_config_path, new_config_path, xxx)
@@ -57,8 +57,8 @@ def main():
         simulation_cmds.append(simulation_cmd)
 
     # Run simulations in parallel using ProcessPoolExecutor
-    with ProcessPoolExecutor() as executor:
-        executor.map(execute_command, simulation_cmds)
+    #with ProcessPoolExecutor() as executor:
+    #    executor.map(execute_command, simulation_cmds)
 
 if __name__ == "__main__":
     main()
