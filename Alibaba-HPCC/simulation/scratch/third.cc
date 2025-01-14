@@ -845,17 +845,12 @@ int main(int argc, char *argv[])
 	printf("dev->GetDataRate().GetBitRate() = %lu\n", dev->GetDataRate().GetBitRate());
 	printf("dev->GetChannel())->GetDelay().GetTimeStep() = %lu\n", DynamicCast<QbbChannel>(dev->GetChannel())->GetDelay().GetTimeStep());
 	sw->ExternalSwitch = 1;
-	sw->loop_qbb_index = 6;
+	sw->loop_qbb_index = 7;
 
 	sw = DynamicCast<SwitchNode>(n.Get(48));
 	dev = DynamicCast<QbbNetDevice>(sw->GetDevice(6));
 	sw->ExternalSwitch = 1;
-	sw->loop_qbb_index = 6;
-
-	sw = DynamicCast<SwitchNode>(n.Get(50));
-	dev = DynamicCast<QbbNetDevice>(sw->GetDevice(3));
-	sw->ExternalSwitch = 1;
-	sw->loop_qbb_index = 3;
+	sw->loop_qbb_index = 7;
 
 	// config switch
 	for (uint32_t i = 0; i < node_num; i++){
