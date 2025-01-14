@@ -352,6 +352,7 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch){
 }
 
 int RdmaHw::ReceiveCnp(Ptr<Packet> p, CustomHeader &ch){
+	printf("草泥马");
 	//终端输出CNP
 	uint16_t qIndex = ch.cnp.pg;
 	uint16_t port = ch.cnp.dport;
