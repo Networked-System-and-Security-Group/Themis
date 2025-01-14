@@ -35,12 +35,8 @@
 #include <ns3/rdma-client-helper.h>
 #include <ns3/rdma-driver.h>
 #include <ns3/switch-node.h>
-#include <ns3/global-settings.h>
-
 #include <ns3/sim-setting.h>
-#include <random>
-#include <cstdlib>
-#include <ctime> 
+
 using namespace ns3;
 using namespace std;
 
@@ -139,11 +135,7 @@ void ReadFlowInput(){
 void ScheduleFlowInputs(){
 	while (flow_input.idx < flow_num && Seconds(flow_input.start_time) == Simulator::Now()){
 		uint32_t port = portNumder[flow_input.src][flow_input.dst]++; // get a new port number 
-		assert(GlobalSettings::PacketId2FlowId.find(std::make_tuple(flow_input.src, flow_input.dst, port, flow_input.dport)) == GlobalSettings::PacketId2FlowId.end());
-		GlobalSettings::PacketId2FlowId[std::make_tuple(flow_input.src, flow_input.dst, port, flow_input.dport)] = flow_input.idx;
-		// RDMA Client在这里创建
 		RdmaClientHelper clientHelper(flow_input.pg, serverAddress[flow_input.src], serverAddress[flow_input.dst], port, flow_input.dport, flow_input.maxPacketCount, has_win?(global_t==1?maxBdp:pairBdp[n.Get(flow_input.src)][n.Get(flow_input.dst)]):0, global_t==1?maxRtt:pairRtt[flow_input.src][flow_input.dst]);
-  		// std::cout << "m_size = " << clientHelper.m_size << "\n";
 		ApplicationContainer appCon = clientHelper.Install(n.Get(flow_input.src));
 		appCon.Start(Time(0));
 
@@ -172,15 +164,9 @@ void qp_finish(FILE* fout, Ptr<RdmaQueuePair> q){
 	uint32_t sid = ip_to_node_id(q->sip), did = ip_to_node_id(q->dip);
 	uint64_t base_rtt = pairRtt[sid][did], b = pairBw[sid][did];
 	uint32_t total_bytes = q->m_size + ((q->m_size-1) / packet_payload_size + 1) * (CustomHeader::GetStaticWholeHeaderSize() - IntHeader::GetStaticSize()); // translate to the minimum bytes required (with header but no INT)
-	uint64_t standalone_fct = base_rtt + total_bytes * 8000000000lu / b; // rtt + 理论传输时间 （ns）
-	//std::cout << "one qp completed\n";
-	//std::cout << "pairBw[sid][did] = " << pairBw[sid][did] << "\n";
+	uint64_t standalone_fct = base_rtt + total_bytes * 8000000000lu / b;
 	// sip, dip, sport, dport, size (B), start_time, fct (ns), standalone_fct (ns)
-	//std::cout << "base_rtt = " << base_rtt << "\n";
-	// fct计算：从建立qp到收到ACK
-	// standalonefct计算：链路固有延迟 + 每个交换机增加的延迟 + 发送端发出所有数据所需延迟
-	fprintf(fout, "%u %u %u %u %lu %lu %lu %lu %u\n", q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->m_size, q->startTime.GetTimeStep(), (Simulator::Now() - q->startTime).GetTimeStep(), standalone_fct, 
-		GlobalSettings::PacketId2FlowId[std::make_tuple(sid, did, q->sport, q->dport)]);
+	fprintf(fout, "%08x %08x %u %u %lu %lu %lu %lu\n", q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->m_size, q->startTime.GetTimeStep(), (Simulator::Now() - q->startTime).GetTimeStep(), standalone_fct);
 	fflush(fout);
 
 	// remove rxQp from the receiver
@@ -189,7 +175,6 @@ void qp_finish(FILE* fout, Ptr<RdmaQueuePair> q){
 	rdma->m_rdma->DeleteRxQp(q->sip.Get(), q->m_pg, q->sport);
 }
 
-//  GetNodeType 0表示服务器，1表示交换机，GetIfIndex表示网络接口，type 0 表示暂停，1表示继续
 void get_pfc(FILE* fout, Ptr<QbbNetDevice> dev, uint32_t type){
 	fprintf(fout, "%lu %u %u %u %u\n", Simulator::Now().GetTimeStep(), dev->GetNode()->GetId(), dev->GetNode()->GetNodeType(), dev->GetIfIndex(), type);
 }
@@ -211,10 +196,8 @@ void monitor_buffer(FILE* qlen_output, NodeContainer *n){
 			Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n->Get(i));
 			if (queue_result.find(i) == queue_result.end())
 				queue_result[i];
-			// sw->GetNDevices()表示使用的端口数目
 			for (uint32_t j = 1; j < sw->GetNDevices(); j++){
 				uint32_t size = 0;
-				// qcnt是每个端口的虚拟队列数目
 				for (uint32_t k = 0; k < SwitchMmu::qCnt; k++)
 					size += sw->m_mmu->egress_bytes[j][k];
 				queue_result[i][j].add(size);
@@ -263,12 +246,8 @@ void CalculateRoute(Ptr<Node> host){
 			// If 'next' have not been visited.
 			if (dis.find(next) == dis.end()){
 				dis[next] = d + 1;
-				// it->second.delay是链路延迟
 				delay[next] = delay[now] + it->second.delay;
-				// std::cout << "it->second.delay = " << it->second.delay << "\n";
-				// it->second.bw是链路带宽
 				txDelay[next] = txDelay[now] + packet_payload_size * 1000000000lu * 8 / it->second.bw;
-				// std::cout << "it->second.bw = " << it->second.bw << "\n";
 				bw[next] = std::min(bw[now], it->second.bw);
 				// we only enqueue switch, because we do not want packets to go through host as middle point
 				if (next->GetNodeType() == 1)
@@ -356,8 +335,8 @@ uint64_t get_nic_rate(NodeContainer &n){
 
 int main(int argc, char *argv[])
 {
-	    std::srand(static_cast<unsigned>(std::time(0)));
-
+	clock_t begint, endt;
+	begint = clock();
 #ifndef PGO_TRAINING
 	if (argc > 1)
 #else
@@ -710,16 +689,13 @@ int main(int argc, char *argv[])
 	}
 
 	//SeedManager::SetSeed(time(NULL));
-	// 
+
 	topof.open(topology_file.c_str());
 	flowf.open(flow_file.c_str());
 	tracef.open(trace_file.c_str());
 	uint32_t node_num, switch_num, link_num, trace_num;
 	topof >> node_num >> switch_num >> link_num;
 	flowf >> flow_num;
-	std::cout << "flow_num: " << flow_num << "\n";
-	std::cout << "node_num: " << node_num << "\n";
-	std::cout << "switch_num: " << switch_num << "\n";
 	tracef >> trace_num;
 
 
@@ -771,7 +747,7 @@ int main(int argc, char *argv[])
 	rem->SetAttribute("ErrorUnit", StringValue("ERROR_UNIT_PACKET"));
 
 	FILE *pfc_file = fopen(pfc_output_file.c_str(), "w");
-	//nzh:important new QbbNetDevice by QbbHelper
+
 	QbbHelper qbb;
 	Ipv4AddressHelper ipv4;
 	for (uint32_t i = 0; i < link_num; i++)
@@ -783,7 +759,6 @@ int main(int argc, char *argv[])
 
 		Ptr<Node> snode = n.Get(src), dnode = n.Get(dst);
 
-		// 设置链路的rate和delay
 		qbb.SetDeviceAttribute("DataRate", StringValue(data_rate));
 		qbb.SetChannelAttribute("Delay", StringValue(link_delay));
 
@@ -829,9 +804,6 @@ int main(int argc, char *argv[])
 		nbr2if[dnode][snode].up = true;
 		nbr2if[dnode][snode].delay = DynamicCast<QbbChannel>(DynamicCast<QbbNetDevice>(d.Get(1))->GetChannel())->GetDelay().GetTimeStep();
 		nbr2if[dnode][snode].bw = DynamicCast<QbbNetDevice>(d.Get(1))->GetDataRate().GetBitRate();
-		
-        GlobalSettings::if2id[snode][nbr2if[snode][dnode].idx] = dnode->GetId();
-        GlobalSettings::if2id[dnode][nbr2if[dnode][snode].idx] = snode->GetId();
 
 		// This is just to set up the connectivity between nodes. The IP addresses are useless
 		char ipstring[16];
@@ -845,42 +817,16 @@ int main(int argc, char *argv[])
 	}
 
 	nic_rate = get_nic_rate(n);
-	//nzh:第二个模块的端口在这里开
-	//zxc:在此处设置外部交换机标记和自循环qbb端口
-	Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n.Get(49));
-	Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(sw->GetDevice(6));
-	printf("dev->GetDataRate().GetBitRate() = %lu\n", dev->GetDataRate().GetBitRate());
-	printf("dev->GetChannel())->GetDelay().GetTimeStep() = %lu\n", DynamicCast<QbbChannel>(dev->GetChannel())->GetDelay().GetTimeStep());
-	sw->ExternalSwitch = 1;
-	sw->loop_qbb_index = 6;
-
-	sw = DynamicCast<SwitchNode>(n.Get(48));
-	dev = DynamicCast<QbbNetDevice>(sw->GetDevice(6));
-	sw->ExternalSwitch = 1;
-	sw->loop_qbb_index = 6;
-
-	sw = DynamicCast<SwitchNode>(n.Get(50));
-	dev = DynamicCast<QbbNetDevice>(sw->GetDevice(3));
-	sw->ExternalSwitch = 1;
-	sw->loop_qbb_index = 3;
 
 	// config switch
 	for (uint32_t i = 0; i < node_num; i++){
 		if (n.Get(i)->GetNodeType() == 1){ // is switch
 			Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n.Get(i));
 			uint32_t shift = 3; // by default 1/8
-			printf("Switch %d sw->GetNDevices() = %d\n", sw->GetId() ,sw->GetNDevices());
-			// 对于交换机来说，其上的设备数为其连接的服务器有多少个
 			for (uint32_t j = 1; j < sw->GetNDevices(); j++){
 				Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(sw->GetDevice(j));
-				//nzh:在EW上开启第二个模块，cnp_handler存储经过的cnp（包括交换机发和端发，m_cnp_time存储收到cnp时间，re_queue1和2代表新端口的m_queue,放到dev的re_queue里
-				if (i == 48 || i == 49 || i == 50) 
-				{
-					dev->enable_themis = true;
-				}
 				// set ecn
 				uint64_t rate = dev->GetDataRate().GetBitRate();
-				// 按照链路rate设置ecn threshold
 				NS_ASSERT_MSG(rate2kmin.find(rate) != rate2kmin.end(), "must set kmin for each link speed");
 				NS_ASSERT_MSG(rate2kmax.find(rate) != rate2kmax.end(), "must set kmax for each link speed");
 				NS_ASSERT_MSG(rate2pmax.find(rate) != rate2pmax.end(), "must set pmax for each link speed");
@@ -897,17 +843,13 @@ int main(int argc, char *argv[])
 					rate /= 2;
 				}
 			}
-			
-			sw->SetAttribute("AckHighPrio", UintegerValue(ack_high_prio));
 			sw->m_mmu->ConfigNPort(sw->GetNDevices()-1);
-			// switch buffer大小单位为MB
 			sw->m_mmu->ConfigBufferSize(buffer_size* 1024 * 1024);
 			sw->m_mmu->node_id = sw->GetId();
 			sw->SetAttribute("AckHighPrio", UintegerValue(ack_high_prio));
-			// if(sw->GetId() == 48 || sw->GetId() == 49)
-			// 	sw->m_mmu->ConfigBufferSize(200 * 1024 * 1024);
 		}
 	}
+
 	#if ENABLE_QP
 	FILE *fct_output = fopen(fct_output_file.c_str(), "w");
 	//
@@ -945,6 +887,7 @@ int main(int argc, char *argv[])
 			Ptr<Node> node = n.Get(i);
 			rdma->SetNode(node);
 			rdma->SetRdmaHw(rdmaHw);
+
 			node->AggregateObject (rdma);
 			rdma->Init();
 			rdma->TraceConnectWithoutContext("QpComplete", MakeBoundCallback (qp_finish, fct_output));
@@ -962,19 +905,6 @@ int main(int argc, char *argv[])
 	CalculateRoutes(n);
 	SetRoutingEntries();
 
-	// rixin: 打印路由表
-	int rixin_switch_no = 32;
-	printf("打印交换机 %d 的路由表\n", rixin_switch_no);
-	for (uint32_t i = 0; i < node_num; i++){
-		if (n.Get(i)->GetNodeType() == 1){ // is switch
-			Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n.Get(i));
-			if (sw->GetId() == rixin_switch_no) {
-				for(int i = 0; i < 32; i++ ) {
-					printf("通往 %d 号主机有 %d 个端口\n", i, sw->m_rtTable[node_id_to_ip(i).Get()].size());
-				}
-			}
-		}
-	}
 	//
 	// get BDP and delay
 	//
@@ -1081,12 +1011,6 @@ int main(int argc, char *argv[])
 	//
 	// Now, do the actual simulation.
 	//
-	clock_t begint, endt;
-	begint = clock();
-
-	FILE* flow_distribution_file = fopen("/home/zj/themis/Themis/Alibaba-HPCC/simulation/mix/UnfairPenalty/Inter-DC/ExprGroup/flow_distribution.txt", "w");
-	Simulator::Schedule(Seconds(2), &GlobalSettings::print_flow_distribution, flow_distribution_file, MicroSeconds(50));
-
 	std::cout << "Running Simulation.\n";
 	fflush(stdout);
 	NS_LOG_INFO("Run Simulation.");
@@ -1097,6 +1021,6 @@ int main(int argc, char *argv[])
 	fclose(trace_output);
 
 	endt = clock();
-	std::cout << (double)(endt - begint) / CLOCKS_PER_SEC << "\n";//ZXC:这里输出的是代码运行时间不是测试网络的运行时间
+	std::cout << (double)(endt - begint) / CLOCKS_PER_SEC << "\n";
 
 }
