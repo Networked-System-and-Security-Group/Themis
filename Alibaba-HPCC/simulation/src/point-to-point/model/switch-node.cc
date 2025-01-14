@@ -149,7 +149,7 @@ int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 			cnp_handler.rec_time = Simulator::Now();
 			cnp_handler.cnp_num += 1;
 			//nzh:重要的参数设计
-			if (cnp_handler.loop_num < 150)
+			if (cnp_handler.loop_num < 100)
 			{
 				//if(cnp_handler.cnp_num % 2 == 1){
 					cnp_handler.loop_num+=1;
@@ -158,13 +158,13 @@ int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 			}
 			else if (cnp_handler.loop_num < 500)
 			{
-				if(cnp_handler.cnp_num % (2) == 1)
+				if(cnp_handler.cnp_num % (10) == 1)
 				{
 					cnp_handler.loop_num++;
 					//cnp_handler.biggest++;
 				}
 			}
-			else if(cnp_handler.loop_num < 3000 && cnp_handler.loop_num%(40) == 0)
+			else if(cnp_handler.loop_num < 3000 && cnp_handler.loop_num%(100) == 0)
 			{
 				cnp_handler.loop_num++;
 				//cnp_handler.biggest++;
@@ -211,7 +211,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		// rixin: 下面只是更新了idx，也就是要走哪个端口出去，此操作必须在Label1之前，不然循环qbb的egress_bytes会不对，导致产生ECN
 		//zxc:控制逻辑只在外部交换机上实现
 		// rixin: 第二个模块
-		if(1&&ExternalSwitch && (m_id >=48)){
+		if(1&&(m_id >=48)){
 			
 			int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
 
@@ -224,9 +224,10 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 				//zxc: 如果没有被cnp命中则直接发走，被命中则进入下方控制逻辑
 				if(iter!=m_cnp_handler.end()){
 					//printf("1111111111111111111\n");
-					if (isDataPkt(ch)) {
-						pkt_num++;
+					if (isDataPkt(ch)&&idx!=5) {
+						//std::cout << "Pkt recycle" << std::endl;
 						//zxc:recycle_times_left==0表明这个包已经被减速并完成减速
+						//std::cout<<"sid = "<<sid<<", did = "<<did<<"mid = "<<m_id<<"idx = "<<idx<<std::endl;
 						if(p->recycle_times_left!=0){
 							//zxc:this packet is cnp-tergeted for the first time
 							if(p->recycle_times_left < 0){
@@ -391,7 +392,7 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 						PppHeader ppp;
 						p->RemoveHeader(ppp);
 						p->RemoveHeader(h);
-						//printf("1.2\n");
+						//printf("send cnp\n");
 						h.SetEcn((Ipv4Header::EcnType)0x00);
 						p->AddHeader(h);
 						p->AddHeader(ppp);
