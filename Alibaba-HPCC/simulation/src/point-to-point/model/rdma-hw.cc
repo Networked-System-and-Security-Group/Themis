@@ -300,6 +300,7 @@ void RdmaHw::DeleteRxQp(uint32_t dip, uint16_t pg, uint16_t dport){
 	m_rxQpMap.erase(key);
 }
 //发送ACK的函数
+int ack_cnp = 0,cnp =0;
 int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch){
 	uint8_t ecnbits = ch.GetIpv4EcnBits();
 	uint32_t payload_size = p->GetSize() - ch.GetSerializedSize();
@@ -355,15 +356,19 @@ int RdmaHw::ReceiveCnp(Ptr<Packet> p, CustomHeader &ch){
 	//终端输出CNP
 	uint16_t qIndex = ch.cnp.pg;
 	uint16_t port = ch.cnp.dport;
-	//printf("CNP received from %d to %d port %d pg %d\n", ch.sip, ch.dip, port, qIndex);
-	Ptr<RdmaQueuePair> qp = GetQp(ch.sip, port, qIndex);
+	//printf("CNP received from %x to %x port %d pg %d\n", ch.sip, ch.dip, port, qIndex);
+	Ptr<RdmaQueuePair> qp = GetQp(ch.sip, port, 3);
 	if (qp == NULL){
 		Ipv4Address ipv4_sip = Ipv4Address(ch.sip);
 		std::cout << "ERROR: " << "node:" << m_node->GetId()  << " CNP NIC cannot find the flow "<< ch.sip << ' ' << port << ' ' << qIndex << std::endl;
 		ipv4_sip.Print(std::cout);
 		return 0;
 	}
+	//std::cout<<ns3::Simulator::Now().GetNanoSeconds()<<": receive cnp"<<std::endl;
+	cnp++;
 	cnp_received_mlx(qp);
+	//std::cout<<"cnp: "<<cnp<<" time: "<<ns3::Simulator::Now().GetNanoSeconds()<<" alpha "<<qp->mlx.m_alpha<<" rate "<<qp->m_rate<<" target rate: "<<qp->mlx.m_targetRate<<std::endl;
+
 	return 0;
 }
 
@@ -400,7 +405,10 @@ int RdmaHw::ReceiveAck(Ptr<Packet> p, CustomHeader &ch){
 	// handle cnp
 	if (cnp){
 		if (m_cc_mode == 1){ // mlx version
+			ack_cnp++;
 			cnp_received_mlx(qp);
+			//std::cout<<"ack_cnp: "<<ack_cnp<<" time: "<<ns3::Simulator::Now().GetNanoSeconds()<<" alpha "<<qp->mlx.m_alpha<<" rate "<<qp->m_rate<<" target rate: "<<qp->mlx.m_targetRate<<std::endl;
+			
 		} 
 	}
 

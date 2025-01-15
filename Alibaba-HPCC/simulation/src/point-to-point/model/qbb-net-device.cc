@@ -502,8 +502,8 @@ void QbbNetDevice::DequeueAndTransmit(void)
 		//输出当前交换机的编号
 		//std::cout << "CNP sent from " << m_node->GetId() << " to " << ch.sip << " port " << ch.udp.dport << " pg "<< ch.udp.pg<< "l3port:"<< ch.l3Prot<< std::endl;
 		CnHeader seqh;
-		if(ch.udp.sport==100)return;
-		seqh.SetPG(ch.udp.pg);
+		//if(ch.udp.sport==100)return;
+		seqh.SetPG(0);
 		seqh.SetSport(ch.udp.dport);
 		seqh.SetDport(ch.udp.sport);
 		//std::cout << "CNP sent from " << m_node->GetId() << " to " << ch.sip << " port " << seqh.GetDport() << " pg "<< seqh.GetPG()<< std::endl;
@@ -526,6 +526,7 @@ void QbbNetDevice::DequeueAndTransmit(void)
 		CustomHeader ch2(CustomHeader::L2_Header | CustomHeader::L3_Header | CustomHeader::L4_Header);
 		newp->PeekHeader(ch2);
 		//std::cout<<ch2.l3Prot<<std::endl;
+		//std::cout<<ns3::Simulator::Now().GetNanoSeconds()<<": send cnp2"<<std::endl;
 		SwitchSend(0, newp, ch2);
 		//终端打印CNP
 	}

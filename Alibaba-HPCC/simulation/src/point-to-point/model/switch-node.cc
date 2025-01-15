@@ -211,7 +211,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		// rixin: 下面只是更新了idx，也就是要走哪个端口出去，此操作必须在Label1之前，不然循环qbb的egress_bytes会不对，导致产生ECN
 		//zxc:控制逻辑只在外部交换机上实现
 		// rixin: 第二个模块
-		if(1&&(m_id >=48)){
+		if(0&&(m_id >=48)){
 			
 			int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
 
@@ -361,12 +361,9 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 		m_bytes[inDev][ifIndex][qIndex] -= p->GetSize();
 		if (m_ecnEnabled){
 			CustomHeader ch(CustomHeader::L2_Header | CustomHeader::L3_Header | CustomHeader::L4_Header);
-			p->PeekHeader(ch);
+
 			bool egressCongested = m_mmu->ShouldSendCN(ifIndex, qIndex);
-			if (m_id == 50 && ifIndex == 3) {
-				// do nothing
-			}
-			else if (egressCongested){
+			if (egressCongested){
 				Ipv4Header h;
 				PppHeader ppp;
 				p->RemoveHeader(ppp);
@@ -374,20 +371,19 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 				h.SetEcn((Ipv4Header::EcnType)0x03);
 				p->AddHeader(h);
 				p->AddHeader(ppp);
-				if (m_id == 50) {
-					printf("switch 50 marked an ECN\n");
-				}
 			}
 			//nzh:如果有Ecnbit，就发cnp
 			// rixin: 下面原本只写了判断有没有ECN标记，导致了一个问题，就是如果有ECN标记，但是不是数据包（ACK），
 			// 导致CNP发给了接收端，而接收端可能正在发送DC内部流，导致DC内部流的效果变差
 			// rixin: 第一个模块
+			p->PeekHeader(ch);
 			if(1&&isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id >= 48){
+				//std::cout<<ns3::Simulator::Now().GetNanoSeconds()<<": send cnp1"<<std::endl;
 				// printf("module 1 is running\n");
 				int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
-				// printf("source node id = %d, dst node id = %d\n", sid, did);
+				//printf("source node id = %d, dst node id = %d, m_node id = %d\n", sid, did,m_id);
 				Ptr<QbbNetDevice> device = DynamicCast<QbbNetDevice>(m_devices[inDev]);
-					if(device->enable_themis){
+					//if(device->enable_themis){
 						Ipv4Header h;
 						PppHeader ppp;
 						p->RemoveHeader(ppp);
@@ -397,8 +393,9 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 						p->AddHeader(h);
 						p->AddHeader(ppp);
 						device->SendCnp(p, ch);
-
-					}
+						// if(inDev == 5)
+						// 	std::cout<<"inDev: "<<inDev<<", ifIndex: "<<ifIndex<<", qIndex: "<<qIndex<<std::endl;
+					//}
 			}			
 		}
 		//CheckAndSendPfc(inDev, qIndex);

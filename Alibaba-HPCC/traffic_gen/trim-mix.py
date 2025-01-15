@@ -1,6 +1,6 @@
 import random
 
-output = "../simulation/mix/UnfairPenalty/Inter-DC/ExprGroup/flow_mix_Web_0.5_1:10.txt"
+output = "../simulation/mix/01-15/bigFlow/flow.txt"
 
 # 打开文件读取数据
 with open(output, "r") as file:
@@ -24,7 +24,7 @@ for i in range(1, len(lines)):
 print(f"Total inter flow num: {len(inter_lines)}")
 
 # 从 inter_lines 中均匀随机选取 n 个行号进行修改
-n = len(inter_lines) - (len(lines) - 1) // 10
+n = len(inter_lines) - (len(lines) - 1) // 11
 selected_lines = random.sample(inter_lines, n)
 for i in selected_lines:
     first_num, second_num = map(int, lines[i].split()[:2])

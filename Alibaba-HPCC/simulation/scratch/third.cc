@@ -172,14 +172,16 @@ void qp_finish(FILE* fout, Ptr<RdmaQueuePair> q){
 	uint32_t sid = ip_to_node_id(q->sip), did = ip_to_node_id(q->dip);
 	uint64_t base_rtt = pairRtt[sid][did], b = pairBw[sid][did];
 	uint32_t total_bytes = q->m_size + ((q->m_size-1) / packet_payload_size + 1) * (CustomHeader::GetStaticWholeHeaderSize() - IntHeader::GetStaticSize()); // translate to the minimum bytes required (with header but no INT)
-	uint64_t standalone_fct = base_rtt + total_bytes * 8000000000lu / b; // rtt + 理论传输时间 （ns）
+	int64_t standalone_fct = base_rtt + total_bytes * 8000000000lu / b; // rtt + 理论传输时间 （ns）
 	//std::cout << "one qp completed\n";
 	//std::cout << "pairBw[sid][did] = " << pairBw[sid][did] << "\n";
 	// sip, dip, sport, dport, size (B), start_time, fct (ns), standalone_fct (ns)
 	//std::cout << "base_rtt = " << base_rtt << "\n";
 	// fct计算：从建立qp到收到ACK
 	// standalonefct计算：链路固有延迟 + 每个交换机增加的延迟 + 发送端发出所有数据所需延迟
-	fprintf(fout, "%u %u %u %u %lu %lu %lu %lu %u\n", q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->m_size, q->startTime.GetTimeStep(), (Simulator::Now() - q->startTime).GetTimeStep(), standalone_fct, 
+	// fprintf(fout, "%08x %08x %u %u %lu %lu %lu %lu %u\n", q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->m_size, q->startTime.GetTimeStep(), (Simulator::Now() - q->startTime).GetTimeStep(), standalone_fct, 
+	// 	GlobalSettings::PacketId2FlowId[std::make_tuple(sid, did, q->sport, q->dport)]);
+	fprintf(fout, "%08x %08x %u %u %lu %lu %lu %lu %u\n", q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->m_size, q->startTime.GetTimeStep(), ((Simulator::Now() - q->startTime).GetTimeStep()  )>base_rtt ? (Simulator::Now() - q->startTime).GetTimeStep() - base_rtt:0 , standalone_fct - base_rtt, 
 		GlobalSettings::PacketId2FlowId[std::make_tuple(sid, did, q->sport, q->dport)]);
 	fflush(fout);
 
@@ -1079,7 +1081,7 @@ int main(int argc, char *argv[])
 	clock_t begint, endt;
 	begint = clock();
 
-	FILE* flow_distribution_file = fopen("/home/zj/themis/Themis/Alibaba-HPCC/simulation/mix/UnfairPenalty/Inter-DC/ExprGroup/flow_distribution.txt", "w");
+	FILE* flow_distribution_file = fopen("./mix/UnfairPenalty/Inter-DC/ExprGroup/flow_distribution.txt", "w");
 	Simulator::Schedule(Seconds(2), &GlobalSettings::print_flow_distribution, flow_distribution_file, MicroSeconds(50));
 
 	std::cout << "Running Simulation.\n";

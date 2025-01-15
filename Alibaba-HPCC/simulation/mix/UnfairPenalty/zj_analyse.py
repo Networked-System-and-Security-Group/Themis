@@ -29,14 +29,15 @@ class Flow:
 flow_trace = defaultdict(list)# flow_id -> list[tuple<time, sid, did, size>]
 flows = []
 id_to_flow = {}
-link_state = defaultdict(defaultdict)# (src, dst) -> dict[time, total_size]
+defaultdict_int = lambda: defaultdict(int)
+link_state = defaultdict(defaultdict_int)# (src, dst) -> dict[time, total_size]
 
 def parse_flow_trace_file():
     """
     解析流轨迹文件，记录每个流在每个时间点的源节点和目标节点信息。
     """
     current_time = None
-    with open('/home/zj/themis/Themis/Alibaba-HPCC/simulation/mix/UnfairPenalty/Inter-DC/ExprGroup/flow_distribution.txt', 'r') as file:
+    with open('./Inter-DC/ExprGroup/flow_distribution.txt', 'r') as file:
         for line in file:
             time_match = re.match(r'#####Time\[(\d+)\]#####', line)
             if time_match:
@@ -54,13 +55,13 @@ def parse_flow_trace_file():
                     link_state[(src_id, dst_id)][current_time] = total_size
 
 def parse_fct_file():
-    with open('/home/zj/themis/Themis/Alibaba-HPCC/simulation/mix/UnfairPenalty/Inter-DC/ExprGroup/fct.txt', 'r') as file:
+    with open('./Inter-DC/ExprGroup/fct.txt', 'r') as file:
         for line in file:
             data = line.split()
             # if len(data) != 9:
             #     continue
-            sip_id = ((int(data[0])) >> 8) & 0xFF
-            dip_id = ((int(data[1])) >> 8) & 0xFF
+            sip_id = ((int(data[0],16)) >> 8) & 0xFF
+            dip_id = ((int(data[1],16)) >> 8) & 0xFF
             sport = int(data[2])
             dport = int(data[3])
             m_size = int(data[4])
