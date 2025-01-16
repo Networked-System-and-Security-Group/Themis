@@ -35,8 +35,8 @@ def read_and_classify(file_path):
 
     for line in lines_to_process:
             row = line.strip().split()
-            src = int(row[0], 10)
-            dst = int(row[1], 10)
+            src = int(row[0], 16)
+            dst = int(row[1], 16)
             flow_size = int(row[4])
             measured_fct = int(row[6])
             perfect_fct = int(row[7])

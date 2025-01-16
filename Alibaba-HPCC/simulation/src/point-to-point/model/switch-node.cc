@@ -149,25 +149,25 @@ int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 			cnp_handler.rec_time = Simulator::Now();
 			cnp_handler.cnp_num += 1;
 			//nzh:重要的参数设计
-			if (cnp_handler.loop_num < 100)
+			if (cnp_handler.biggest < 5)
 			{
 				//if(cnp_handler.cnp_num % 2 == 1){
 					cnp_handler.loop_num+=1;
-					//cnp_handler.biggest+=1;
+					cnp_handler.biggest+=1;
 				//}
 			}
-			else if (cnp_handler.loop_num < 500)
+			else if (cnp_handler.biggest < 10)
 			{
-				if(cnp_handler.cnp_num % (10) == 1)
+				if(cnp_handler.cnp_num % (5) == 1)
 				{
 					cnp_handler.loop_num++;
-					//cnp_handler.biggest++;
+					cnp_handler.biggest++;
 				}
 			}
-			else if(cnp_handler.loop_num < 3000 && cnp_handler.loop_num%(100) == 0)
+			else if(cnp_handler.biggest < 20 && cnp_handler.loop_num%(10) == 1)
 			{
 				cnp_handler.loop_num++;
-				//cnp_handler.biggest++;
+				cnp_handler.biggest++;
 			}
 		}
 	}
@@ -211,7 +211,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		// rixin: 下面只是更新了idx，也就是要走哪个端口出去，此操作必须在Label1之前，不然循环qbb的egress_bytes会不对，导致产生ECN
 		//zxc:控制逻辑只在外部交换机上实现
 		// rixin: 第二个模块
-		if(0&&(m_id >=48)){
+		if(1&&(m_id >=48)){
 			
 			int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
 
@@ -363,6 +363,8 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 			CustomHeader ch(CustomHeader::L2_Header | CustomHeader::L3_Header | CustomHeader::L4_Header);
 
 			bool egressCongested = m_mmu->ShouldSendCN(ifIndex, qIndex);
+			if(m_mmu->egress_bytes[ifIndex][qIndex])
+				//std::cout<<m_id<<"  "<<m_mmu->egress_bytes[ifIndex][qIndex]<<std::endl;
 			if (egressCongested){
 				Ipv4Header h;
 				PppHeader ppp;
@@ -371,6 +373,7 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 				h.SetEcn((Ipv4Header::EcnType)0x03);
 				p->AddHeader(h);
 				p->AddHeader(ppp);
+				//std::cout<<m_id<<" congested"<<std::endl;
 			}
 			//nzh:如果有Ecnbit，就发cnp
 			// rixin: 下面原本只写了判断有没有ECN标记，导致了一个问题，就是如果有ECN标记，但是不是数据包（ACK），

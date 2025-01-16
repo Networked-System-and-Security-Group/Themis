@@ -179,10 +179,10 @@ void qp_finish(FILE* fout, Ptr<RdmaQueuePair> q){
 	//std::cout << "base_rtt = " << base_rtt << "\n";
 	// fct计算：从建立qp到收到ACK
 	// standalonefct计算：链路固有延迟 + 每个交换机增加的延迟 + 发送端发出所有数据所需延迟
-	// fprintf(fout, "%08x %08x %u %u %lu %lu %lu %lu %u\n", q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->m_size, q->startTime.GetTimeStep(), (Simulator::Now() - q->startTime).GetTimeStep(), standalone_fct, 
-	// 	GlobalSettings::PacketId2FlowId[std::make_tuple(sid, did, q->sport, q->dport)]);
-	fprintf(fout, "%08x %08x %u %u %lu %lu %lu %lu %u\n", q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->m_size, q->startTime.GetTimeStep(), ((Simulator::Now() - q->startTime).GetTimeStep()  )>base_rtt ? (Simulator::Now() - q->startTime).GetTimeStep() - base_rtt:0 , standalone_fct - base_rtt, 
-		GlobalSettings::PacketId2FlowId[std::make_tuple(sid, did, q->sport, q->dport)]);
+	 fprintf(fout, "%08x %08x %u %u %lu %lu %lu %lu %u\n", q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->m_size, q->startTime.GetTimeStep(), (Simulator::Now() - q->startTime).GetTimeStep(), standalone_fct, 
+	 	GlobalSettings::PacketId2FlowId[std::make_tuple(sid, did, q->sport, q->dport)]);
+	//fprintf(fout, "%08x %08x %u %u %lu %lu %lu %lu %u\n", q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->m_size, q->startTime.GetTimeStep(), ((Simulator::Now() - q->startTime).GetTimeStep()  )>base_rtt ? (Simulator::Now() - q->startTime).GetTimeStep() - base_rtt:0 , standalone_fct - base_rtt, 
+		//GlobalSettings::PacketId2FlowId[std::make_tuple(sid, did, q->sport, q->dport)]);
 	fflush(fout);
 
 	// remove rxQp from the receiver
