@@ -593,7 +593,7 @@ void RdmaHw::UpdateNextAvail(Ptr<RdmaQueuePair> qp, Time interframeGap, uint32_t
 		sendingTime = interframeGap + Seconds(qp->m_max_rate.CalculateTxTime(pkt_size));
 	qp->m_nextAvail = Simulator::Now() + sendingTime;
 }
-#define PRINT_LOG 0
+#define PRINT_LOG 1
 void RdmaHw::ChangeRate(Ptr<RdmaQueuePair> qp, DataRate new_rate){
 	#if 1
 	Time sendingTime = Seconds(qp->m_rate.CalculateTxTime(qp->lastPktSize));
@@ -607,7 +607,7 @@ void RdmaHw::ChangeRate(Ptr<RdmaQueuePair> qp, DataRate new_rate){
 	// change to new rate
 	qp->m_rate = new_rate;
 	#if PRINT_LOG
-	std::cout << Simulator::Now() << " rate change:" << m_node->GetId() << ' ' << new_rate << '\n';
+	//std::cout << Simulator::Now() << " rate change:" << m_node->GetId() << ' ' << new_rate << '\n';
 	#endif
 }
 
@@ -617,8 +617,8 @@ void RdmaHw::ChangeRate(Ptr<RdmaQueuePair> qp, DataRate new_rate){
  *****************************/
 void RdmaHw::UpdateAlphaMlx(Ptr<RdmaQueuePair> q){
 	#if PRINT_LOG
-	std::cout << Simulator::Now() << " alpha update:" << m_node->GetId() << ' ' << q->mlx.m_alpha << ' ' << (int)q->mlx.m_alpha_cnp_arrived << '\n';
-	printf("%lu alpha update: %08x %08x %u %u %.6lf->", Simulator::Now().GetTimeStep(), q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->mlx.m_alpha);
+	//std::cout << Simulator::Now() << " alpha update:" << m_node->GetId() << ' ' << q->mlx.m_alpha << ' ' << (int)q->mlx.m_alpha_cnp_arrived << '\n';
+	//printf("%lu %08x %08x", Simulator::Now().GetTimeStep(), q->sip.Get(), q->dip.Get());
 	#endif
 	if (q->mlx.m_alpha_cnp_arrived){
 		q->mlx.m_alpha = (1 - m_g)*q->mlx.m_alpha + m_g; 	//binary feedback
@@ -656,7 +656,7 @@ void RdmaHw::CheckRateDecreaseMlx(Ptr<RdmaQueuePair> q){
 	ScheduleDecreaseRateMlx(q, 0);
 	if (q->mlx.m_decrease_cnp_arrived){
 		#if PRINT_LOG
-		printf("%lu rate dec: %08x %08x %u %u (%0.3lf %.3lf)->", Simulator::Now().GetTimeStep(), q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->mlx.m_targetRate.GetBitRate() * 1e-9, q->m_rate.GetBitRate() * 1e-9);
+		printf("%lu %08x %08x ", Simulator::Now().GetTimeStep(), q->sip.Get(), q->dip.Get());
 		#endif
 		bool clamp = true;
 		if (!m_EcnClampTgtRate){
@@ -672,7 +672,7 @@ void RdmaHw::CheckRateDecreaseMlx(Ptr<RdmaQueuePair> q){
 		Simulator::Cancel(q->mlx.m_rpTimer);
 		q->mlx.m_rpTimer = Simulator::Schedule(MicroSeconds(m_rpgTimeReset), &RdmaHw::RateIncEventTimerMlx, this, q);
 		#if PRINT_LOG
-		printf("(%.3lf %.3lf)\n", q->mlx.m_targetRate.GetBitRate() * 1e-9, q->m_rate.GetBitRate() * 1e-9);
+		printf("%.3lf\n",q->m_rate.GetBitRate() * 1e-9);
 		#endif
 	}
 }
@@ -698,16 +698,16 @@ void RdmaHw::RateIncEventMlx(Ptr<RdmaQueuePair> q){
 
 void RdmaHw::FastRecoveryMlx(Ptr<RdmaQueuePair> q){
 	#if PRINT_LOG
-	printf("%lu fast recovery: %08x %08x %u %u (%0.3lf %.3lf)->", Simulator::Now().GetTimeStep(), q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->mlx.m_targetRate.GetBitRate() * 1e-9, q->m_rate.GetBitRate() * 1e-9);
+	printf("%lu %08x %08x ", Simulator::Now().GetTimeStep(), q->sip.Get(), q->dip.Get());
 	#endif
 	q->m_rate = (q->m_rate / 2) + (q->mlx.m_targetRate / 2);
 	#if PRINT_LOG
-	printf("(%.3lf %.3lf)\n", q->mlx.m_targetRate.GetBitRate() * 1e-9, q->m_rate.GetBitRate() * 1e-9);
+	printf("%.3lf\n", q->m_rate.GetBitRate() * 1e-9);
 	#endif
 }
 void RdmaHw::ActiveIncreaseMlx(Ptr<RdmaQueuePair> q){
 	#if PRINT_LOG
-	printf("%lu active inc: %08x %08x %u %u (%0.3lf %.3lf)->", Simulator::Now().GetTimeStep(), q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->mlx.m_targetRate.GetBitRate() * 1e-9, q->m_rate.GetBitRate() * 1e-9);
+	printf("%lu %08x %08x ", Simulator::Now().GetTimeStep(), q->sip.Get(), q->dip.Get());
 	#endif
 	// get NIC
 	uint32_t nic_idx = GetNicIdxOfQp(q);
@@ -718,12 +718,12 @@ void RdmaHw::ActiveIncreaseMlx(Ptr<RdmaQueuePair> q){
 		q->mlx.m_targetRate = dev->GetDataRate();
 	q->m_rate = (q->m_rate / 2) + (q->mlx.m_targetRate / 2);
 	#if PRINT_LOG
-	printf("(%.3lf %.3lf)\n", q->mlx.m_targetRate.GetBitRate() * 1e-9, q->m_rate.GetBitRate() * 1e-9);
+	printf("%.3lf\n", q->m_rate.GetBitRate() * 1e-9);
 	#endif
 }
 void RdmaHw::HyperIncreaseMlx(Ptr<RdmaQueuePair> q){
 	#if PRINT_LOG
-	printf("%lu hyper inc: %08x %08x %u %u (%0.3lf %.3lf)->", Simulator::Now().GetTimeStep(), q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->mlx.m_targetRate.GetBitRate() * 1e-9, q->m_rate.GetBitRate() * 1e-9);
+	printf("%lu %08x %08x ", Simulator::Now().GetTimeStep(), q->sip.Get(), q->dip.Get());
 	#endif
 	// get NIC
 	uint32_t nic_idx = GetNicIdxOfQp(q);
@@ -734,7 +734,7 @@ void RdmaHw::HyperIncreaseMlx(Ptr<RdmaQueuePair> q){
 		q->mlx.m_targetRate = dev->GetDataRate();
 	q->m_rate = (q->m_rate / 2) + (q->mlx.m_targetRate / 2);
 	#if PRINT_LOG
-	printf("(%.3lf %.3lf)\n", q->mlx.m_targetRate.GetBitRate() * 1e-9, q->m_rate.GetBitRate() * 1e-9);
+	printf("%.3lf\n",  q->m_rate.GetBitRate() * 1e-9);
 	#endif
 }
 

@@ -144,27 +144,26 @@ int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 		//printf("max	cnp_num = %d\n", max_cnp_num);
 		CNP_Handler &cnp_handler = iter->second;
 		cnp_handler.recovered=0;
-		if(Simulator::Now()-cnp_handler.rec_time>=ns3::NanoSeconds(1)){
+		if(Simulator::Now()-cnp_handler.rec_time>=ns3::NanoSeconds(5)){
 			//std::cout<<"time"<<Simulator::Now()-cnp_handler.rec_time<<std::endl;
 			cnp_handler.rec_time = Simulator::Now();
 			cnp_handler.cnp_num += 1;
-			//nzh:重要的参数设计
 			if (cnp_handler.biggest < 5)
 			{
 				//if(cnp_handler.cnp_num % 2 == 1){
-					cnp_handler.loop_num+=1;
-					cnp_handler.biggest+=1;
+					cnp_handler.loop_num+=3;
+					cnp_handler.biggest+=3;
 				//}
 			}
-			else if (cnp_handler.biggest < 10)
+			else if (cnp_handler.biggest < 20)
 			{
-				if(cnp_handler.cnp_num % (5) == 1)
+				if(cnp_handler.cnp_num % (2) == 1)
 				{
-					cnp_handler.loop_num++;
-					cnp_handler.biggest++;
+					cnp_handler.loop_num+=1;
+					cnp_handler.biggest+=1;
 				}
 			}
-			else if(cnp_handler.biggest < 20 && cnp_handler.loop_num%(10) == 1)
+			else if(cnp_handler.biggest < 500 && cnp_handler.loop_num%(20) == 1)
 			{
 				cnp_handler.loop_num++;
 				cnp_handler.biggest++;
@@ -174,7 +173,7 @@ int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 	else{
 		CNP_Handler cnp_handler;
 		cnp_handler.cnp_num = 1;
-		cnp_handler.rec_time=Simulator::Now();
+		//cnp_handler.rec_time=Simulator::Now();
 		cnp_handler.set_last_loop = Simulator::Now();
 		m_cnp_handler[key] = cnp_handler;
 	}
@@ -232,6 +231,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 							//zxc:this packet is cnp-tergeted for the first time
 							if(p->recycle_times_left < 0){
 								p->recycle_times_left = iter->second.loop_num;
+								//std::cout<<Simulator::Now()<<" "<<ch.udp.seq<<" "<<p->recycle_times_left<<std::endl;
 								if(p->recycle_times_left){
 									idx = loop_qbb_index;
 									p->recycle_times_left -= 1;
@@ -241,7 +241,8 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 							}
 							else{
 								iter->second.recover[p->recycle_times_left]--;
-								if(Simulator::Now()-iter->second.rec_time>=ns3::MicroSeconds(8000)){
+								p->recycle_times_left -= 1;
+								if(Simulator::Now()-iter->second.rec_time>=ns3::MicroSeconds(500)){
 									for(int i = p->recycle_times_left; i >0;i--)
 									{
 										if(iter->second.recover[i])
@@ -249,11 +250,12 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 											goto Minus;
 										}
 									}
-									p->recycle_times_left=0;
+									//std::cout<<"recover"<<std::endl;
+									p->recycle_times_left/=2;
+									p->recycle_times_left = 0;
 									goto Send;
 								}
 								Minus:
-								p->recycle_times_left -= 1;
 								Send:
 								idx = loop_qbb_index;
 								iter->second.recover[p->recycle_times_left]++;
