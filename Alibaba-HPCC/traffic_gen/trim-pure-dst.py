@@ -8,7 +8,7 @@ from custom_rand import CustomRand
 #output = "tmp_traffic.txt"
 port = 80
 parser = OptionParser()
-parser.add_option("-o", "--output", dest = "output", help = "the output file", default = "tmp_traffic.txt")
+parser.add_option("-o", "--output", dest = "output", help = "the output file", default = "../simulation/mix/02-07/des_70%_0.03s/flow.txt")
 options,args = parser.parse_args()
 output = options.output
 # 打开文件读取数据
