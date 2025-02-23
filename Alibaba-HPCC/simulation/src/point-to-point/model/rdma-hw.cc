@@ -325,7 +325,11 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch){
 		if (ecnbits) {
 			rxQp->cnp_milestone++;
 			//if(rxQp->cnp_milestone%5==4)
+			if(Simulator::Now()-rxQp->m_cnp_time>=ns3::MicroSeconds(5))
+			{
 				seqh.SetCnp();
+				rxQp->m_cnp_time = Simulator::Now();
+			}
 		}
 		Ptr<Packet> newp = Create<Packet>(std::max(60-14-20-(int)seqh.GetSerializedSize(), 0));
 		newp->AddHeader(seqh);
@@ -593,7 +597,7 @@ void RdmaHw::UpdateNextAvail(Ptr<RdmaQueuePair> qp, Time interframeGap, uint32_t
 		sendingTime = interframeGap + Seconds(qp->m_max_rate.CalculateTxTime(pkt_size));
 	qp->m_nextAvail = Simulator::Now() + sendingTime;
 }
-#define PRINT_LOG 1
+#define PRINT_LOG 0
 void RdmaHw::ChangeRate(Ptr<RdmaQueuePair> qp, DataRate new_rate){
 	#if 1
 	Time sendingTime = Seconds(qp->m_rate.CalculateTxTime(qp->lastPktSize));

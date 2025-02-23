@@ -64,7 +64,7 @@ class SwitchNode : public Node{
 			set_last_loop = Simulator::Now();
 			recovered = 0;
 			memset(recover, 0, sizeof(recover));
-    	}
+		};
  	};
 
 	struct CnpKey {
@@ -89,8 +89,9 @@ class SwitchNode : public Node{
 	  		this->qindex = qindex;
 			this->sport = sport;
 			this->dport = dport;
-		}
+		};
 	};
+
 
 
 
@@ -111,6 +112,7 @@ public:
 	int ReceiveCnp(Ptr<Packet>p, CustomHeader &ch);//zxc:为交换机添加实现控制逻辑所需函数
 	std::map<CnpKey, CNP_Handler> m_cnp_handler;
 	std::map<CnpKey, Time> m_cnp_time;
+	std::map<CnpKey, Time> m_ecn_detector;
 	Ptr<SwitchMmu> m_mmu;
 	void CheckAndSendCnp(uint32_t ifIndex, uint32_t qIndex, Ptr<Packet> p);
 	static TypeId GetTypeId (void);

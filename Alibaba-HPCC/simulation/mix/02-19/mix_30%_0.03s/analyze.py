@@ -55,6 +55,10 @@ def read_and_classify(file_path):
             src_third_field = (src >> 8) & 0xFF
             dst_third_field = (dst >> 8) & 0xFF
 
+            # print(src)
+            # print(dst)
+            # print(src_third_field)
+            # print(dst_third_field)
 
             if (src_third_field < 16 and dst_third_field < 16) or (src_third_field > 15 and dst_third_field > 15):
                 max_intra_ratio = max(max_intra_ratio, ratio)
@@ -107,7 +111,7 @@ def read_and_classify(file_path):
     plt.ylabel('Average FCT')
 
     # 显示图形
-    plt.show()
+    #plt.show()
     return intra_dc_flow, inter_dc_flow, ratio_and_flow_size_record
 
 def write_to_file(data, file_path):
@@ -117,7 +121,7 @@ def write_to_file(data, file_path):
 
 if __name__ == "__main__":
     if MODE:
-        input_file = './fct_send.txt'
+        input_file = './fct_2.txt'
     else:
         input_file = f'.fct_{prefix}_dc.txt'
     intra_dc_flow_file = './fct_intra_dc.txt'

@@ -46,9 +46,9 @@ def plot_data(times, flow_types, rates):
     ax.legend()
     ax.grid(True)
     plt.tight_layout()
-    plt.savefig('Themis.png')
+    plt.savefig('long.png')
 
 if __name__ == "__main__":
-    file_path = 'Themis.txt'
+    file_path = 'long.txt'
     times, flow_types, rates = read_data(file_path)
     plot_data(times, flow_types, rates)

@@ -122,7 +122,7 @@ public:
 	uint32_t m_lastNACK;
 	EventId QcnTimerEvent; // if destroy this rxQp, remember to cancel this timer
 	uint32_t cnp_milestone = 0;
-	
+	Time m_cnp_time = Seconds(0);
 	static TypeId GetTypeId (void);
 	RdmaRxQueuePair();
 	uint32_t GetHash(void);
