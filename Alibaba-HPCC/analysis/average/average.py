@@ -24,8 +24,8 @@ DCQCN_short_50_inter = 3.9571922087543547
 
 DCQCN_70_intra = 13.661249892419512
 DCQCN_70_inter = 1.5039229580145075
-Themis_70_intra = 4.638276763178418
-Themis_70_inter = 7.625295080633392
+Themis_70_intra = 4.912151116381316
+Themis_70_inter = 5.244815204406885
 Annulus_70_intra = 8.477125441876192
 Annulus_70_inter = 1.6353964411002377
 DCQCN_short_70_intra = 6.266539733900149
@@ -86,6 +86,7 @@ for flow_type in ['intra', 'inter']:
         ax.yaxis.set_major_locator(ticker.MultipleLocator(2))
     ax.yaxis.set_major_formatter(ticker.ScalarFormatter())
     ax.grid(True, which='major', linestyle='dashed', linewidth=0.5)
-    
+    if(flow_type == 'inter'):
+        ax.legend(loc='upper right',fontsize=24)
     # 保存图表到文件
-    plt.savefig(f'./Avg_{flow_type}.pdf', bbox_inches='tight')
+    plt.savefig(f'./Avg_{flow_type}.png', bbox_inches='tight')

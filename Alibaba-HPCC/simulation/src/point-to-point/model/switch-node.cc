@@ -211,7 +211,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		// rixin: 下面只是更新了idx，也就是要走哪个端口出去，此操作必须在Label1之前，不然循环qbb的egress_bytes会不对，导致产生ECN
 		//zxc:控制逻辑只在外部交换机上实现
 		// rixin: 第二个模块
-		if(1&&(m_id >=48)){
+		if(0&&(m_id >=48)){
 			
 			int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
 
@@ -222,7 +222,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 				CnpKey key(ch.sip,ch.dip,ch.udp.pg,ch.udp.sport,ch.udp.dport);
 				auto iter = m_cnp_handler.find(key);
 				//zxc: 如果没有被cnp命中则直接发走，被命中则进入下方控制逻辑
-				if(iter!=m_cnp_handler.end()){
+				if(iter!=m_cnp_handler.end()) {
 					//printf("1111111111111111111\n");
 					if (isDataPkt(ch)&&idx!=5) {
 						//std::cout << "Pkt recycle" << std::endl;
@@ -384,7 +384,7 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 			// 导致CNP发给了接收端，而接收端可能正在发送DC内部流，导致DC内部流的效果变差
 			// rixin: 第一个模块
 			p->PeekHeader(ch);
-			if(0&&isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id >= 48){
+			if(1&&isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id >= 48){
 				//std::cout<<ns3::Simulator::Now().GetNanoSeconds()<<": send cnp1"<<std::endl;
 				// printf("module 1 is running\n");
 				int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
@@ -403,12 +403,17 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 						auto iter = m_ecn_detector.find(key);
 						if(iter != m_ecn_detector.end()){
 							if(Simulator::Now()-iter->second >= ns3::MicroSeconds(5)){
+								//Simulator::Schedule(ns3::MicroSeconds(2), &QbbNetDevice::SendCnp, device, p, ch);
+								//iter->second = Simulator::Now()+ns3::MicroSeconds(2);
 								device->SendCnp(p, ch);
 								iter->second = Simulator::Now();
+								
 							}
 					
 						}
 						else{
+							//Simulator::Schedule(ns3::MicroSeconds(2), &QbbNetDevice::SendCnp, device, p, ch);
+							//m_ecn_detector[key] = Simulator::Now()+ns3::MicroSeconds(2);
 							device->SendCnp(p, ch);
 							m_ecn_detector[key] = Simulator::Now();
 						}
