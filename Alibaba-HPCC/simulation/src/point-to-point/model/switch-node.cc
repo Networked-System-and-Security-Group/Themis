@@ -116,6 +116,7 @@ void SwitchNode::CheckAndSendResume(uint32_t inDev, uint32_t qIndex){
 	if (m_mmu->CheckShouldResume(inDev, qIndex)){
 		device->SendPfc(qIndex, 1);
 		m_mmu->SetResume(inDev, qIndex);
+		std::cout<<"resume "<<Simulator::Now()<<" node "<<m_id<<" qIndex "<<qIndex<<std::endl;
 	}
 }
 
@@ -275,6 +276,36 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		FlowIdTag t;
 		p->PeekPacketTag(t);
 		uint32_t inDev = t.GetFlowId(); 
+		//模块：naive_solution_sendPFC
+		if(0&&(m_id >=48)){
+			
+			int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
+
+			//zxc：判断是否是cnp以及更新cnp_handler信息
+			int is_cnp = ReceiveCnp(p,ch);
+			//zxc:判断是否要循环减速，cnp直接发走，非cnp才需要执行此操作
+			if(!is_cnp){
+				CnpKey key(ch.sip,ch.dip,ch.udp.pg,ch.udp.sport,ch.udp.dport);
+				auto iter = m_cnp_handler.find(key);
+				//zxc: 如果没有被cnp命中则直接发走，被命中则进入下方控制逻辑
+				if(iter!=m_cnp_handler.end()) {
+					//solution:PFC
+					if(isDataPkt(ch)&&idx!=5)
+					{
+						if(Simulator::Now()-iter->second.rec_time<ns3::MicroSeconds(100))
+						{
+							Ptr<QbbNetDevice> device = DynamicCast<QbbNetDevice>(m_devices[inDev]);
+							device->SendPfc(qIndex, 1);
+							m_mmu->SetResume(inDev, qIndex);
+							std::cout<<"paused "<<Simulator::Now()<<" node "<<m_id<<" qIndex "<<qIndex<<std::endl;
+						}
+						else{
+							CheckAndSendResume(inDev, qIndex);
+						}
+					}
+				}
+			}
+		}
 		if (qIndex != 0){ //not highest priority
 			//交换机判断丢包逻辑
 			if (m_mmu->CheckIngressAdmission(inDev, qIndex, p->GetSize()) && m_mmu->CheckEgressAdmission(idx, qIndex, p->GetSize())){			// Admission control
@@ -384,7 +415,7 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 			// 导致CNP发给了接收端，而接收端可能正在发送DC内部流，导致DC内部流的效果变差
 			// rixin: 第一个模块
 			p->PeekHeader(ch);
-			if(1&&isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id >= 48){
+			if(0&&isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id >= 48){
 				//std::cout<<ns3::Simulator::Now().GetNanoSeconds()<<": send cnp1"<<std::endl;
 				// printf("module 1 is running\n");
 				int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
@@ -402,20 +433,19 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 						CnpKey key(ch.sip,ch.dip,ch.udp.pg,ch.udp.sport,ch.udp.dport);
 						auto iter = m_ecn_detector.find(key);
 						if(iter != m_ecn_detector.end()){
-							if(Simulator::Now()-iter->second >= ns3::MicroSeconds(5)){
-								//Simulator::Schedule(ns3::MicroSeconds(2), &QbbNetDevice::SendCnp, device, p, ch);
-								//iter->second = Simulator::Now()+ns3::MicroSeconds(2);
-								device->SendCnp(p, ch);
-								iter->second = Simulator::Now();
+							//if(Simulator::Now()-iter->second >= ns3::MicroSeconds(55)){
+								Simulator::Schedule(ns3::MicroSeconds(2), &QbbNetDevice::SendCnp, device, p, ch);
+								iter->second = Simulator::Now()+ns3::MicroSeconds(2);
+								// device->SendCnp(p, ch);
+								// iter->second = Simulator::Now();
 								
-							}
-					
+							//}
 						}
 						else{
-							//Simulator::Schedule(ns3::MicroSeconds(2), &QbbNetDevice::SendCnp, device, p, ch);
-							//m_ecn_detector[key] = Simulator::Now()+ns3::MicroSeconds(2);
-							device->SendCnp(p, ch);
-							m_ecn_detector[key] = Simulator::Now();
+							Simulator::Schedule(ns3::MicroSeconds(2), &QbbNetDevice::SendCnp, device, p, ch);
+							m_ecn_detector[key] = Simulator::Now()+ns3::MicroSeconds(2);
+							// device->SendCnp(p, ch);
+							// m_ecn_detector[key] = Simulator::Now();
 						}
 
 			}

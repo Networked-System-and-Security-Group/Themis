@@ -46,9 +46,9 @@ def plot_data(times, flow_types, rates):
     ax.legend()
     ax.grid(True)
     plt.tight_layout()
-    plt.savefig('long.png')
+    plt.savefig('interval.png')
 
 if __name__ == "__main__":
-    file_path = 'long.txt'
+    file_path = 'out_interval.txt'
     times, flow_types, rates = read_data(file_path)
     plot_data(times, flow_types, rates)

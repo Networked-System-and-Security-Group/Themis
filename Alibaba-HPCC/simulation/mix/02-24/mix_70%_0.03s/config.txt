@@ -5,8 +5,8 @@ PACKET_PAYLOAD_SIZE 1000
 
 TOPOLOGY_FILE mix/02-24/mix_70%_0.03s/topology.txt
 FLOW_FILE mix/02-24/mix_70%_0.03s/flow.txt
-FCT_OUTPUT_FILE mix/02-24/mix_70%_0.03s/fct_2.txt
-PFC_OUTPUT_FILE mix/02-24/mix_70%_0.03s/pfc_2.txt
+FCT_OUTPUT_FILE mix/02-24/mix_70%_0.03s/fct_interval2.txt
+PFC_OUTPUT_FILE mix/02-24/mix_70%_0.03s/pfc_interval2.txt
 TRACE_FILE mix/trace.txt
 TRACE_OUTPUT_FILE mix/mix.tr
 

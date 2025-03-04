@@ -321,11 +321,10 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch){
 		seqh.SetSport(ch.udp.dport);
 		seqh.SetDport(ch.udp.sport);
 		seqh.SetIntHeader(ch.udp.ih);
-		//每3个ack设置一次cnp标记
 		if (ecnbits) {
 			rxQp->cnp_milestone++;
 			//if(rxQp->cnp_milestone%5==4)
-			if(Simulator::Now()-rxQp->m_cnp_time>=ns3::MicroSeconds(5))
+			if(Simulator::Now()-rxQp->m_cnp_time>=ns3::MicroSeconds(55))
 			{
 				seqh.SetCnp();
 				rxQp->m_cnp_time = Simulator::Now();
