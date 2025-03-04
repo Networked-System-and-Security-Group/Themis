@@ -212,7 +212,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		// rixin: 下面只是更新了idx，也就是要走哪个端口出去，此操作必须在Label1之前，不然循环qbb的egress_bytes会不对，导致产生ECN
 		//zxc:控制逻辑只在外部交换机上实现
 		// rixin: 第二个模块
-		if(0&&(m_id >=48)){
+		if(1&&(m_id >=48)){
 			
 			int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
 
