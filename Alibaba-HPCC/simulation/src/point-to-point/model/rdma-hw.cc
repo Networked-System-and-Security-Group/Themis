@@ -342,9 +342,13 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch){
 		head.SetIdentification(rxQp->m_ipid++);
 		newp->AddHeader(head);
 		AddHeader(newp, 0x800);	// Attach PPP header
-		//CustomHeader ch2;
-		//newp->PeekHeader(ch2);
-		//std::cout<<"send ack from " << ch2.sip << " to " << ch2.dip << "sport "<< ch2.udp.sport << " dport " << ch2.udp.dport << " pg " << ch2.udp.pg << "cnp bits "<< ((ch2.ack.flags >> qbbHeader::FLAG_CNP) & 1) << std::endl;
+		CustomHeader ch2;
+		newp->PeekHeader(ch2);
+		//std::cout<<" ack "<<ch2.l3Prot<<std::endl;
+		int sid =(Ipv4Address(ch2.sip).Get() >> 8) & 0xffff;
+		int did =(Ipv4Address(ch2.dip).Get() >> 8) & 0xffff;
+		if((sid<16&&did>=16) || (sid<16&&did>=16))
+			std::cout<<"send ack from " << sid << " to " << did << "sport "<< ch2.udp.sport << " dport " << ch2.udp.dport << " pg " << ch2.udp.pg << "cnp bits "<< ((ch2.ack.flags >> qbbHeader::FLAG_CNP) & 1) << std::endl;
 		// send
 		//输出rxQp的信息
 		//std::cout << "rxQp: " << rxQp->dip << " " << rxQp->sip << " " << rxQp->sport << " " << rxQp->dport << " " << rxQp->m_ecn_source.qIndex << std::endl;
@@ -432,6 +436,7 @@ int RdmaHw::ReceiveAck(Ptr<Packet> p, CustomHeader &ch){
 }
 
 int RdmaHw::Receive(Ptr<Packet> p, CustomHeader &ch){
+	//std::cout<<"receive packet "<<ch.l3Prot<<std::endl;
 	if (ch.l3Prot == 0x11){ // UDP
 		ReceiveUdp(p, ch);
 	}else if (ch.l3Prot == 0xFF){ // CNP

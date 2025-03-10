@@ -1,0 +1,418 @@
+Waf: Entering directory `/home/liurixin25/liurixin/ns3/BiCC/Themis/Alibaba-HPCC/simulation/build'
+Waf: Leaving directory `/home/liurixin25/liurixin/ns3/BiCC/Themis/Alibaba-HPCC/simulation/build'
+'build' finished successfully (0.261s)
+ENABLE_QCN			Yes
+USE_DYNAMIC_PFC_THRESHOLD	Yes
+PACKET_PAYLOAD_SIZE		1000
+TOPOLOGY_FILE			mix/03-08/mix_30%_0.03s/topology.txt
+FLOW_FILE			mix/03-08/mix_30%_0.03s/flow.txt
+FCT_OUTPUT_FILE		mix/03-08/mix_30%_0.03s/fct.txt
+PFC_OUTPUT_FILE				mix/03-08/mix_30%_0.03s/pfc.txt
+TRACE_FILE			mix/trace.txt
+TRACE_OUTPUT_FILE		mix/mix.tr
+SIMULATOR_STOP_TIME		4
+CC_MODE		1
+ALPHA_RESUME_INTERVAL		1
+RATE_DECREASE_INTERVAL		4
+CLAMP_TARGET_RATE		No
+RP_TIMER			900
+EWMA_GAIN			0.00390625
+FAST_RECOVERY_TIMES		1
+RATE_AI				50Mb/s
+RATE_HAI			100Mb/s
+MIN_RATE		100Mb/s
+DCTCP_RATE_AI				1000Mb/s
+ERROR_RATE_PER_LINK		0
+L2_CHUNK_SIZE			4000
+L2_ACK_INTERVAL			1
+L2_BACK_TO_ZERO			No
+HAS_WIN		1
+GLOBAL_T		1
+VAR_WIN		1
+FAST_REACT		1
+U_TARGET		0.95
+MI_THRESH		0
+INT_MULTI				1
+MULTI_RATE				0
+SAMPLE_FEEDBACK				0
+PINT_LOG_BASE				1.05
+PINT_PROB				1
+RATE_BOUND		1
+ACK_HIGH_PRIO		1
+LINK_DOWN				0 0 0
+ENABLE_TRACE				1
+KMAX_MAP				 50000000000 800 100000000000 1600 400000000000 6400 1600000000000 25600
+KMIN_MAP				 50000000000 200 100000000000 400 400000000000 800 1600000000000 1600
+PMAX_MAP				 50000000000 0.2 100000000000 0.2 400000000000 0.2 1600000000000 0.2
+BUFFER_SIZE				32
+QLEN_MON_FILE				mix/qlen.txt
+QLEN_MON_START				2000000000
+QLEN_MON_END				2010000000
+flow_num: 2133
+node_num: 50
+switch_num: 18
+dev->GetDataRate().GetBitRate() = 1600000000000
+dev->GetChannel())->GetDelay().GetTimeStep() = 100
+Switch 32 sw->GetNDevices() = 9
+Switch 33 sw->GetNDevices() = 9
+Switch 34 sw->GetNDevices() = 9
+Switch 35 sw->GetNDevices() = 9
+Switch 36 sw->GetNDevices() = 9
+Switch 37 sw->GetNDevices() = 9
+Switch 38 sw->GetNDevices() = 9
+Switch 39 sw->GetNDevices() = 9
+Switch 40 sw->GetNDevices() = 6
+Switch 41 sw->GetNDevices() = 6
+Switch 42 sw->GetNDevices() = 6
+Switch 43 sw->GetNDevices() = 6
+Switch 44 sw->GetNDevices() = 6
+Switch 45 sw->GetNDevices() = 6
+Switch 46 sw->GetNDevices() = 6
+Switch 47 sw->GetNDevices() = 6
+Switch 48 sw->GetNDevices() = 8
+Switch 49 sw->GetNDevices() = 8
+打印交换机 32 的路由表
+通往 0 号主机有 1 个端口
+通往 1 号主机有 1 个端口
+通往 2 号主机有 1 个端口
+通往 3 号主机有 1 个端口
+通往 4 号主机有 4 个端口
+通往 5 号主机有 4 个端口
+通往 6 号主机有 4 个端口
+通往 7 号主机有 4 个端口
+通往 8 号主机有 4 个端口
+通往 9 号主机有 4 个端口
+通往 10 号主机有 4 个端口
+通往 11 号主机有 4 个端口
+通往 12 号主机有 4 个端口
+通往 13 号主机有 4 个端口
+通往 14 号主机有 4 个端口
+通往 15 号主机有 4 个端口
+通往 16 号主机有 4 个端口
+通往 17 号主机有 4 个端口
+通往 18 号主机有 4 个端口
+通往 19 号主机有 4 个端口
+通往 20 号主机有 4 个端口
+通往 21 号主机有 4 个端口
+通往 22 号主机有 4 个端口
+通往 23 号主机有 4 个端口
+通往 24 号主机有 4 个端口
+通往 25 号主机有 4 个端口
+通往 26 号主机有 4 个端口
+通往 27 号主机有 4 个端口
+通往 28 号主机有 4 个端口
+通往 29 号主机有 4 个端口
+通往 30 号主机有 4 个端口
+通往 31 号主机有 4 个端口
+maxRtt=1012365 maxBdp=12654562
+Running Simulation.
+resume +2006825647.0ns node 47 qIndex 3
+resume +2006839201.0ns node 47 qIndex 3
+resume +2006853228.0ns node 47 qIndex 3
+resume +2006866983.0ns node 47 qIndex 3
+resume +2006876897.0ns node 47 qIndex 3
+resume +2006886866.0ns node 47 qIndex 3
+resume +2006896669.0ns node 47 qIndex 3
+resume +2006906219.0ns node 47 qIndex 3
+resume +2006915607.0ns node 47 qIndex 3
+resume +2006925145.0ns node 47 qIndex 3
+resume +2006935043.0ns node 47 qIndex 3
+resume +2006944676.0ns node 47 qIndex 3
+resume +2006954226.0ns node 47 qIndex 3
+resume +2006964088.0ns node 47 qIndex 3
+resume +2006973361.0ns node 47 qIndex 3
+resume +2006982979.0ns node 47 qIndex 3
+resume +2006992459.0ns node 47 qIndex 3
+resume +2007001927.0ns node 47 qIndex 3
+resume +2007011304.0ns node 47 qIndex 3
+resume +2007021100.0ns node 47 qIndex 3
+resume +2007030718.0ns node 47 qIndex 3
+resume +2007039739.0ns node 47 qIndex 3
+resume +2007048914.0ns node 47 qIndex 3
+resume +2007058401.0ns node 47 qIndex 3
+resume +2007067089.0ns node 47 qIndex 3
+resume +2007076105.0ns node 47 qIndex 3
+resume +2007085789.0ns node 47 qIndex 3
+resume +2007094888.0ns node 47 qIndex 3
+resume +2007103655.0ns node 47 qIndex 3
+resume +2007111750.0ns node 47 qIndex 3
+resume +2007119683.0ns node 47 qIndex 3
+resume +2007127612.0ns node 47 qIndex 3
+resume +2007135126.0ns node 47 qIndex 3
+resume +2007142792.0ns node 47 qIndex 3
+resume +2007150881.0ns node 47 qIndex 3
+resume +2007159412.0ns node 47 qIndex 3
+resume +2007167952.0ns node 47 qIndex 3
+resume +2007176699.0ns node 47 qIndex 3
+resume +2007185857.0ns node 47 qIndex 3
+resume +2007194849.0ns node 47 qIndex 3
+resume +2007205256.0ns node 47 qIndex 3
+resume +2007213549.0ns node 47 qIndex 3
+resume +2007222861.0ns node 47 qIndex 3
+resume +2007232604.0ns node 47 qIndex 3
+resume +2007242932.0ns node 47 qIndex 3
+resume +2007253909.0ns node 47 qIndex 3
+resume +2007264501.0ns node 47 qIndex 3
+resume +2007275489.0ns node 47 qIndex 3
+resume +2007284888.0ns node 47 qIndex 3
+resume +2007293457.0ns node 47 qIndex 3
+resume +2007301939.0ns node 47 qIndex 3
+resume +2007310931.0ns node 47 qIndex 3
+resume +2007318605.0ns node 47 qIndex 3
+resume +2007327306.0ns node 47 qIndex 3
+resume +2007336196.0ns node 47 qIndex 3
+resume +2007345117.0ns node 47 qIndex 3
+resume +2007354200.0ns node 47 qIndex 3
+resume +2007365117.0ns node 47 qIndex 3
+resume +2007374449.0ns node 47 qIndex 3
+resume +2007383366.0ns node 47 qIndex 3
+resume +2007391698.0ns node 47 qIndex 3
+resume +2007400532.0ns node 47 qIndex 3
+resume +2007408951.0ns node 47 qIndex 3
+resume +2007417868.0ns node 47 qIndex 3
+resume +2007427785.0ns node 47 qIndex 3
+resume +2007437706.0ns node 47 qIndex 3
+resume +2007447789.0ns node 47 qIndex 3
+resume +2007458710.0ns node 47 qIndex 3
+resume +2007471879.0ns node 47 qIndex 3
+resume +2007503560.0ns node 47 qIndex 3
+resume +2007518149.0ns node 47 qIndex 3
+resume +2007530655.0ns node 47 qIndex 3
+resume +2007544240.0ns node 47 qIndex 3
+resume +2007558908.0ns node 47 qIndex 3
+resume +2007573821.0ns node 47 qIndex 3
+resume +2007587489.0ns node 47 qIndex 3
+resume +2007607904.0ns node 47 qIndex 3
+resume +2007626070.0ns node 47 qIndex 3
+resume +2007642489.0ns node 47 qIndex 3
+resume +2007661991.0ns node 47 qIndex 3
+resume +2007675663.0ns node 47 qIndex 3
+resume +2007698916.0ns node 47 qIndex 3
+resume +2012948676.0ns node 37 qIndex 3
+resume +2012957733.0ns node 37 qIndex 3
+resume +2012970692.0ns node 37 qIndex 3
+resume +2012983975.0ns node 37 qIndex 3
+resume +2013004414.0ns node 37 qIndex 3
+resume +2013024137.0ns node 37 qIndex 3
+resume +2013046111.0ns node 37 qIndex 3
+resume +2013064634.0ns node 37 qIndex 3
+resume +2013078288.0ns node 37 qIndex 3
+resume +2013089439.0ns node 37 qIndex 3
+resume +2013092542.0ns node 37 qIndex 3
+resume +2013105871.0ns node 37 qIndex 3
+resume +2013116520.0ns node 37 qIndex 3
+resume +2013126580.0ns node 37 qIndex 3
+resume +2013135984.0ns node 37 qIndex 3
+resume +2013146412.0ns node 37 qIndex 3
+resume +2013155579.0ns node 37 qIndex 3
+resume +2013165173.0ns node 37 qIndex 3
+resume +2013174510.0ns node 37 qIndex 3
+resume +2013183760.0ns node 37 qIndex 3
+resume +2013192595.0ns node 37 qIndex 3
+resume +2013201592.0ns node 37 qIndex 3
+resume +2013210680.0ns node 37 qIndex 3
+resume +2013220025.0ns node 37 qIndex 3
+resume +2013229303.0ns node 37 qIndex 3
+resume +2013238913.0ns node 37 qIndex 3
+resume +2013247934.0ns node 37 qIndex 3
+resume +2013257121.0ns node 37 qIndex 3
+resume +2013266391.0ns node 37 qIndex 3
+resume +2013275669.0ns node 37 qIndex 3
+resume +2013284686.0ns node 37 qIndex 3
+resume +2013293712.0ns node 37 qIndex 3
+resume +2013303035.0ns node 37 qIndex 3
+resume +2013312168.0ns node 37 qIndex 3
+resume +2013321479.0ns node 37 qIndex 3
+resume +2013330304.0ns node 37 qIndex 3
+resume +2013339129.0ns node 37 qIndex 3
+resume +2013348215.0ns node 37 qIndex 3
+resume +2013357574.0ns node 37 qIndex 3
+resume +2013366261.0ns node 37 qIndex 3
+resume +2013375059.0ns node 37 qIndex 3
+resume +2013383703.0ns node 37 qIndex 3
+resume +2013392857.0ns node 37 qIndex 3
+resume +2013401372.0ns node 37 qIndex 3
+resume +2013410418.0ns node 37 qIndex 3
+resume +2013419582.0ns node 37 qIndex 3
+resume +2013428849.0ns node 37 qIndex 3
+resume +2013437678.0ns node 37 qIndex 3
+resume +2013447708.0ns node 37 qIndex 3
+resume +2013457829.0ns node 37 qIndex 3
+resume +2013467823.0ns node 37 qIndex 3
+resume +2013478696.0ns node 37 qIndex 3
+resume +2013488822.0ns node 37 qIndex 3
+resume +2013498699.0ns node 37 qIndex 3
+resume +2013508659.0ns node 37 qIndex 3
+resume +2013518868.0ns node 37 qIndex 3
+resume +2013529243.0ns node 37 qIndex 3
+resume +2013539369.0ns node 37 qIndex 3
+resume +2013550076.0ns node 37 qIndex 3
+resume +2013559206.0ns node 37 qIndex 3
+resume +2013568087.0ns node 37 qIndex 3
+resume +2013577217.0ns node 37 qIndex 3
+resume +2013590165.0ns node 37 qIndex 3
+resume +2013601951.0ns node 37 qIndex 3
+resume +2013613405.0ns node 37 qIndex 3
+resume +2013625108.0ns node 37 qIndex 3
+resume +2013634736.0ns node 37 qIndex 3
+resume +2013645526.0ns node 37 qIndex 3
+resume +2013654988.0ns node 37 qIndex 3
+resume +2013664035.0ns node 37 qIndex 3
+resume +2013673663.0ns node 37 qIndex 3
+resume +2013682710.0ns node 37 qIndex 3
+resume +2013691868.0ns node 37 qIndex 3
+resume +2013700002.0ns node 37 qIndex 3
+resume +2013710294.0ns node 37 qIndex 3
+resume +2013720752.0ns node 37 qIndex 3
+resume +2013731625.0ns node 37 qIndex 3
+resume +2013742249.0ns node 37 qIndex 3
+resume +2013751296.0ns node 37 qIndex 3
+resume +2013760011.0ns node 37 qIndex 3
+resume +2013769390.0ns node 37 qIndex 3
+resume +2013777939.0ns node 37 qIndex 3
+resume +2013786322.0ns node 37 qIndex 3
+resume +2013794290.0ns node 37 qIndex 3
+resume +2013802456.0ns node 37 qIndex 3
+resume +2013810662.0ns node 37 qIndex 3
+resume +2013818630.0ns node 37 qIndex 3
+resume +2013826681.0ns node 37 qIndex 3
+resume +2013834732.0ns node 37 qIndex 3
+resume +2013842866.0ns node 37 qIndex 3
+resume +2013851249.0ns node 37 qIndex 3
+resume +2013859217.0ns node 37 qIndex 3
+resume +2013867351.0ns node 37 qIndex 3
+resume +2013875568.0ns node 37 qIndex 3
+resume +2013884864.0ns node 37 qIndex 3
+resume +2013893413.0ns node 37 qIndex 3
+resume +2013901713.0ns node 37 qIndex 3
+resume +2013910179.0ns node 37 qIndex 3
+resume +2013918562.0ns node 37 qIndex 3
+resume +2013927111.0ns node 37 qIndex 3
+resume +2013935245.0ns node 37 qIndex 3
+resume +2013943296.0ns node 37 qIndex 3
+resume +2013951845.0ns node 37 qIndex 3
+resume +2013960145.0ns node 37 qIndex 3
+resume +2013968445.0ns node 37 qIndex 3
+resume +2013976828.0ns node 37 qIndex 3
+resume +2013984879.0ns node 37 qIndex 3
+resume +2013992930.0ns node 37 qIndex 3
+resume +2014001479.0ns node 37 qIndex 3
+resume +2014010194.0ns node 37 qIndex 3
+resume +2014019075.0ns node 37 qIndex 3
+resume +2014028122.0ns node 37 qIndex 3
+resume +2014036920.0ns node 37 qIndex 3
+resume +2014047378.0ns node 37 qIndex 3
+resume +2014057587.0ns node 37 qIndex 3
+resume +2014068045.0ns node 37 qIndex 3
+resume +2014079333.0ns node 37 qIndex 3
+resume +2014090040.0ns node 37 qIndex 3
+resume +2014100332.0ns node 37 qIndex 3
+resume +2014110458.0ns node 37 qIndex 3
+resume +2014120999.0ns node 37 qIndex 3
+resume +2014131955.0ns node 37 qIndex 3
+resume +2014141666.0ns node 37 qIndex 3
+resume +2014370082.0ns node 37 qIndex 3
+resume +2014957623.0ns node 37 qIndex 3
+resume +2014967334.0ns node 37 qIndex 3
+resume +2014976962.0ns node 37 qIndex 3
+resume +2014986341.0ns node 37 qIndex 3
+resume +2014995969.0ns node 37 qIndex 3
+resume +2015005431.0ns node 37 qIndex 3
+resume +2015015723.0ns node 37 qIndex 3
+resume +2015025351.0ns node 37 qIndex 3
+resume +2015034647.0ns node 37 qIndex 3
+resume +2015044358.0ns node 37 qIndex 3
+resume +2015053737.0ns node 37 qIndex 3
+resume +2015063365.0ns node 37 qIndex 3
+resume +2015073408.0ns node 37 qIndex 3
+resume +2015083534.0ns node 37 qIndex 3
+resume +2015092664.0ns node 37 qIndex 3
+resume +2015101545.0ns node 37 qIndex 3
+resume +2015110675.0ns node 37 qIndex 3
+resume +2015120495.0ns node 37 qIndex 3
+resume +2015129937.0ns node 37 qIndex 3
+resume +2015138446.0ns node 37 qIndex 3
+resume +2015147855.0ns node 37 qIndex 3
+resume +2015157050.0ns node 37 qIndex 3
+resume +2015166310.0ns node 37 qIndex 3
+resume +2015175613.0ns node 37 qIndex 3
+resume +2015184537.0ns node 37 qIndex 3
+resume +2015193291.0ns node 37 qIndex 3
+resume +2015202733.0ns node 37 qIndex 3
+resume +2015212499.0ns node 37 qIndex 3
+resume +2015224101.0ns node 37 qIndex 3
+resume +2015319425.0ns node 37 qIndex 3
+resume +2015339222.0ns node 37 qIndex 3
+resume +2015355610.0ns node 37 qIndex 3
+resume +2015370958.0ns node 37 qIndex 3
+resume +2015386294.0ns node 37 qIndex 3
+resume +2015406415.0ns node 37 qIndex 3
+resume +2015440776.0ns node 37 qIndex 3
+resume +2018387546.0ns node 36 qIndex 3
+resume +2018396925.0ns node 36 qIndex 3
+resume +2018405889.0ns node 36 qIndex 3
+resume +2018415019.0ns node 36 qIndex 3
+resume +2018424149.0ns node 36 qIndex 3
+resume +2018433279.0ns node 36 qIndex 3
+resume +2018442575.0ns node 36 qIndex 3
+resume +2018451539.0ns node 36 qIndex 3
+resume +2018460752.0ns node 36 qIndex 3
+resume +2018470131.0ns node 36 qIndex 3
+resume +2018479344.0ns node 36 qIndex 3
+resume +2018488474.0ns node 36 qIndex 3
+resume +2018497521.0ns node 36 qIndex 3
+resume +2018506900.0ns node 36 qIndex 3
+resume +2018516362.0ns node 36 qIndex 3
+resume +2018525575.0ns node 36 qIndex 3
+resume +2018534622.0ns node 36 qIndex 3
+resume +2018543752.0ns node 36 qIndex 3
+resume +2018551477.0ns node 36 qIndex 3
+resume +2018562433.0ns node 36 qIndex 3
+resume +2018573472.0ns node 36 qIndex 3
+resume +2018584594.0ns node 36 qIndex 3
+resume +2018595716.0ns node 36 qIndex 3
+resume +2018606755.0ns node 36 qIndex 3
+resume +2018617545.0ns node 36 qIndex 3
+resume +2018628335.0ns node 36 qIndex 3
+resume +2018639125.0ns node 36 qIndex 3
+resume +2018649915.0ns node 36 qIndex 3
+resume +2018660705.0ns node 36 qIndex 3
+resume +2018671661.0ns node 36 qIndex 3
+resume +2018682617.0ns node 36 qIndex 3
+resume +2018693407.0ns node 36 qIndex 3
+resume +2018704529.0ns node 36 qIndex 3
+resume +2018715568.0ns node 36 qIndex 3
+resume +2018725943.0ns node 36 qIndex 3
+resume +2028015257.0ns node 36 qIndex 3
+resume +2028024835.0ns node 36 qIndex 3
+resume +2028034330.0ns node 36 qIndex 3
+resume +2028043659.0ns node 36 qIndex 3
+resume +2028052818.0ns node 36 qIndex 3
+resume +2028062230.0ns node 36 qIndex 3
+resume +2028071468.0ns node 36 qIndex 3
+resume +2028080950.0ns node 36 qIndex 3
+resume +2028090709.0ns node 36 qIndex 3
+resume +2028100481.0ns node 36 qIndex 3
+resume +2028110087.0ns node 36 qIndex 3
+resume +2028119353.0ns node 36 qIndex 3
+resume +2028129046.0ns node 36 qIndex 3
+resume +2028138399.0ns node 36 qIndex 3
+resume +2028147748.0ns node 36 qIndex 3
+resume +2028157146.0ns node 36 qIndex 3
+resume +2028166315.0ns node 36 qIndex 3
+resume +2028175393.0ns node 36 qIndex 3
+resume +2028184562.0ns node 36 qIndex 3
+resume +2028193735.0ns node 36 qIndex 3
+resume +2028203074.0ns node 36 qIndex 3
+resume +2028212239.0ns node 36 qIndex 3
+resume +2028221495.0ns node 36 qIndex 3
+resume +2028230581.0ns node 36 qIndex 3
+resume +2028240003.0ns node 36 qIndex 3
+resume +2028249259.0ns node 36 qIndex 3
+resume +2028258016.0ns node 36 qIndex 3
+resume +2028267320.0ns node 36 qIndex 3
+resume +2028276699.0ns node 36 qIndex 3
+resume +2028285912.0ns node 36 qIndex 3
+resume +2028294959.0ns node 36 qIndex 3
+resume +2028302346.0ns node 36 qIndex 3
+284.131

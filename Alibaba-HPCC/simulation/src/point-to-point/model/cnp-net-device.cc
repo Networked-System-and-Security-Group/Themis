@@ -199,7 +199,7 @@ namespace ns3 {
 			return;
 		}else{   //switch, doesn't care about qcn, just send
 			// cnp-net-device便是Themis中的External Switch，在收到CNP后会对target flow做一个减速
-			p = m_queue->DequeueRR(m_paused);		//this is round-robin
+			p = m_queue->DequeueRR(m_paused,m_BiCC,m_node->GetId());		//this is round-robin
 			if (p != 0){
 				//检查p是否符合m_cnp_handler中的条件，如果符合则更新seq，并放到队尾
 				CustomHeader ch(CustomHeader::L2_Header | CustomHeader::L3_Header | CustomHeader::L4_Header);
@@ -520,7 +520,7 @@ int cnt = 0;
 			for (uint32_t i = 0; i < qCnt; i++)
 				m_paused[i] = false;
 			while (1){
-				Ptr<Packet> p = m_queue->DequeueRR(m_paused);
+				Ptr<Packet> p = m_queue->DequeueRR(m_paused,m_BiCC,m_node->GetId());
 				if (p == 0)
 					 break;
 				m_traceDrop(p, m_queue->GetLastQueue());

@@ -1,0 +1,3 @@
+Waf: Entering directory `/home/liurixin25/liurixin/ns3/BiCC/Themis/Alibaba-HPCC/simulation/build'
+Waf: Leaving directory `/home/liurixin25/liurixin/ns3/BiCC/Themis/Alibaba-HPCC/simulation/build'
+'build' finished successfully (0.262s)

@@ -34,11 +34,11 @@ namespace ns3 {
 	public:
 		static TypeId GetTypeId(void);
 		static const unsigned fCnt = 128; //max number of queues, 128 for NICs
-		static const unsigned qCnt = 8; //max number of queues, 8 for switches
+		static const unsigned qCnt = 16; //max number of queues, 8 for switches
 		BEgressQueue();
 		virtual ~BEgressQueue();
 		bool Enqueue(Ptr<Packet> p, uint32_t qIndex);
-		Ptr<Packet> DequeueRR(bool paused[]);
+		Ptr<Packet> DequeueRR(bool paused[],long long BiCC[qCnt][2],int m_id);
 		uint32_t GetNBytes(uint32_t qIndex) const;
 		uint32_t GetNBytesTotal() const;
 		uint32_t GetLastQueue();
@@ -48,7 +48,7 @@ namespace ns3 {
 
 	private:
 		bool DoEnqueue(Ptr<Packet> p, uint32_t qIndex);
-		Ptr<Packet> DoDequeueRR(bool paused[]);
+		Ptr<Packet> DoDequeueRR(bool paused[],long long BiCC[qCnt][2],int m_id);
 		//for compatibility
 		virtual bool DoEnqueue(Ptr<Packet> p);
 		virtual Ptr<Packet> DoDequeue(void);

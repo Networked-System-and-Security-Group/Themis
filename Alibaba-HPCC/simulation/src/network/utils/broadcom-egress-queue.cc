@@ -87,7 +87,7 @@ namespace ns3 {
 	}
 
 	Ptr<Packet>
-		BEgressQueue::DoDequeueRR(bool paused[]) //this is for switch only
+		BEgressQueue::DoDequeueRR(bool paused[],long long BiCC[qCnt][2],int m_id) //this is for switch only
 	{
 		NS_LOG_FUNCTION(this);
 
@@ -112,8 +112,24 @@ namespace ns3 {
 				{
 					if (!paused[(qIndex + m_rrlast) % qCnt] && m_queues[(qIndex + m_rrlast) % qCnt]->GetNPackets() > 0)  //round robin
 					{
-						found = true;
-						break;
+						//60000
+						if(m_id>=48){
+							if(BiCC[(qIndex + m_rrlast) % qCnt][0]-BiCC[(qIndex + m_rrlast) % qCnt][1] <= 60000)
+							{
+								BiCC[(qIndex + m_rrlast) % qCnt][1]=0;
+								BiCC[(qIndex + m_rrlast) % qCnt][0]-=BiCC[(qIndex + m_rrlast) % qCnt][1];
+								BiCC[(qIndex + m_rrlast) % qCnt][0] += 1000;
+								std::cout<<"node "<<m_id<<" qIndex "<<(qIndex + m_rrlast) % qCnt<<" send "<<BiCC[(qIndex + m_rrlast) % qCnt][0]<<std::endl;
+								found = true;
+								break;
+							}
+						}
+						else{
+							found = true;
+							break;
+						}
+
+
 					}
 				}
 				qIndex = (qIndex + m_rrlast) % qCnt;
@@ -165,10 +181,10 @@ namespace ns3 {
 	}
 
 	Ptr<Packet>
-		BEgressQueue::DequeueRR(bool paused[])
+		BEgressQueue::DequeueRR(bool paused[],long long BiCC[qCnt][2],int m_id)
 	{
 		NS_LOG_FUNCTION(this);
-		Ptr<Packet> packet = DoDequeueRR(paused);
+		Ptr<Packet> packet = DoDequeueRR(paused,BiCC,m_id);
 		if (packet != 0)
 		{
 			NS_ASSERT(m_nBytes >= packet->GetSize());

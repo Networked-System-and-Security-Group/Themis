@@ -47,6 +47,7 @@
 #include "ns3/seq-ts-header.h"
 #include "ns3/pointer.h"
 #include "ns3/custom-header.h"
+#include "switch-node.h"
 
 #include <iostream>
 #include <chrono>
@@ -317,11 +318,14 @@ void QbbNetDevice::DequeueAndTransmit(void)
 			}
 			return;
 		}else{   //switch, doesn't care about qcn, just send
-			p = m_queue->DequeueRR(m_paused);		//this is round-robin
+			Ptr<SwitchNode> switchNode = m_node->GetObject<SwitchNode>();
+			p = m_queue->DequeueRR(m_paused, switchNode->m_BiCC,m_node->GetId());		//this is round-robin
+			//std::cout<<"node "<<m_node->GetId()<<" dequeue "<<first_num++<<std::endl;
 			if (p != 0){
-				if(m_bps==1600000000000 ){
-					p->inter_DC = 1;
-				}
+				//判断是否是ack
+				CustomHeader ch;
+				p->PeekHeader(ch);
+				//std::cout<<"node "<<m_node->GetId()<<" Queue "<<m_queue->GetLastQueue()<<std::endl;
                 // zxc：这是本文件下方大量被注释掉的代码原先所处的行位置，为了编码方便我将注释移动至文件最下方，此行紧邻下一行的m_snifferTrace(p)，中间勿插入代码				
 				m_snifferTrace(p);
 				m_promiscSnifferTrace(p);
@@ -453,6 +457,10 @@ void QbbNetDevice::DequeueAndTransmit(void)
 			// 	ReceiveCnp(packet, ch);
 			// 	//printf("finish receive cnp\n");
 			// }
+				// else if(m_queue->GetLastQueue()==0)
+				// {
+				// 	std::cout<<"node "<<m_node->GetId()<<" l3Prot "<<ch.l3Prot<<std::endl;
+				// }
 				packet->AddPacketTag(FlowIdTag(m_ifIndex));
 				m_node->SwitchReceiveFromDevice(this, packet, ch);
 			}else { // NIC
@@ -626,8 +634,9 @@ void QbbNetDevice::DequeueAndTransmit(void)
 			// clean the queue
 			for (uint32_t i = 0; i < qCnt; i++)
 				m_paused[i] = false;
+			Ptr<SwitchNode> switchNode = m_node->GetObject<SwitchNode>();
 			while (1){
-				Ptr<Packet> p = m_queue->DequeueRR(m_paused);
+				Ptr<Packet> p = m_queue->DequeueRR(m_paused,switchNode->m_BiCC,m_node->GetId());
 				if (p == 0)
 					 break;
 				m_traceDrop(p, m_queue->GetLastQueue());

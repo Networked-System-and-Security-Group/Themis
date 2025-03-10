@@ -116,7 +116,7 @@ void SwitchNode::CheckAndSendResume(uint32_t inDev, uint32_t qIndex){
 	if (m_mmu->CheckShouldResume(inDev, qIndex)){
 		device->SendPfc(qIndex, 1);
 		m_mmu->SetResume(inDev, qIndex);
-		std::cout<<"resume "<<Simulator::Now()<<" node "<<m_id<<" qIndex "<<qIndex<<std::endl;
+		//std::cout<<"resume "<<Simulator::Now()<<" node "<<m_id<<" qIndex "<<qIndex<<std::endl;
 	}
 }
 
@@ -195,6 +195,14 @@ int recir_num = 0;
 // int init_log = 0;
 //nzh:非常重要的函数！！！important
 void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
+	if(m_id>=48 && ch.l3Prot==0xFC)
+	{
+		int sid = (Ipv4Address(ch.sip).Get() >> 8) & 0xffff;
+		//int qIndex = sid % 16;
+		int qIndex = 3;
+		m_BiCC[qIndex][1]+=1000;
+		std::cout<<"node "<<m_id<<" qIndex "<<qIndex<<" receive "<<m_BiCC[qIndex][1]<<std::endl;
+	}
 	int idx = GetOutDev(p, ch);
 	int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
 
@@ -297,7 +305,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 							Ptr<QbbNetDevice> device = DynamicCast<QbbNetDevice>(m_devices[inDev]);
 							device->SendPfc(qIndex, 1);
 							m_mmu->SetResume(inDev, qIndex);
-							std::cout<<"paused "<<Simulator::Now()<<" node "<<m_id<<" qIndex "<<qIndex<<std::endl;
+							//std::cout<<"paused "<<Simulator::Now()<<" node "<<m_id<<" qIndex "<<qIndex<<std::endl;
 						}
 						else{
 							CheckAndSendResume(inDev, qIndex);
@@ -415,7 +423,7 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 			// 导致CNP发给了接收端，而接收端可能正在发送DC内部流，导致DC内部流的效果变差
 			// rixin: 第一个模块
 			p->PeekHeader(ch);
-			if(0&&isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id >= 48){
+			if(1&&isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id >= 48){
 				//std::cout<<ns3::Simulator::Now().GetNanoSeconds()<<": send cnp1"<<std::endl;
 				// printf("module 1 is running\n");
 				int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));

@@ -1,0 +1,130 @@
+Waf: Entering directory `/home/liurixin25/liurixin/ns3/Themis/Alibaba-HPCC/simulation/build'
+[ 794/1431] cxx: src/point-to-point/model/switch-node.cc -> build/src/point-to-point/model/switch-node.cc.1.o
+[1405/1431] cxxshlib: build/src/point-to-point/model/point-to-point-net-device.cc.1.o build/src/point-to-point/model/point-to-point-channel.cc.1.o build/src/point-to-point/model/point-to-point-remote-channel.cc.1.o build/src/point-to-point/model/ppp-header.cc.1.o build/src/point-to-point/helper/point-to-point-helper.cc.1.o build/src/point-to-point/helper/qbb-helper.cc.1.o build/src/point-to-point/model/qbb-net-device.cc.1.o build/src/point-to-point/model/cnp-net-device.cc.1.o build/src/point-to-point/model/pause-header.cc.1.o build/src/point-to-point/model/cn-header.cc.1.o build/src/point-to-point/model/qbb-header.cc.1.o build/src/point-to-point/model/qbb-channel.cc.1.o build/src/point-to-point/model/qbb-remote-channel.cc.1.o build/src/point-to-point/model/rdma-driver.cc.1.o build/src/point-to-point/model/rdma-queue-pair.cc.1.o build/src/point-to-point/model/rdma-hw.cc.1.o build/src/point-to-point/model/switch-node.cc.1.o build/src/point-to-point/model/switch-node2.cc.1.o build/src/point-to-point/model/switch-mmu.cc.1.o build/src/point-to-point/model/pint.cc.1.o build/src/point-to-point/model/global-settings.cc.1.o -> build/libns3.18-point-to-point-debug.so
+[1407/1431] cxxshlib: build/src/applications/model/bulk-send-application.cc.1.o build/src/applications/model/onoff-application.cc.1.o build/src/applications/model/packet-sink.cc.1.o build/src/applications/model/ping6.cc.1.o build/src/applications/model/radvd.cc.1.o build/src/applications/model/radvd-interface.cc.1.o build/src/applications/model/radvd-prefix.cc.1.o build/src/applications/model/udp-client.cc.1.o build/src/applications/model/udp-server.cc.1.o build/src/applications/model/udp-trace-client.cc.1.o build/src/applications/model/packet-loss-counter.cc.1.o build/src/applications/model/udp-echo-client.cc.1.o build/src/applications/model/udp-echo-server.cc.1.o build/src/applications/model/v4ping.cc.1.o build/src/applications/helper/bulk-send-helper.cc.1.o build/src/applications/helper/on-off-helper.cc.1.o build/src/applications/helper/packet-sink-helper.cc.1.o build/src/applications/helper/ping6-helper.cc.1.o build/src/applications/helper/udp-client-server-helper.cc.1.o build/src/applications/helper/udp-echo-helper.cc.1.o build/src/applications/helper/v4ping-helper.cc.1.o build/src/applications/model/rdma-client.cc.1.o build/src/applications/helper/rdma-client-helper.cc.1.o -> build/libns3.18-applications-debug.so
+[1408/1431] cxxshlib: build/src/csma/model/backoff.cc.1.o build/src/csma/model/csma-net-device.cc.1.o build/src/csma/model/csma-channel.cc.1.o build/src/csma/helper/csma-helper.cc.1.o -> build/libns3.18-csma-debug.so
+[1410/1431] cxxshlib: build/src/wimax/model/cid.cc.1.o build/src/wimax/model/cid-factory.cc.1.o build/src/wimax/model/wimax-net-device.cc.1.o build/src/wimax/model/bs-net-device.cc.1.o build/src/wimax/model/ss-net-device.cc.1.o build/src/wimax/model/wimax-mac-header.cc.1.o build/src/wimax/model/wimax-phy.cc.1.o build/src/wimax/model/wimax-channel.cc.1.o build/src/wimax/model/ofdm-downlink-frame-prefix.cc.1.o build/src/wimax/model/wimax-connection.cc.1.o build/src/wimax/model/ss-record.cc.1.o build/src/wimax/model/mac-messages.cc.1.o build/src/wimax/model/dl-mac-messages.cc.1.o build/src/wimax/model/ul-mac-messages.cc.1.o build/src/wimax/model/simple-ofdm-wimax-phy.cc.1.o build/src/wimax/model/simple-ofdm-wimax-channel.cc.1.o build/src/wimax/model/send-params.cc.1.o build/src/wimax/model/ss-manager.cc.1.o build/src/wimax/model/connection-manager.cc.1.o build/src/wimax/model/bs-uplink-scheduler.cc.1.o build/src/wimax/model/bs-uplink-scheduler-simple.cc.1.o build/src/wimax/model/bs-uplink-scheduler-mbqos.cc.1.o build/src/wimax/model/bs-uplink-scheduler-rtps.cc.1.o build/src/wimax/model/bs-scheduler.cc.1.o build/src/wimax/model/bs-scheduler-simple.cc.1.o build/src/wimax/model/bs-scheduler-rtps.cc.1.o build/src/wimax/model/wimax-mac-queue.cc.1.o build/src/wimax/model/burst-profile-manager.cc.1.o build/src/wimax/model/ss-scheduler.cc.1.o build/src/wimax/model/service-flow.cc.1.o build/src/wimax/model/service-flow-manager.cc.1.o build/src/wimax/model/service-flow-record.cc.1.o build/src/wimax/model/ss-link-manager.cc.1.o build/src/wimax/model/bs-link-manager.cc.1.o build/src/wimax/model/bandwidth-manager.cc.1.o build/src/wimax/model/crc8.cc.1.o build/src/wimax/model/ul-job.cc.1.o build/src/wimax/model/snr-to-block-error-rate-record.cc.1.o build/src/wimax/model/snr-to-block-error-rate-manager.cc.1.o build/src/wimax/model/simple-ofdm-send-param.cc.1.o build/src/wimax/model/ss-service-flow-manager.cc.1.o build/src/wimax/model/bs-service-flow-manager.cc.1.o build/src/wimax/model/ipcs-classifier.cc.1.o build/src/wimax/model/ipcs-classifier-record.cc.1.o build/src/wimax/model/wimax-tlv.cc.1.o build/src/wimax/model/cs-parameters.cc.1.o build/src/wimax/model/wimax-mac-to-mac-header.cc.1.o build/src/wimax/helper/wimax-helper.cc.1.o -> build/libns3.18-wimax-debug.so
+[1411/1431] cxxshlib: build/src/mesh/model/mesh-information-element-vector.cc.1.o build/src/mesh/model/mesh-point-device.cc.1.o build/src/mesh/model/mesh-l2-routing-protocol.cc.1.o build/src/mesh/model/mesh-wifi-beacon.cc.1.o build/src/mesh/model/mesh-wifi-interface-mac.cc.1.o build/src/mesh/model/dot11s/ie-dot11s-beacon-timing.cc.1.o build/src/mesh/model/dot11s/ie-dot11s-configuration.cc.1.o build/src/mesh/model/dot11s/ie-dot11s-id.cc.1.o build/src/mesh/model/dot11s/ie-dot11s-peer-management.cc.1.o build/src/mesh/model/dot11s/ie-dot11s-preq.cc.1.o build/src/mesh/model/dot11s/ie-dot11s-prep.cc.1.o build/src/mesh/model/dot11s/ie-dot11s-perr.cc.1.o build/src/mesh/model/dot11s/ie-dot11s-rann.cc.1.o build/src/mesh/model/dot11s/ie-dot11s-peering-protocol.cc.1.o build/src/mesh/model/dot11s/ie-dot11s-metric-report.cc.1.o build/src/mesh/model/dot11s/dot11s-mac-header.cc.1.o build/src/mesh/model/dot11s/peer-link-frame.cc.1.o build/src/mesh/model/dot11s/peer-link.cc.1.o build/src/mesh/model/dot11s/peer-management-protocol-mac.cc.1.o build/src/mesh/model/dot11s/peer-management-protocol.cc.1.o build/src/mesh/model/dot11s/hwmp-tag.cc.1.o build/src/mesh/model/dot11s/hwmp-rtable.cc.1.o build/src/mesh/model/dot11s/hwmp-protocol-mac.cc.1.o build/src/mesh/model/dot11s/hwmp-protocol.cc.1.o build/src/mesh/model/dot11s/airtime-metric.cc.1.o build/src/mesh/model/flame/flame-header.cc.1.o build/src/mesh/model/flame/flame-rtable.cc.1.o build/src/mesh/model/flame/flame-protocol-mac.cc.1.o build/src/mesh/model/flame/flame-protocol.cc.1.o build/src/mesh/helper/mesh-helper.cc.1.o build/src/mesh/helper/dot11s/dot11s-installer.cc.1.o build/src/mesh/helper/flame/flame-installer.cc.1.o -> build/libns3.18-mesh-debug.so
+[1411/1431] cxxshlib: build/src/spectrum/model/spectrum-model.cc.1.o build/src/spectrum/model/spectrum-value.cc.1.o build/src/spectrum/model/spectrum-converter.cc.1.o build/src/spectrum/model/spectrum-signal-parameters.cc.1.o build/src/spectrum/model/spectrum-propagation-loss-model.cc.1.o build/src/spectrum/model/friis-spectrum-propagation-loss.cc.1.o build/src/spectrum/model/constant-spectrum-propagation-loss.cc.1.o build/src/spectrum/model/spectrum-phy.cc.1.o build/src/spectrum/model/spectrum-channel.cc.1.o build/src/spectrum/model/single-model-spectrum-channel.cc.1.o build/src/spectrum/model/multi-model-spectrum-channel.cc.1.o build/src/spectrum/model/spectrum-interference.cc.1.o build/src/spectrum/model/spectrum-error-model.cc.1.o build/src/spectrum/model/spectrum-model-ism2400MHz-res1MHz.cc.1.o build/src/spectrum/model/spectrum-model-300kHz-300GHz-log.cc.1.o build/src/spectrum/model/wifi-spectrum-value-helper.cc.1.o build/src/spectrum/model/waveform-generator.cc.1.o build/src/spectrum/model/spectrum-analyzer.cc.1.o build/src/spectrum/model/aloha-noack-mac-header.cc.1.o build/src/spectrum/model/aloha-noack-net-device.cc.1.o build/src/spectrum/model/half-duplex-ideal-phy.cc.1.o build/src/spectrum/model/half-duplex-ideal-phy-signal-parameters.cc.1.o build/src/spectrum/model/non-communicating-net-device.cc.1.o build/src/spectrum/model/microwave-oven-spectrum-value-helper.cc.1.o build/src/spectrum/helper/spectrum-helper.cc.1.o build/src/spectrum/helper/adhoc-aloha-noack-ideal-phy-helper.cc.1.o build/src/spectrum/helper/waveform-generator-helper.cc.1.o build/src/spectrum/helper/spectrum-analyzer-helper.cc.1.o -> build/libns3.18-spectrum-debug.so
+[1412/1431] cxxshlib: build/src/olsr/model/olsr-header.cc.1.o build/src/olsr/model/olsr-state.cc.1.o build/src/olsr/model/olsr-routing-protocol.cc.1.o build/src/olsr/helper/olsr-helper.cc.1.o -> build/libns3.18-olsr-debug.so
+[1414/1431] cxxshlib: build/src/aodv/model/aodv-id-cache.cc.1.o build/src/aodv/model/aodv-dpd.cc.1.o build/src/aodv/model/aodv-rtable.cc.1.o build/src/aodv/model/aodv-rqueue.cc.1.o build/src/aodv/model/aodv-packet.cc.1.o build/src/aodv/model/aodv-neighbor.cc.1.o build/src/aodv/model/aodv-routing-protocol.cc.1.o build/src/aodv/helper/aodv-helper.cc.1.o -> build/libns3.18-aodv-debug.so
+[1416/1431] cxxshlib: build/src/dsdv/model/dsdv-rtable.cc.1.o build/src/dsdv/model/dsdv-packet-queue.cc.1.o build/src/dsdv/model/dsdv-packet.cc.1.o build/src/dsdv/model/dsdv-routing-protocol.cc.1.o build/src/dsdv/helper/dsdv-helper.cc.1.o -> build/libns3.18-dsdv-debug.so
+[1416/1431] cxxshlib: build/src/dsr/model/dsr-routing.cc.1.o build/src/dsr/model/dsr-options.cc.1.o build/src/dsr/model/dsr-fs-header.cc.1.o build/src/dsr/model/dsr-option-header.cc.1.o build/src/dsr/model/dsr-maintain-buff.cc.1.o build/src/dsr/model/dsr-rsendbuff.cc.1.o build/src/dsr/model/dsr-rcache.cc.1.o build/src/dsr/model/dsr-rreq-table.cc.1.o build/src/dsr/model/dsr-gratuitous-reply-table.cc.1.o build/src/dsr/model/dsr-errorbuff.cc.1.o build/src/dsr/model/dsr-network-queue.cc.1.o build/src/dsr/helper/dsr-helper.cc.1.o build/src/dsr/helper/dsr-main-helper.cc.1.o -> build/libns3.18-dsr-debug.so
+[1416/1431] cxxshlib: build/src/lte/model/lte-common.cc.1.o build/src/lte/model/lte-spectrum-phy.cc.1.o build/src/lte/model/lte-spectrum-signal-parameters.cc.1.o build/src/lte/model/lte-phy.cc.1.o build/src/lte/model/lte-enb-phy.cc.1.o build/src/lte/model/lte-ue-phy.cc.1.o build/src/lte/model/lte-spectrum-value-helper.cc.1.o build/src/lte/model/lte-amc.cc.1.o build/src/lte/model/lte-enb-rrc.cc.1.o build/src/lte/model/lte-ue-rrc.cc.1.o build/src/lte/model/lte-rlc-sap.cc.1.o build/src/lte/model/lte-rlc.cc.1.o build/src/lte/model/lte-rlc-sequence-number.cc.1.o build/src/lte/model/lte-rlc-header.cc.1.o build/src/lte/model/lte-rlc-am-header.cc.1.o build/src/lte/model/lte-rlc-um.cc.1.o build/src/lte/model/lte-rlc-am.cc.1.o build/src/lte/model/lte-rlc-tag.cc.1.o build/src/lte/model/lte-rlc-sdu-status-tag.cc.1.o build/src/lte/model/lte-pdcp-sap.cc.1.o build/src/lte/model/lte-pdcp.cc.1.o build/src/lte/model/lte-pdcp-header.cc.1.o build/src/lte/model/lte-pdcp-tag.cc.1.o build/src/lte/model/eps-bearer.cc.1.o build/src/lte/model/lte-radio-bearer-info.cc.1.o build/src/lte/model/lte-net-device.cc.1.o build/src/lte/model/lte-enb-net-device.cc.1.o build/src/lte/model/lte-ue-net-device.cc.1.o build/src/lte/model/ideal-control-messages.cc.1.o build/src/lte/helper/lte-helper.cc.1.o build/src/lte/helper/lte-stats-calculator.cc.1.o build/src/lte/helper/epc-helper.cc.1.o build/src/lte/helper/radio-bearer-stats-calculator.cc.1.o build/src/lte/helper/mac-stats-calculator.cc.1.o build/src/lte/helper/radio-environment-map-helper.cc.1.o build/src/lte/helper/lte-hex-grid-enb-topology-helper.cc.1.o build/src/lte/model/rem-spectrum-phy.cc.1.o build/src/lte/model/ff-mac-csched-sap.cc.1.o build/src/lte/model/ff-mac-sched-sap.cc.1.o build/src/lte/model/lte-mac-sap.cc.1.o build/src/lte/model/ff-mac-scheduler.cc.1.o build/src/lte/model/lte-enb-cmac-sap.cc.1.o build/src/lte/model/lte-ue-cmac-sap.cc.1.o build/src/lte/model/rr-ff-mac-scheduler.cc.1.o build/src/lte/model/lte-enb-mac.cc.1.o build/src/lte/model/lte-ue-mac.cc.1.o build/src/lte/model/lte-radio-bearer-tag.cc.1.o build/src/lte/model/lte-phy-tag.cc.1.o build/src/lte/model/lte-enb-phy-sap.cc.1.o build/src/lte/model/lte-ue-phy-sap.cc.1.o build/src/lte/model/lte-interference.cc.1.o build/src/lte/model/lte-sinr-chunk-processor.cc.1.o build/src/lte/model/pf-ff-mac-scheduler.cc.1.o build/src/lte/model/epc-gtpu-header.cc.1.o build/src/lte/model/trace-fading-loss-model.cc.1.o build/src/lte/model/epc-enb-application.cc.1.o build/src/lte/model/epc-sgw-pgw-application.cc.1.o build/src/lte/model/epc-tft.cc.1.o build/src/lte/model/epc-tft-classifier.cc.1.o build/src/lte/model/lte-mi-error-model.cc.1.o -> build/libns3.18-lte-debug.so
+[1417/1431] cxxshlib: build/src/netanim/model/animation-interface.cc.1.o build/src/netanim/helper/animation-interface-helper.cc.1.o -> build/libns3.18-netanim-debug.so
+[1419/1431] cxxshlib: build/src/point-to-point-layout/model/point-to-point-dumbbell.cc.1.o build/src/point-to-point-layout/model/point-to-point-grid.cc.1.o build/src/point-to-point-layout/model/point-to-point-star.cc.1.o -> build/libns3.18-point-to-point-layout-debug.so
+[1419/1431] cxxshlib: build/src/csma-layout/model/csma-star-helper.cc.1.o -> build/libns3.18-csma-layout-debug.so
+[1420/1431] cxxshlib:  -> build/libns3.18-test-debug.so
+[1421/1431] cxxprogram: build/utils/test-runner.cc.1.o -> build/utils/ns3.18-test-runner-debug
+[1422/1431] cxxprogram: build/scratch/third.cc.2.o -> build/scratch/third
+[1424/1431] cxxprogram: build/utils/print-introspected-doxygen.cc.4.o -> build/utils/ns3.18-print-introspected-doxygen-debug
+[1424/1431] cxxprogram: build/scratch/subdir/scratch-simulator-subdir.cc.1.o -> build/scratch/subdir/subdir
+[1425/1431] cxxprogram: build/scratch/scratch-simulator.cc.3.o -> build/scratch/scratch-simulator
+Waf: Leaving directory `/home/liurixin25/liurixin/ns3/Themis/Alibaba-HPCC/simulation/build'
+'build' finished successfully (3.660s)
+ENABLE_QCN			Yes
+USE_DYNAMIC_PFC_THRESHOLD	Yes
+PACKET_PAYLOAD_SIZE		1000
+TOPOLOGY_FILE			mix/02-24/mix_70%_0.03s/topology.txt
+FLOW_FILE			mix/02-24/mix_70%_0.03s/flow.txt
+FCT_OUTPUT_FILE		mix/02-24/mix_70%_0.03s/fct_interval2.txt
+PFC_OUTPUT_FILE				mix/02-24/mix_70%_0.03s/pfc_interval2.txt
+TRACE_FILE			mix/trace.txt
+TRACE_OUTPUT_FILE		mix/mix.tr
+SIMULATOR_STOP_TIME		4
+CC_MODE		1
+ALPHA_RESUME_INTERVAL		1
+RATE_DECREASE_INTERVAL		4
+CLAMP_TARGET_RATE		No
+RP_TIMER			900
+EWMA_GAIN			0.00390625
+FAST_RECOVERY_TIMES		1
+RATE_AI				50Mb/s
+RATE_HAI			100Mb/s
+MIN_RATE		100Mb/s
+DCTCP_RATE_AI				1000Mb/s
+ERROR_RATE_PER_LINK		0
+L2_CHUNK_SIZE			4000
+L2_ACK_INTERVAL			1
+L2_BACK_TO_ZERO			No
+HAS_WIN		1
+GLOBAL_T		1
+VAR_WIN		1
+FAST_REACT		1
+U_TARGET		0.95
+MI_THRESH		0
+INT_MULTI				1
+MULTI_RATE				0
+SAMPLE_FEEDBACK				0
+PINT_LOG_BASE				1.05
+PINT_PROB				1
+RATE_BOUND		1
+ACK_HIGH_PRIO		1
+LINK_DOWN				0 0 0
+ENABLE_TRACE				1
+KMAX_MAP				 50000000000 800 100000000000 1600 400000000000 6400 1600000000000 25600
+KMIN_MAP				 50000000000 200 100000000000 400 400000000000 800 1600000000000 1600
+PMAX_MAP				 50000000000 0.2 100000000000 0.2 400000000000 0.2 1600000000000 0.2
+BUFFER_SIZE				32
+QLEN_MON_FILE				mix/qlen.txt
+QLEN_MON_START				2000000000
+QLEN_MON_END				2010000000
+flow_num: 4986
+node_num: 50
+switch_num: 18
+dev->GetDataRate().GetBitRate() = 1600000000000
+dev->GetChannel())->GetDelay().GetTimeStep() = 100
+Switch 32 sw->GetNDevices() = 9
+Switch 33 sw->GetNDevices() = 9
+Switch 34 sw->GetNDevices() = 9
+Switch 35 sw->GetNDevices() = 9
+Switch 36 sw->GetNDevices() = 9
+Switch 37 sw->GetNDevices() = 9
+Switch 38 sw->GetNDevices() = 9
+Switch 39 sw->GetNDevices() = 9
+Switch 40 sw->GetNDevices() = 6
+Switch 41 sw->GetNDevices() = 6
+Switch 42 sw->GetNDevices() = 6
+Switch 43 sw->GetNDevices() = 6
+Switch 44 sw->GetNDevices() = 6
+Switch 45 sw->GetNDevices() = 6
+Switch 46 sw->GetNDevices() = 6
+Switch 47 sw->GetNDevices() = 6
+Switch 48 sw->GetNDevices() = 8
+Switch 49 sw->GetNDevices() = 8
+打印交换机 32 的路由表
+通往 0 号主机有 1 个端口
+通往 1 号主机有 1 个端口
+通往 2 号主机有 1 个端口
+通往 3 号主机有 1 个端口
+通往 4 号主机有 4 个端口
+通往 5 号主机有 4 个端口
+通往 6 号主机有 4 个端口
+通往 7 号主机有 4 个端口
+通往 8 号主机有 4 个端口
+通往 9 号主机有 4 个端口
+通往 10 号主机有 4 个端口
+通往 11 号主机有 4 个端口
+通往 12 号主机有 4 个端口
+通往 13 号主机有 4 个端口
+通往 14 号主机有 4 个端口
+通往 15 号主机有 4 个端口
+通往 16 号主机有 4 个端口
+通往 17 号主机有 4 个端口
+通往 18 号主机有 4 个端口
+通往 19 号主机有 4 个端口
+通往 20 号主机有 4 个端口
+通往 21 号主机有 4 个端口
+通往 22 号主机有 4 个端口
+通往 23 号主机有 4 个端口
+通往 24 号主机有 4 个端口
+通往 25 号主机有 4 个端口
+通往 26 号主机有 4 个端口
+通往 27 号主机有 4 个端口
+通往 28 号主机有 4 个端口
+通往 29 号主机有 4 个端口
+通往 30 号主机有 4 个端口
+通往 31 号主机有 4 个端口
+maxRtt=1012365 maxBdp=12654562
+Running Simulation.
+987.3

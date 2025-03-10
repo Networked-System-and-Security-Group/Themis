@@ -43,6 +43,7 @@ namespace ns3 {
  */
 class cnpNetDevice : public QbbNetDevice 
 {
+  long long m_BiCC[qCnt][2];
   class CNP_Handler{
   public:
   
