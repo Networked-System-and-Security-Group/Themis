@@ -114,12 +114,12 @@ namespace ns3 {
 					{
 						//60000
 						if(m_id>=48){
-							if(BiCC[(qIndex + m_rrlast) % qCnt][0]-BiCC[(qIndex + m_rrlast) % qCnt][1] <= 60000)
+							if(BiCC[(qIndex + m_rrlast) % qCnt][0]-BiCC[(qIndex + m_rrlast) % qCnt][1] <= 13000000*16)
 							{
-								BiCC[(qIndex + m_rrlast) % qCnt][1]=0;
 								BiCC[(qIndex + m_rrlast) % qCnt][0]-=BiCC[(qIndex + m_rrlast) % qCnt][1];
+								BiCC[(qIndex + m_rrlast) % qCnt][1]=0;
 								BiCC[(qIndex + m_rrlast) % qCnt][0] += 1000;
-								std::cout<<"node "<<m_id<<" qIndex "<<(qIndex + m_rrlast) % qCnt<<" send "<<BiCC[(qIndex + m_rrlast) % qCnt][0]<<std::endl;
+								//std::cout<<"node "<<m_id<<" qIndex "<<(qIndex + m_rrlast) % qCnt<<" send "<<BiCC[(qIndex + m_rrlast) % qCnt][0]<<std::endl;
 								found = true;
 								break;
 							}
@@ -128,8 +128,6 @@ namespace ns3 {
 							found = true;
 							break;
 						}
-
-
 					}
 				}
 				qIndex = (qIndex + m_rrlast) % qCnt;

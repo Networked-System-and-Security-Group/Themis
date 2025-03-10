@@ -201,7 +201,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		//int qIndex = sid % 16;
 		int qIndex = 3;
 		m_BiCC[qIndex][1]+=1000;
-		std::cout<<"node "<<m_id<<" qIndex "<<qIndex<<" receive "<<m_BiCC[qIndex][1]<<std::endl;
+		//std::cout<<"node "<<m_id<<" qIndex "<<qIndex<<" receive "<<m_BiCC[qIndex][1]<<std::endl;
 	}
 	int idx = GetOutDev(p, ch);
 	int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));

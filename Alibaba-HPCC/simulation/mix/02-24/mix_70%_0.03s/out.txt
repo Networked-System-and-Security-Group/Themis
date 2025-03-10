@@ -3,8 +3,8 @@ USE_DYNAMIC_PFC_THRESHOLD	Yes
 PACKET_PAYLOAD_SIZE		1000
 TOPOLOGY_FILE			mix/02-24/mix_70%_0.03s/topology.txt
 FLOW_FILE			mix/02-24/mix_70%_0.03s/flow.txt
-FCT_OUTPUT_FILE		mix/02-24/mix_70%_0.03s/fct_interval2.txt
-PFC_OUTPUT_FILE				mix/02-24/mix_70%_0.03s/pfc_interval2.txt
+FCT_OUTPUT_FILE		mix/02-24/mix_70%_0.03s/fct.txt
+PFC_OUTPUT_FILE				mix/02-24/mix_70%_0.03s/pfc.txt
 TRACE_FILE			mix/trace.txt
 TRACE_OUTPUT_FILE		mix/mix.tr
 SIMULATOR_STOP_TIME		4
@@ -103,125 +103,4 @@ Switch 49 sw->GetNDevices() = 8
 通往 31 号主机有 4 个端口
 maxRtt=1012365 maxBdp=12654562
 Running Simulation.
-node 48 qIndex 3 send 1000
-node 48 qIndex 3 send 2000
-node 48 qIndex 3 send 3000
-node 48 qIndex 3 send 4000
-node 48 qIndex 3 send 5000
-node 48 qIndex 3 send 6000
-node 48 qIndex 3 send 7000
-node 48 qIndex 3 send 8000
-node 48 qIndex 3 send 9000
-node 48 qIndex 3 send 10000
-node 48 qIndex 3 send 11000
-node 48 qIndex 3 send 12000
-node 48 qIndex 3 send 13000
-node 48 qIndex 3 send 14000
-node 48 qIndex 3 send 15000
-node 48 qIndex 3 send 16000
-node 48 qIndex 3 send 17000
-node 48 qIndex 3 send 18000
-node 48 qIndex 3 send 19000
-node 48 qIndex 3 send 20000
-node 48 qIndex 3 send 21000
-node 48 qIndex 3 send 22000
-node 48 qIndex 3 send 23000
-node 48 qIndex 3 send 24000
-node 48 qIndex 3 send 25000
-node 48 qIndex 3 send 26000
-node 48 qIndex 3 send 27000
-node 48 qIndex 3 send 28000
-node 48 qIndex 3 send 29000
-node 48 qIndex 3 send 30000
-node 48 qIndex 3 send 31000
-node 48 qIndex 3 send 32000
-node 48 qIndex 3 send 33000
-node 48 qIndex 3 send 34000
-node 48 qIndex 3 send 35000
-node 48 qIndex 3 send 36000
-node 48 qIndex 3 send 37000
-node 48 qIndex 3 send 38000
-node 48 qIndex 3 send 39000
-node 48 qIndex 3 send 40000
-node 48 qIndex 3 send 41000
-node 48 qIndex 3 send 42000
-node 48 qIndex 3 send 43000
-node 48 qIndex 3 send 44000
-node 48 qIndex 3 send 45000
-node 48 qIndex 3 send 46000
-node 48 qIndex 3 send 47000
-node 48 qIndex 3 send 48000
-node 48 qIndex 3 send 49000
-node 48 qIndex 3 send 50000
-node 49 qIndex 3 send 1000
-node 49 qIndex 3 send 2000
-node 49 qIndex 3 send 3000
-node 49 qIndex 3 send 4000
-node 49 qIndex 3 send 5000
-node 49 qIndex 3 send 6000
-node 49 qIndex 3 send 7000
-node 49 qIndex 3 send 8000
-node 49 qIndex 3 send 9000
-node 49 qIndex 3 send 10000
-node 49 qIndex 3 send 11000
-node 49 qIndex 3 send 12000
-node 49 qIndex 3 send 13000
-node 49 qIndex 3 send 14000
-node 49 qIndex 3 send 15000
-node 49 qIndex 3 send 16000
-node 49 qIndex 3 send 17000
-node 49 qIndex 3 send 18000
-node 49 qIndex 3 send 19000
-node 49 qIndex 3 send 20000
-node 49 qIndex 3 send 21000
-node 49 qIndex 3 send 22000
-node 49 qIndex 3 send 23000
-node 49 qIndex 3 send 24000
-node 49 qIndex 3 send 25000
-node 49 qIndex 3 send 26000
-node 49 qIndex 3 send 27000
-node 49 qIndex 3 send 28000
-node 49 qIndex 3 send 29000
-node 49 qIndex 3 send 30000
-node 49 qIndex 3 send 31000
-node 49 qIndex 3 send 32000
-node 48 qIndex 3 send 51000
-node 49 qIndex 3 send 33000
-node 48 qIndex 3 send 52000
-node 49 qIndex 3 send 34000
-node 48 qIndex 3 send 53000
-node 49 qIndex 3 send 35000
-node 48 qIndex 3 send 54000
-node 49 qIndex 3 send 36000
-node 48 qIndex 3 send 55000
-node 49 qIndex 3 send 37000
-node 48 qIndex 3 send 56000
-node 49 qIndex 3 send 38000
-node 48 qIndex 3 send 57000
-node 49 qIndex 3 send 39000
-node 48 qIndex 3 send 58000
-node 48 qIndex 3 send 59000
-node 48 qIndex 3 send 60000
-node 48 qIndex 3 send 61000
-node 49 qIndex 3 send 40000
-node 49 qIndex 3 send 41000
-node 49 qIndex 3 send 42000
-node 49 qIndex 3 send 43000
-node 49 qIndex 3 send 44000
-node 49 qIndex 3 send 45000
-node 49 qIndex 3 send 46000
-node 49 qIndex 3 send 47000
-node 49 qIndex 3 send 48000
-node 49 qIndex 3 send 49000
-node 49 qIndex 3 send 50000
-node 49 qIndex 3 send 51000
-node 49 qIndex 3 send 52000
-node 49 qIndex 3 send 53000
-node 49 qIndex 3 send 54000
-node 49 qIndex 3 send 55000
-node 49 qIndex 3 send 56000
-node 49 qIndex 3 send 57000
-node 49 qIndex 3 send 58000
-node 49 qIndex 3 send 59000
-node 49 qIndex 3 send 60000
-node 49 qIndex 3 send 61000
+1010.36

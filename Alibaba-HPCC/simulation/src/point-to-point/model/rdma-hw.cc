@@ -347,8 +347,8 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch){
 		//std::cout<<" ack "<<ch2.l3Prot<<std::endl;
 		int sid =(Ipv4Address(ch2.sip).Get() >> 8) & 0xffff;
 		int did =(Ipv4Address(ch2.dip).Get() >> 8) & 0xffff;
-		if((sid<16&&did>=16) || (sid<16&&did>=16))
-			std::cout<<"send ack from " << sid << " to " << did << "sport "<< ch2.udp.sport << " dport " << ch2.udp.dport << " pg " << ch2.udp.pg << "cnp bits "<< ((ch2.ack.flags >> qbbHeader::FLAG_CNP) & 1) << std::endl;
+		//if((sid<16&&did>=16) || (sid<16&&did>=16))
+			//std::cout<<"send ack from " << sid << " to " << did << "sport "<< ch2.udp.sport << " dport " << ch2.udp.dport << " pg " << ch2.udp.pg << "cnp bits "<< ((ch2.ack.flags >> qbbHeader::FLAG_CNP) & 1) << std::endl;
 		// send
 		//输出rxQp的信息
 		//std::cout << "rxQp: " << rxQp->dip << " " << rxQp->sip << " " << rxQp->sport << " " << rxQp->dport << " " << rxQp->m_ecn_source.qIndex << std::endl;

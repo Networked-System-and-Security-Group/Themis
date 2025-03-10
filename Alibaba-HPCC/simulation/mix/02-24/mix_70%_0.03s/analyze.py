@@ -121,7 +121,7 @@ def write_to_file(data, file_path):
 
 if __name__ == "__main__":
     if MODE:
-        input_file = './fct_interval2.txt'
+        input_file = './fct.txt'
     else:
         input_file = f'.fct_{prefix}_dc.txt'
     intra_dc_flow_file = './fct_intra_dc.txt'
