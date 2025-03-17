@@ -30,8 +30,8 @@ sudo python daemon.py
 ```
 cd RDMA_RC_example
 gcc -Wall -O2 -o RDMA_RC_example RDMA_RC_example.c -libverbs
-// At the terminal of host A
-./RDMA_RC_example -g 3 -d mlx5_0 <IP of HOST B>
 // At the terminal of host B
 ./RDMA_RC_example -g 3 -d mlx5_0
+// At the terminal of host A
+./RDMA_RC_example -g 3 -d mlx5_0 <IP of HOST B>
 ```
