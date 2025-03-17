@@ -13,10 +13,11 @@ bf_rt_table_key_hdl *counter_table_key;
 bf_rt_table_data_hdl *counter_table_data;
 bf_rt_id_t counter_pkts_field_id = 0;
 
-// ibv_destroy_qp中只有cQPN，没有dIP
+// ibv_destroy_qp中只有cQPN和sIP，没有sQPN和dIP
 // 所以为了找到要删哪一个table entry，需要在controlPlane维护这么一个映射
 // C里面没有unordered_map，追求完美就要把代码重构为C++然后用unordered_map，懒得重构了
-uint16_t sIP_and_cQPN_to_dIP_mapping[100][1000];
+uint32_t sIP_and_cQPN_to_sQPN_mapping[100][1000];
+uint32_t sIP_and_cQPN_to_dIP_mapping[100][1000];
 
 uint32_t ipv4AddrToUint32(const char* ip_str) {
   uint32_t ip_addr;
@@ -801,13 +802,15 @@ void* poll_daemon_pkt(void* arg) {
                                             &set_cnp_dstQPN_info, &set_cnp_dstQPN_entry);
                     printf("check2\n");
                     // 将映射写入 sIP_and_cQPN_to_udp_sport_mapping
-                    // sIP_and_cQPN_to_dIP_mapping[sIP][cQPN] = dIP;
+                    sIP_and_cQPN_to_sQPN_mapping[sIP][cQPN] = sQPN;
+                    sIP_and_cQPN_to_dIP_mapping[sIP][cQPN] = dIP;
                 }
                 else {
                     printf("Delete a new entry\n");
                     set_cnp_dstQPN_entry_t set_cnp_dstQPN_entry =  {
                         .server_ip = sIP_and_cQPN_to_dIP_mapping[sIP][cQPN],
                         .client_ip = sIP,
+                        .serverQPN = sIP_and_cQPN_to_sQPN_mapping[sIP][cQPN],
                         .action = "set_dstQPN",
                         .clientQPN = cQPN,
                     }; 
