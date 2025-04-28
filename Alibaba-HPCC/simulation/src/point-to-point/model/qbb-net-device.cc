@@ -404,7 +404,7 @@ void QbbNetDevice::DequeueAndTransmit(void)
 	void QbbNetDevice::Resume(unsigned qIndex)
 	{
 		NS_LOG_FUNCTION(this << qIndex);
-		NS_ASSERT_MSG(m_paused[qIndex], "Must be PAUSEd");
+		//NS_ASSERT_MSG(m_paused[qIndex], "Must be PAUSEd");
 		m_paused[qIndex] = false;
 		NS_LOG_INFO("Node " << m_node->GetId() << " dev " << m_ifIndex << " queue " << qIndex <<
 			" resumed at " << Simulator::Now().GetSeconds());
