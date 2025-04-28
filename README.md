@@ -2,10 +2,10 @@
 ## NS3 Simulation
 The NS-3 module is developed based on the [HPCC](https://github.com/alibaba-edu/High-Precision-Congestion-Control) project.
 
+
+### Setup
+The project configuration method is consistent with [HPCC](https://github.com/alibaba-edu/High-Precision-Congestion-Control).
 ### Quickstart
-
-The project configuration scheme is consistent with [HPCC](https://github.com/alibaba-edu/High-Precision-Congestion-Control).
-
 ```
 cd simulation
 nohup ./waf --run 'scratch/third mix/mix_70%_0.03s/config.txt' > mix/mix_70%_0.03s/out.txt &
