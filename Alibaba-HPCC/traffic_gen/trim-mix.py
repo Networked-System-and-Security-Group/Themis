@@ -1,6 +1,6 @@
 import random
 
-output = "../simulation/mix/01-15/bigFlow/flow.txt"
+output = "../simulation/mix/03-08/mix_70%_0.03s/flow.txt"
 
 # 打开文件读取数据
 with open(output, "r") as file:

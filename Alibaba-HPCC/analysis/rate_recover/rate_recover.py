@@ -6,12 +6,12 @@ plt.rcParams.update({'font.size': 30})
 data = {
     'without recovery': [20.58258799034843, 4.520556826482152, 6.528310721965436],
     'with recovery': [4.512521564154761, 4.605152803972009, 4.593573898994853],
-    'naive recovery': [5.078331587012373, 6.690190036151068, 6.4887077300087315]
+    'direct recovery': [5.078331587012373, 6.690190036151068, 6.4887077300087315]
 }
 
 # 标签和方案
 labels = ['Inter', 'Intra', 'Average']
-schemes = ['without Recovery', 'with Recovery', 'naive Recovery']
+schemes = ['without Recovery', 'with Recovery', 'direct Recovery']
 
 # 颜色设置
 colors = ['#D15354', '#3DA6AE', '#E8B86C']

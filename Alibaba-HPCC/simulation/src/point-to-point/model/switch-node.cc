@@ -116,7 +116,7 @@ void SwitchNode::CheckAndSendResume(uint32_t inDev, uint32_t qIndex){
 	if (m_mmu->CheckShouldResume(inDev, qIndex)){
 		device->SendPfc(qIndex, 1);
 		m_mmu->SetResume(inDev, qIndex);
-		std::cout<<"resume "<<Simulator::Now()<<" node "<<m_id<<" qIndex "<<qIndex<<std::endl;
+		//std::cout<<"resume "<<Simulator::Now()<<" node "<<m_id<<" qIndex "<<qIndex<<std::endl;
 	}
 }
 
@@ -149,28 +149,49 @@ int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 			//std::cout<<"time"<<Simulator::Now()-cnp_handler.rec_time<<std::endl;
 			cnp_handler.rec_time = Simulator::Now();
 			cnp_handler.cnp_num += 1;
-			if (cnp_handler.biggest < 5)
-			{
-				//if(cnp_handler.cnp_num % 5 == 1)
-				{
-					cnp_handler.loop_num+=1;
-					cnp_handler.biggest+=1;
-				}
-			}
-			else if (cnp_handler.biggest < 10)
-			{
-				//if(cnp_handler.cnp_num % (10) == 1)
-				{
-					cnp_handler.loop_num+=1;
-					cnp_handler.biggest+=1;
-				}
-			}
-			else if(cnp_handler.biggest < 400 && cnp_handler.cnp_num%(20) == 1)
+			if(cnp_handler.cnp_num==1)
 			{
 				cnp_handler.loop_num++;
+				cnp_handler.alpha++;
 				cnp_handler.biggest++;
 			}
+			//if (cnp_handler.biggest < 20000)
+			//{
+				if(cnp_handler.cnp_num>=cnp_handler.alpha)
+				{
+					cnp_handler.cnp_num -= cnp_handler.alpha;
+					cnp_handler.alpha++;
+					cnp_handler.biggest++;
+					cnp_handler.loop_num++;
+				}
+			//}
 		}
+		// if(Simulator::Now()-cnp_handler.rec_time>=ns3::NanoSeconds(5)){
+		// 	//std::cout<<"time"<<Simulator::Now()-cnp_handler.rec_time<<std::endl;
+		// 	cnp_handler.rec_time = Simulator::Now();
+		// 	cnp_handler.cnp_num += 1;
+		// 	if (cnp_handler.biggest < 5)
+		// 	{
+		// 		//if(cnp_handler.cnp_num % 5 == 1)
+		// 		{
+		// 			cnp_handler.loop_num+=1;
+		// 			cnp_handler.biggest+=1;
+		// 		}
+		// 	}
+		// 	else if (cnp_handler.biggest < 10)
+		// 	{
+		// 		//if(cnp_handler.cnp_num % (10) == 1)
+		// 		{
+		// 			cnp_handler.loop_num+=1;
+		// 			cnp_handler.biggest+=1;
+		// 		}
+		// 	}
+		// 	else if(cnp_handler.biggest < 400 && cnp_handler.cnp_num%(20) == 1)
+		// 	{
+		// 		cnp_handler.loop_num++;
+		// 		cnp_handler.biggest++;
+		// 	}
+		// }
 	}
 	else{
 		CNP_Handler cnp_handler;
@@ -178,6 +199,7 @@ int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 		//cnp_handler.rec_time=Simulator::Now();
 		cnp_handler.set_last_loop = Simulator::Now();
 		m_cnp_handler[key] = cnp_handler;
+		//std::cout<<Simulator::Now()<<" "<<sid<<" "<<did<<" "<<ch.udp.pg<<" "<<ch.udp.dport<<" "<<ch.udp.sport<<std::endl;
 	}
 	//printf("size of m_cnp_handler: %d\n", m_cnp_handler.size());
 	return 1;//更新m_cnp_handler信息后返回1
@@ -244,7 +266,8 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 							else{
 								iter->second.recover[p->recycle_times_left]--;
 								p->recycle_times_left -= 1;
-								if(Simulator::Now()-iter->second.rec_time>=ns3::MicroSeconds(1000)){
+								if(Simulator::Now()-iter->second.rec_time>=ns3::MicroSeconds(500)){
+									iter->second.alpha/=2;
 									for(int i = p->recycle_times_left; i >0;i--)
 									{
 										if(iter->second.recover[i])
@@ -292,17 +315,21 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 					//solution:PFC
 					if(isDataPkt(ch)&&idx!=5)
 					{
-						if(Simulator::Now()-iter->second.rec_time<ns3::MicroSeconds(100))
+						if(Simulator::Now()-iter->second.rec_time<ns3::MicroSeconds(100)&&iter->second.cnp_num>5)
 						{
 							Ptr<QbbNetDevice> device = DynamicCast<QbbNetDevice>(m_devices[inDev]);
 							device->SendPfc(qIndex, 1);
 							m_mmu->SetResume(inDev, qIndex);
-							std::cout<<"paused "<<Simulator::Now()<<" node "<<m_id<<" qIndex "<<qIndex<<std::endl;
+							//std::cout<<"paused "<<Simulator::Now()<<" node "<<m_id<<" qIndex "<<qIndex<<std::endl;
 						}
 						else{
 							CheckAndSendResume(inDev, qIndex);
 						}
 					}
+				}
+				else
+				{
+					CheckAndSendResume(inDev, qIndex);
 				}
 			}
 		}
@@ -415,7 +442,7 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 			// 导致CNP发给了接收端，而接收端可能正在发送DC内部流，导致DC内部流的效果变差
 			// rixin: 第一个模块
 			p->PeekHeader(ch);
-			if(0&&isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id >= 48){
+			if(1&&isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id >= 48){
 				//std::cout<<ns3::Simulator::Now().GetNanoSeconds()<<": send cnp1"<<std::endl;
 				// printf("module 1 is running\n");
 				int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
@@ -433,19 +460,19 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 						CnpKey key(ch.sip,ch.dip,ch.udp.pg,ch.udp.sport,ch.udp.dport);
 						auto iter = m_ecn_detector.find(key);
 						if(iter != m_ecn_detector.end()){
-							//if(Simulator::Now()-iter->second >= ns3::MicroSeconds(55)){
+							if(Simulator::Now()-iter->second >= ns3::MicroSeconds(5)){
 								Simulator::Schedule(ns3::MicroSeconds(2), &QbbNetDevice::SendCnp, device, p, ch);
 								iter->second = Simulator::Now()+ns3::MicroSeconds(2);
-								// device->SendCnp(p, ch);
-								// iter->second = Simulator::Now();
+								//device->SendCnp(p, ch);
+								//iter->second = Simulator::Now();
 								
-							//}
+							}
 						}
 						else{
 							Simulator::Schedule(ns3::MicroSeconds(2), &QbbNetDevice::SendCnp, device, p, ch);
 							m_ecn_detector[key] = Simulator::Now()+ns3::MicroSeconds(2);
-							// device->SendCnp(p, ch);
-							// m_ecn_detector[key] = Simulator::Now();
+							//device->SendCnp(p, ch);
+							//m_ecn_detector[key] = Simulator::Now();
 						}
 
 			}

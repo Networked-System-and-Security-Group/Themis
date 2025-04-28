@@ -1,25 +1,26 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.ticker as ticker
-plt.rcParams.update({'font.size': 26})
+plt.rcParams.update({'font.size': 36})
 # 数据
 data = {
     'DCQCN': [4.32, 14.38, 16.76],
     'Annulus': [3.75, 9.61, 14.78],
+    'BiCC': [0.30, 0.38, 0.67],
     'Themis': [0.17, 1.83, 1.12]
     
 }
 
 # 标签和方案
 labels = ['30%', '50%', '70%']
-schemes = ['DCQCN', 'Annulus', 'Themis']
+schemes = ['DCQCN', 'Annulus', 'BiCC', 'Themis']
 
 # 颜色设置
-colors = ['#D15354', '#E8B86C', '#3DA6AE']
+colors = ['#D15354', '#E8B86C', '#C6E3C6', '#3DA6AE']
 
 # 创建柱状图
-fig, ax = plt.subplots(figsize=(10, 6))
-bar_width = 0.2
+fig, ax = plt.subplots(figsize=(12, 8))
+bar_width = 0.18
 index = np.arange(len(labels))
 
 for k, scheme in enumerate(schemes):

@@ -51,6 +51,7 @@ class SwitchNode : public Node{
     	bool sended;//是否发送过 废弃
 		uint32_t recovered;//被废弃
 		int recover[3005];//还差n次循环的包数量
+		uint32_t alpha = 5;
     	CNP_Handler(){
 			cnp_num = 0;
       		rec_time = Time(0);
