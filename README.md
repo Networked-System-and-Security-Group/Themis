@@ -1,5 +1,19 @@
 # Themis
 ## NS3 Simulation
+The NS-3 module is developed based on the [HPCC](https://github.com/alibaba-edu/High-Precision-Congestion-Control) project.
+
+### Quickstart
+
+The project configuration scheme is consistent with [HPCC](https://github.com/alibaba-edu/High-Precision-Congestion-Control).
+
+```
+cd simulation
+nohup ./waf --run 'scratch/third mix/mix_70%_0.03s/config.txt' > mix/mix_70%_0.03s/out.txt &
+cd mix/mix_70%_0.03s
+python3 annalyze.py
+```
+
+The figures used in the paper were generated through `NS3/analysis`.
 ## P4 Testbed
 Themis's main concern is whether the daemon packet sent via eBPF can be received by the switch CPU in time and successfully install the flow rule before the first RDMA data packet arrives. Therefore, we build a testbed to verify its validity. The topology is described below:
 
