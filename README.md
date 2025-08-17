@@ -1,4 +1,31 @@
-# Themis
+# THEMIS: Addressing Congestion-Induced Unfairness in Long-Haul RDMA Networks
+
+![Overview.](.assets/Workflow_00.png)
+
+THEMIS is a fairness maintenance patch designed to address congestion-induced unfairness in long-haul RDMA networks.
+
+## Key Features
+
+### Proactive Notification Point (PNP): 
+
+Reduces feedback delay for near-source bottlenecks by generating congestion notifications (CNPs) within a single DC.
+
+### Temporary Reaction Point (TRP): 
+
+Temporarily throttles inter-DC flows to address near-destination bottlenecks until the sender receives congestion feedback.
+
+### Compatibility: 
+
+THEMIS is designed to be compatible with existing congestion control algorithms like DCQCN.
+
+### Minimal Modifications: 
+
+THEMIS requires only modifications at the external switches (ESW) connecting the DC to the WAN, ensuring minimal impact on existing infrastructure.
+
+### Resource Efficiency: 
+
+Optimized to minimize resource overhead on switches, making it deployable on current hardware.
+
 ## NS3 Simulation
 The NS-3 module is developed based on the [HPCC](https://github.com/alibaba-edu/High-Precision-Congestion-Control) project.
 
@@ -8,7 +35,7 @@ The project configuration method is consistent with [HPCC](https://github.com/al
 ### Quickstart
 ```
 cd simulation
-nohup ./waf --run 'scratch/third mix/mix_70%_0.03s/config.txt' > mix/mix_70%_0.03s/out.txt &
+./waf --run 'scratch/third mix/mix_70%_0.03s/config.txt' > mix/mix_70%_0.03s/out.txt 
 cd mix/mix_70%_0.03s
 python3 annalyze.py
 ```
