@@ -1,6 +1,7 @@
 #include "ns3/ipv4.h"
 #include "ns3/packet.h"
 #include "ns3/ipv4-header.h"
+#include "ns3/udp-header.h"
 #include "ns3/pause-header.h"
 #include "ns3/flow-id-tag.h"
 #include "ns3/boolean.h"
@@ -19,7 +20,15 @@
 #include <chrono>
 #include <fstream>
 #include <ns3/global-settings.h>
+#include <set> // 添加头文件
+#include <tuple> // 用于存储流信息的元组
+#include <algorithm>
 
+// 定义一个全局变量，用于存储流信息
+std::set<std::tuple<uint32_t, uint32_t, uint16_t, uint16_t>> uniqueFlows;
+
+#define register_only 0
+#define mat_only 0
 
 namespace ns3 {
 
@@ -59,8 +68,11 @@ SwitchNode::SwitchNode(){
 	m_node_type = 1;
 	m_mmu = CreateObject<SwitchMmu>();
 	m_cnp_handler = std::map<CnpKey, CNP_Handler>();
+	//m_cnp_handler = std::unordered_map<CnpKey, CNP_Handler>();
 	ExternalSwitch = 0;
 	loop_qbb_index = 7;
+	m_preloadEnabled = false;
+	m_preloadPacketCount = 0;
 	for (uint32_t i = 0; i < pCnt; i++)
 		for (uint32_t j = 0; j < pCnt; j++)
 			for (uint32_t k = 0; k < qCnt; k++)
@@ -71,6 +83,7 @@ SwitchNode::SwitchNode(){
 		m_lastPktSize[i] = m_lastPktTs[i] = 0;
 	for (uint32_t i = 0; i < pCnt; i++)
 		m_u[i] = 0;
+	//m_cnp_handler.reserve(1024);
 }
 
 int SwitchNode::GetOutDev(Ptr<const Packet> p, CustomHeader &ch){
@@ -141,11 +154,12 @@ int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 	CnpKey key(ch.dip, ch.sip, ch.udp.pg, ch.udp.dport, ch.udp.sport);
 	auto iter = m_cnp_handler.find(key);
 	if(iter!=m_cnp_handler.end()){
+	//if(iter!=nullptr){
 		max_cnp_num = std::max(max_cnp_num, iter->second.cnp_num);
 		//printf("max	cnp_num = %d\n", max_cnp_num);
 		CNP_Handler &cnp_handler = iter->second;
 		cnp_handler.recovered=0;
-		if(Simulator::Now()-cnp_handler.rec_time>=ns3::NanoSeconds(5)){
+		if(Simulator::Now()-cnp_handler.rec_time>=ns3::NanoSeconds(1)){
 			//std::cout<<"time"<<Simulator::Now()-cnp_handler.rec_time<<std::endl;
 			cnp_handler.rec_time = Simulator::Now();
 			cnp_handler.cnp_num += 1;
@@ -153,52 +167,40 @@ int SwitchNode::ReceiveCnp(Ptr<Packet>p, CustomHeader &ch){
 			{
 				cnp_handler.loop_num++;
 				cnp_handler.alpha++;
+				// cnp_handler.alpha=32-((m_recyclePacketCount-(1024))>>(9));
+				// if(cnp_handler.alpha<1)cnp_handler.alpha=1;
+				// if(cnp_handler.alpha>32)cnp_handler.alpha=32;
 				cnp_handler.biggest++;
 			}
-			//if (cnp_handler.biggest < 20000)
-			//{
-				if(cnp_handler.cnp_num>=cnp_handler.alpha)
-				{
-					cnp_handler.cnp_num -= cnp_handler.alpha;
-					cnp_handler.alpha++;
-					cnp_handler.biggest++;
-					cnp_handler.loop_num++;
-				}
-			//}
+			//cnp_handler.cnp_num += 1;
+			if(cnp_handler.cnp_num>=cnp_handler.alpha)
+			{
+				cnp_handler.cnp_num -= cnp_handler.alpha;
+				cnp_handler.alpha++;
+				// cnp_handler.alpha=32-((m_recyclePacketCount-(1024))>>(9));
+				// if(cnp_handler.alpha<1)cnp_handler.alpha=1;
+				// if(cnp_handler.alpha>32)cnp_handler.alpha=32;
+				cnp_handler.biggest++;
+				cnp_handler.loop_num++;
+			}
 		}
-		// if(Simulator::Now()-cnp_handler.rec_time>=ns3::NanoSeconds(5)){
-		// 	//std::cout<<"time"<<Simulator::Now()-cnp_handler.rec_time<<std::endl;
-		// 	cnp_handler.rec_time = Simulator::Now();
-		// 	cnp_handler.cnp_num += 1;
-		// 	if (cnp_handler.biggest < 5)
-		// 	{
-		// 		//if(cnp_handler.cnp_num % 5 == 1)
-		// 		{
-		// 			cnp_handler.loop_num+=1;
-		// 			cnp_handler.biggest+=1;
-		// 		}
-		// 	}
-		// 	else if (cnp_handler.biggest < 10)
-		// 	{
-		// 		//if(cnp_handler.cnp_num % (10) == 1)
-		// 		{
-		// 			cnp_handler.loop_num+=1;
-		// 			cnp_handler.biggest+=1;
-		// 		}
-		// 	}
-		// 	else if(cnp_handler.biggest < 400 && cnp_handler.cnp_num%(20) == 1)
-		// 	{
-		// 		cnp_handler.loop_num++;
-		// 		cnp_handler.biggest++;
-		// 	}
-		// }
+		int32_t val = ((256 - (m_recyclePacketCount >> 7)));
+		//if(val<1)val=1;
+		if(cnp_handler.loop_num>val)
+		{
+			std::cout<<"min:"<<cnp_handler.loop_num<<" "<<val<<" "<<m_recyclePacketCount<<std::endl;
+			cnp_handler.loop_num=val;
+		}
 	}
 	else{
 		CNP_Handler cnp_handler;
 		cnp_handler.cnp_num = 1;
 		//cnp_handler.rec_time=Simulator::Now();
 		cnp_handler.set_last_loop = Simulator::Now();
+		cnp_handler.per_recycle_num=((m_recyclePacketCount>>10)>1)?(m_recyclePacketCount>>10):0;
+		//cnp_handler.per_recycle_num=1;
 		m_cnp_handler[key] = cnp_handler;
+		//m_cnp_handler.insert(key, cnp_handler);
 		//std::cout<<Simulator::Now()<<" "<<sid<<" "<<did<<" "<<ch.udp.pg<<" "<<ch.udp.dport<<" "<<ch.udp.sport<<std::endl;
 	}
 	//printf("size of m_cnp_handler: %d\n", m_cnp_handler.size());
@@ -220,6 +222,13 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 	int idx = GetOutDev(p, ch);
 	int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
 
+	// 检查是否是预加载包
+	if (p->recycle_times_left==-1) {
+		// 预加载包直接发送到循环端口
+		idx = loop_qbb_index;
+		//std::cout << "Switch " << idx << " handling preload packet " << ch.udp.seq << " directly to loop port" << std::endl;
+	}
+
 	if (idx >= 0){
 		NS_ASSERT_MSG(m_devices[idx]->IsLinkUp(), "The routing table look up should return link that is up");
 
@@ -234,8 +243,14 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		// rixin: 下面只是更新了idx，也就是要走哪个端口出去，此操作必须在Label1之前，不然循环qbb的egress_bytes会不对，导致产生ECN
 		//zxc:控制逻辑只在外部交换机上实现
 		// rixin: 第二个模块
-		if(0&&(m_id >=48)){
-			
+		if(1&&(m_id >=48)){
+			if (p->recycle_times_left==-1) {
+			// 预加载包直接发送到循环端口
+			idx = loop_qbb_index;
+
+			//std::cout << "Switch " << m_id << " handling preload packet " << ch.udp.seq << " directly to loop port" << std::endl;
+			goto Pre;
+		}
 			int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
 
 			//zxc：判断是否是cnp以及更新cnp_handler信息
@@ -246,28 +261,52 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 				auto iter = m_cnp_handler.find(key);
 				//zxc: 如果没有被cnp命中则直接发走，被命中则进入下方控制逻辑
 				if(iter!=m_cnp_handler.end()) {
+				//if(iter!=nullptr) {
 					//printf("1111111111111111111\n");
-					if (isDataPkt(ch)&&idx!=5) {
+					if (isDataPkt(ch)&&idx!=5&&((!mat_only)||(Simulator::Now()-iter->second.rec_time>=ns3::MicroSeconds(2000)))) {
 						//std::cout << "Pkt recycle" << std::endl;
 						//zxc:recycle_times_left==0表明这个包已经被减速并完成减速
 						//std::cout<<"sid = "<<sid<<", did = "<<did<<"mid = "<<m_id<<"idx = "<<idx<<std::endl;
 						if(p->recycle_times_left!=0){
-							//zxc:this packet is cnp-tergeted for the first time
-							if(p->recycle_times_left < 0){
+							auto flowInfo = std::make_tuple(ch.sip, ch.dip, ch.udp.sport, ch.udp.dport);
+
+							// 如果流信息尚未存储，则存储并输出
+							if (uniqueFlows.find(flowInfo) == uniqueFlows.end()) {
+								uniqueFlows.insert(flowInfo);
+								// std::cout << uniqueFlows.size()
+								// 		<< std::endl;
+							}
+							if(p->recycle_times_left == -100){
 								p->recycle_times_left = iter->second.loop_num;
-								//std::cout<<m_id<<" "<<Simulator::Now()<<" "<<ch.udp.seq<<" "<<p->recycle_times_left<<std::endl;
-								if(p->recycle_times_left){
-									idx = loop_qbb_index;
-									p->recycle_times_left -= 1;
-									iter->second.recover[p->recycle_times_left]++;
-									
+								m_recyclePacketCount++; 
+								//std::cout<<"cnt+: "<<m_recyclePacketCount<<std::endl;
+								if(m_recyclePacketCount>r_max)
+								{
+									r_max=m_recyclePacketCount;
+									//std::cout<<"r_max : "<<r_max<<std::endl;
 								}
+								idx = loop_qbb_index;
+								//std::cout<<m_id<<" "<<Simulator::Now()<<" "<<ch.udp.seq<<" "<<p->recycle_times_left<<std::endl;
+								// if(p->recycle_times_left){
+								// 	idx = loop_qbb_index;
+								// 	p->recycle_times_left -= iter->second.per_recycle_num;
+								// 	if(p->recycle_times_left<0)
+								// 	{
+								// 		p->recycle_times_left=0;
+								// 	}
+								// 	iter->second.recover[p->recycle_times_left]++;
+
+								// }
 							}
 							else{
 								iter->second.recover[p->recycle_times_left]--;
-								p->recycle_times_left -= 1;
-								if(Simulator::Now()-iter->second.rec_time>=ns3::MicroSeconds(500)){
-									iter->second.alpha/=2;
+								p->recycle_times_left -= iter->second.per_recycle_num;
+								if(p->recycle_times_left<0)
+								{
+									p->recycle_times_left=0;
+								}
+								if(Simulator::Now()-iter->second.rec_time>=ns3::MicroSeconds(5000)){
+									iter->second.alpha=1;
 									for(int i = p->recycle_times_left; i >0;i--)
 									{
 										if(iter->second.recover[i])
@@ -277,7 +316,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 									}
 									//std::cout<<"recover"<<std::endl;
 									//p->recycle_times_left/=2;
-									p->recycle_times_left = 0;
+									p->recycle_times_left = 0;// 包通过270行归0，计数器-1
 									goto Send;
 								}
 								Minus:
@@ -285,6 +324,12 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 								idx = loop_qbb_index;
 								
 								iter->second.recover[p->recycle_times_left]++;
+								
+								// 检查循环次数是否归0
+								if(p->recycle_times_left == 0){
+									m_recyclePacketCount--; // 循环次数归0，计数器-1
+									//std::cout<<"cnt : "<<m_recyclePacketCount<<std::endl;
+								}
 							}
 						}
 						else{
@@ -294,7 +339,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 				}
 			}
 		}
-
+		Pre:
 		// Label1：admission control
 		FlowIdTag t;
 		p->PeekPacketTag(t);
@@ -312,6 +357,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 				auto iter = m_cnp_handler.find(key);
 				//zxc: 如果没有被cnp命中则直接发走，被命中则进入下方控制逻辑
 				if(iter!=m_cnp_handler.end()) {
+				//if(iter!=nullptr) {
 					//solution:PFC
 					if(isDataPkt(ch)&&idx!=5)
 					{
@@ -421,11 +467,27 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 		m_mmu->RemoveFromIngressAdmission(inDev, qIndex, p->GetSize());
 		m_mmu->RemoveFromEgressAdmission(ifIndex, qIndex, p->GetSize());
 		m_bytes[inDev][ifIndex][qIndex] -= p->GetSize();
+		
+		// 处理循环包
+		if (ifIndex == loop_qbb_index && m_preloadEnabled) {
+			// 解析自定义头部
+			CustomHeader ch(CustomHeader::L2_Header | CustomHeader::L3_Header | CustomHeader::L4_Header);
+			p->PeekHeader(ch);
+			
+			// 检查是否是预加载包
+			// if (p->recycle_times_left==-1) {
+			// 	// 重新循环这个包
+			// 	Simulator::Schedule(MicroSeconds(1), &SwitchNode::HandlePreloadPacket, this, p);
+			// 	return;
+			// }
+			// 重新添加头部
+		}
+		
 		if (m_ecnEnabled){
 			CustomHeader ch(CustomHeader::L2_Header | CustomHeader::L3_Header | CustomHeader::L4_Header);
 
 			bool egressCongested = m_mmu->ShouldSendCN(ifIndex, qIndex);
-			if(m_mmu->egress_bytes[ifIndex][qIndex])
+			//if(m_mmu->egress_bytes[ifIndex][qIndex])
 				//std::cout<<m_id<<"  "<<m_mmu->egress_bytes[ifIndex][qIndex]<<std::endl;
 			if (egressCongested){
 				Ipv4Header h;
@@ -442,7 +504,7 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 			// 导致CNP发给了接收端，而接收端可能正在发送DC内部流，导致DC内部流的效果变差
 			// rixin: 第一个模块
 			p->PeekHeader(ch);
-			if(1&&isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id >= 48){
+			if(0&&isDataPkt(ch) && ch.GetIpv4EcnBits() && m_id >= 48){
 				//std::cout<<ns3::Simulator::Now().GetNanoSeconds()<<": send cnp1"<<std::endl;
 				// printf("module 1 is running\n");
 				int sid = ip_to_node_id(Ipv4Address(ch.sip)); int did = ip_to_node_id(Ipv4Address(ch.dip));
@@ -450,7 +512,7 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 				Ptr<QbbNetDevice> device = DynamicCast<QbbNetDevice>(m_devices[inDev]);
 					//if(device->enable_themis){
 						Ipv4Header h;
-						PppHeader ppp;
+						PppHeader ppp; 
 						p->RemoveHeader(ppp);
 						p->RemoveHeader(h);
 						//printf("send cnp\n");
@@ -463,16 +525,16 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 							if(Simulator::Now()-iter->second >= ns3::MicroSeconds(5)){
 								Simulator::Schedule(ns3::MicroSeconds(2), &QbbNetDevice::SendCnp, device, p, ch);
 								iter->second = Simulator::Now()+ns3::MicroSeconds(2);
-								//device->SendCnp(p, ch);
-								//iter->second = Simulator::Now();
+								// device->SendCnp(p, ch);
+								// iter->second = Simulator::Now();
 								
 							}
 						}
 						else{
 							Simulator::Schedule(ns3::MicroSeconds(2), &QbbNetDevice::SendCnp, device, p, ch);
 							m_ecn_detector[key] = Simulator::Now()+ns3::MicroSeconds(2);
-							//device->SendCnp(p, ch);
-							//m_ecn_detector[key] = Simulator::Now();
+							// device->SendCnp(p, ch);
+							// m_ecn_detector[key] = Simulator::Now();
 						}
 
 			}
@@ -592,6 +654,141 @@ int SwitchNode::log2apprx(int x, int b, int m, int l){
 		#endif
 	}
 	return int(log2(x) * (1<<logres_shift(b, l)));
+}
+
+//启用预加载功能
+void SwitchNode::EnablePreload(uint32_t packetCount) {
+	m_preloadEnabled = true;
+	m_preloadPacketCount = packetCount;
+	m_preloadPackets.clear();
+	m_preloadPackets.reserve(packetCount);
+	
+	// 创建预加载包
+	for (uint32_t i = 0; i < packetCount; i++) {
+		CreatePreloadPacket(i);
+	}
+	
+	// 延迟注入包，确保网络初始化完成
+	Simulator::Schedule(Seconds(2), &SwitchNode::InjectPreloadPackets, this);
+}
+
+// 创建预加载包
+void SwitchNode::CreatePreloadPacket(uint32_t packetId) {
+    // 1. 创建 qbbHeader (L4/自定义传输层)
+    qbbHeader seqh;
+    seqh.SetSeq(packetId);
+    seqh.SetPG(3); // 优先级组 (Priority Group)
+    seqh.SetSport(10000 + packetId); // 源端口
+    seqh.SetDport(20000 + packetId); // 目标端口
+    // 假设 SetIntHeader 是可选的
+    
+    // 2. 创建数据包的 Payload 部分。
+    // 计算 Payload Data Size = max(最小帧长60 - 以太网头14 - IP头20 - qbbHeader大小, 0)
+    // 这保证了 L4 Header + Payload Data + L3 Header + L2 Header 的总大小能满足最小帧长要求。
+    Ptr<Packet> packet = Create<Packet>(std::max(60-14-20-(int)seqh.GetSerializedSize(), 0));
+    
+    // L4: 添加 qbbHeader (ns-3中，AddHeader是预先添加，所以从高层开始加)
+    packet->AddHeader(seqh);
+    
+    // 3. 添加 IPv4 头部 (L3 网络层)
+    Ipv4Header ipv4Header;
+    ipv4Header.SetSource(Ipv4Address(0x0b000001)); // 虚拟源IP
+    ipv4Header.SetDestination(Ipv4Address(0x0b000002)); // 虚拟目标IP
+    // Protocol 0x11 (UDP) 是 L4 协议号。如果 qbbHeader 是自定义 L4 协议，则使用对应的值。
+    ipv4Header.SetProtocol(0x11);
+    ipv4Header.SetTtl(64);
+    // GetSize() 返回 L4 头部 + Payload Data 的大小 (即 L3 层的 Payload Size)
+    ipv4Header.SetPayloadSize(packet->GetSize()); 
+    ipv4Header.SetIdentification(packetId);
+    
+    // L3: 添加 IPv4 头部
+    packet->AddHeader(ipv4Header);
+    
+    // 4. 添加 PPP 头部 (L2 链路层)
+    // 这是协议栈最底层，最后添加。
+    PppHeader pppHeader;
+    pppHeader.SetProtocol(0x0021); // IPv4协议 (EtherType/Protocol)
+    
+    // L2: 添加 PPP 头部
+    packet->AddHeader(pppHeader);
+    
+    // 5. 设置自定义属性 (Tag)
+    // 移除冗余的 CustomHeader ch 结构体，因为它的内容已在实际头部中设置，且未被序列化。
+    
+    // 设置循环次数标记（假设这是 Ptr<Packet> 上的自定义扩展属性）
+    packet->recycle_times_left = -1; 
+    
+    // 添加流ID标签
+    FlowIdTag flowTag(loop_qbb_index); 
+    packet->AddPacketTag(flowTag);
+    
+    // 6. 将创建好的包加入预载列表
+    m_preloadPackets.push_back(packet);
+}
+
+
+// 注入预加载包
+void SwitchNode::InjectPreloadPackets() {
+	if (!m_preloadEnabled) return;
+	
+	std::cout << "Switch " << m_id << " injecting " << m_preloadPacketCount << " preload packets" << std::endl;
+	
+	for (uint32_t i = 0; i < m_preloadPacketCount; i++) {
+		Ptr<Packet> packet = m_preloadPackets[i]->Copy();
+		HandlePreloadPacket(packet);
+	}
+}
+
+// 处理预加载包
+void SwitchNode::HandlePreloadPacket(Ptr<Packet> packet) {
+    // 解析自定义头部
+    CustomHeader ch(CustomHeader::L2_Header | CustomHeader::L3_Header | CustomHeader::L4_Header);
+    packet->PeekHeader(ch);
+
+    // 创建CNP handler（如果不存在）
+    CnpKey key(ch.sip, ch.dip, ch.udp.pg, ch.udp.sport, ch.udp.dport);
+    auto iter = m_cnp_handler.find(key);
+
+    if (iter == m_cnp_handler.end()) {
+        // 创建新的CNP handler
+        CNP_Handler cnp_handler;
+        cnp_handler.cnp_num = 1;
+        cnp_handler.loop_num = 5; // 设置正常包的初始循环次数
+        cnp_handler.rec_time = Simulator::Now();
+        cnp_handler.set_last_loop = Simulator::Now();
+        m_cnp_handler[key] = cnp_handler;
+        iter = m_cnp_handler.find(key);
+    }
+	packet->recycle_times_left = -1;
+    // 如果是预加载包，确保其循环次数为 -1
+    if (packet->recycle_times_left == -1) {
+        // 预加载包永久循环，不减少循环次数
+        std::cout << "Preload packet detected, recycling indefinitely." << std::endl;
+    } else {
+        // 正常包减少循环次数
+        if (packet->recycle_times_left > 0) {
+            packet->recycle_times_left -= 1;
+            iter->second.recover[packet->recycle_times_left]++;
+        } else {
+            std::cout << "Packet recycle_times_left is 0, stopping loop. " <<packet->recycle_times_left<< std::endl;
+            return;
+        }
+    }
+
+    // 将包发送到循环端口
+    Ptr<QbbNetDevice> loopDevice = DynamicCast<QbbNetDevice>(m_devices[loop_qbb_index]);
+    if (loopDevice) {
+        loopDevice->SwitchSend(3, packet, ch); // 使用队列1
+        m_bytes[loop_qbb_index][loop_qbb_index][1] += packet->GetSize();
+        if (packet->recycle_times_left != -1) {
+            m_recyclePacketCount++; // 更新循环包计数器
+        }
+        std::cout << "Switch " << m_id << " sent packet " << ch.udp.seq
+                  << " to loop port " << loop_qbb_index
+                  << ", recycle_times_left: " << packet->recycle_times_left << std::endl;
+    } else {
+        //std::cout << "Switch " << m_id << " loop device " << loop_qbb_index << " is not a QbbNetDevice!" << std::endl;
+    }
 }
 
 } /* namespace ns3 */

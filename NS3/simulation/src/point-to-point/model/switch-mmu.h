@@ -41,6 +41,7 @@ public:
 	void ConfigNPort(uint32_t n_port);
 	void ConfigBufferSize(uint32_t size);
 
+
 	// config
 	uint32_t node_id;
 	uint32_t buffer_size;

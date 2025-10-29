@@ -7,6 +7,49 @@
 #include "switch-mmu.h"
 #include "pint.h"
 #include <map>
+#include <functional>
+
+namespace ns3 {
+
+	// 定义 CnpKey 结构体
+	struct CnpKey {
+		uint32_t sip;
+		uint32_t dip;
+		uint32_t sport;
+		uint32_t dport;
+		uint16_t qindex;
+		
+		CnpKey() : sip(0), dip(0), sport(0), dport(0), qindex(0) {} // 默认构造函数
+		bool operator<(const CnpKey& other) const {
+			if (sip != other.sip) return sip < other.sip;
+			if (dip != other.dip) return dip < other.dip;
+			if (sport != other.sport) return sport < other.sport;
+			if (dport != other.dport) return dport < other.dport;
+			return qindex < other.qindex;
+		}
+		bool operator==(const CnpKey& other) const {
+			return sip == other.sip && dip == other.dip &&
+				   sport == other.sport && dport == other.dport &&
+				   qindex == other.qindex;
+		}
+	
+		CnpKey(uint32_t sip, uint32_t dip, uint16_t qindex, uint32_t sport, uint32_t dport)
+			: sip(sip), dip(dip), sport(sport), dport(dport), qindex(qindex) {}
+	};
+
+} // namespace ns3
+	
+	// 在全局命名空间中定义 std::hash 的特化
+	namespace std {
+		template <>
+		struct hash<ns3::CnpKey> {
+			size_t operator()(const ns3::CnpKey& key) const {
+				return hash<uint32_t>()(key.sip) ^ hash<uint32_t>()(key.dip) ^
+					   hash<uint32_t>()(key.sport) ^ hash<uint32_t>()(key.dport) ^
+					   hash<uint16_t>()(key.qindex);
+			}
+		};
+	}
 
 namespace ns3 {
 
@@ -30,7 +73,8 @@ class SwitchNode : public Node{
 	double m_u[pCnt];
 
 	public:
-	
+	int64_t  m_recyclePacketCount=0;
+	int64_t r_max;
 	std::unordered_map<uint32_t, std::vector<int> > m_rtTable; // map from ip address (u32) to possible ECMP port (index of dev)
 
 
@@ -51,7 +95,8 @@ class SwitchNode : public Node{
     	bool sended;//是否发送过 废弃
 		uint32_t recovered;//被废弃
 		int recover[3005];//还差n次循环的包数量
-		uint32_t alpha = 5;
+		uint32_t alpha = 1;
+		uint32_t per_recycle_num = 1;
     	CNP_Handler(){
 			cnp_num = 0;
       		rec_time = Time(0);
@@ -68,32 +113,44 @@ class SwitchNode : public Node{
 		};
  	};
 
-	struct CnpKey {
-    	uint32_t sip;
-    	uint32_t dip;
-		uint32_t sport;
-		uint32_t dport;
-    	uint16_t qindex;
-    	// 重载小于运算符，用于 map 的键比较
-    	bool operator<(const CnpKey& other) const {
-      		if (sip != other.sip) {
-        		return sip < other.sip;
-      		}
-      		if (dip != other.dip) {
-       			 return dip < other.dip;
-      		}
-			return qindex < other.qindex;
-    	}
-    	CnpKey(uint32_t sip, uint32_t dip, uint16_t qindex, uint32_t sport, uint32_t dport) {
-	  		this->sip = sip;
-	  		this->dip = dip;
-	  		this->qindex = qindex;
-			this->sport = sport;
-			this->dport = dport;
-		};
-	};
+struct CnpRegister{
+		private:
+    static const size_t TABLE_SIZE = 1024; // 固定大小的哈希表
+    struct Entry {
+        CnpKey key;
+        CNP_Handler second;
+        bool occupied; // 标记该槽位是否被占用
 
+        Entry() : occupied(false) {} // 默认构造函数
+    };
 
+    Entry table[TABLE_SIZE];
+
+    // 自定义哈希函数
+    size_t Hash(const CnpKey& key) const {
+        return (key.sip ^ key.dip ^ key.sport ^ key.dport ^ key.qindex) % TABLE_SIZE;
+    }
+
+public:
+    // 插入键值对
+    void insert(const CnpKey& key, const CNP_Handler& handler) {
+        size_t index = Hash(key);
+        if (table[index].occupied) {
+            // 不解决冲突，直接覆盖或丢弃
+            return;
+        }
+        table[index].key = key;
+        table[index].second = handler;
+        table[index].occupied = true;
+    }
+	Entry* find(const CnpKey& key) {
+        size_t index = Hash(key);
+        if (table[index].occupied && table[index].key == key) {
+            return &table[index];
+        }
+        return nullptr; // 未找到
+    }
+};
 
 
 protected:
@@ -112,6 +169,8 @@ private:
 public:
 	int ReceiveCnp(Ptr<Packet>p, CustomHeader &ch);//zxc:为交换机添加实现控制逻辑所需函数
 	std::map<CnpKey, CNP_Handler> m_cnp_handler;
+	//std::unordered_map<CnpKey, CNP_Handler> m_cnp_handler;
+	//CnpRegister m_cnp_handler;
 	std::map<CnpKey, Time> m_cnp_time;
 	std::map<CnpKey, Time> m_ecn_detector;
 	Ptr<SwitchMmu> m_mmu;
@@ -128,10 +187,21 @@ public:
 	int log2apprx(int x, int b, int m, int l); // given x of at most b bits, use most significant m bits of x, calc the result in l bits
 	uint32_t ExternalSwitch = 0;//zxc:if this is an external switch
 	uint32_t loop_qbb_index=7; //zxc: the index of the loop-decelerating qbb-net-device that installed in this switch
+	
+	// 循环包注入相关变量
+	bool m_preloadEnabled = false; // 是否启用预加载
+	uint32_t m_preloadPacketCount = 0; // 预加载的包数量
+	std::vector<Ptr<Packet>> m_preloadPackets; // 预加载的包列表
+	
+	// 循环包注入相关方法
+	void EnablePreload(uint32_t packetCount);
+	void InjectPreloadPackets();
+	void CreatePreloadPacket(uint32_t packetId);
+	void HandlePreloadPacket(Ptr<Packet> packet);
 };
 
-} /* namespace ns3 */
 
+} /* namespace ns3 */
 
 
 
