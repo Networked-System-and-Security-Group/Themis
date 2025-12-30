@@ -81,7 +81,7 @@ gcc -Wall -O2 -o RDMA_RC_example RDMA_RC_example.c -libverbs
 
 The main branch corresponds to the open source code of paper:
 
->>> Z. Niu, M. Zhang, J. Zhang, R. Xie, Y. Yang and X. Hu, "THEMIS: Addressing Congestion-Induced Unfairness in Long-Haul RDMA Networks," 2025 IEEE 33rd International Conference on Network Protocols (ICNP), Seoul, Korea, Republic of, 2025, pp. 1-13, doi: 10.1109/ICNP65844.2025.11192376.
+> Z. Niu, M. Zhang, J. Zhang, R. Xie, Y. Yang and X. Hu, "THEMIS: Addressing Congestion-Induced Unfairness in Long-Haul RDMA Networks," 2025 IEEE 33rd International Conference on Network Protocols (ICNP), Seoul, Korea, Republic of, 2025, pp. 1-13, doi: 10.1109/ICNP65844.2025.11192376.
 
 If you find THEMIS useful in your research, please consider citing:
 
