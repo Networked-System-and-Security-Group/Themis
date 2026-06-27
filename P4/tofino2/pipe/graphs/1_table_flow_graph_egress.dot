@@ -1,0 +1,73 @@
+digraph egress {
+tbl_themis536 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_themis536\l\l
+R:\l
+ hdr.ethernet.dst_addr\l
+ hdr.ipv4.dst_addr\l
+\lW:\l
+ pnp_dip_hash_0\l
+ tmp1_0\l
+ tmp2_0\l
+ "];
+cond_23 [ shape=record, style="filled", fillcolor=cornsilk, label="meta.is_mirrored == 1\l\l
+ "];
+tbl_themis543 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_themis543\l\l
+R:\l
+ hdr.ethernet.src_addr\l
+ tmp1_0\l
+ hdr.ipv4.src_addr\l
+ tmp2_0\l
+\lW:\l
+ hdr.ethernet.dst_addr\l
+ hdr.ethernet.src_addr\l
+ hdr.ipv4.dst_addr\l
+ hdr.ipv4.src_addr\l
+ hdr.ipv4.ecn\l
+ hdr.bth.dst_qpn\l
+ "];
+cond_25 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.udp.$valid == 1 && hdr.bth.$valid == 1 && hdr.udp.dst_port == 4791 && hdr.bth.opcode != 129\l\l
+ "];
+tbl_themis555 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_themis555\l\l
+R:\l
+ hdr.udp.src_port\l
+\lW:\l
+ hdr.bth.dst_qpn\l
+ "];
+tbl_themis556 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_themis556\l\l
+R:\l
+ pnp_dip_hash_0\l
+\lW:\l
+ hdr.bth.dst_qpn\l
+ hdr.bth.opcode\l
+ "];
+cond_24 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bth.$valid == 1\l\l
+ "];
+tbl_themis559 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_themis559\l\l
+ "];
+cond_26 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bth.$valid == 1\l\l
+ "];
+tbl_themis560 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_themis560\l\l
+ "];
+tbl_themis566 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_themis566\l\l
+ "];
+count_cnp_0 [ shape=record, style="filled", fillcolor=cornsilk, label="count_cnp_0\l\l
+M:\l
+ hdr.bth.opcode\l
+\l "];
+    PARSER -> tbl_themis536
+    tbl_themis536 -> cond_23
+    cond_23 -> tbl_themis543
+    cond_23 -> cond_25
+    tbl_themis543 -> tbl_themis555
+    tbl_themis555 -> tbl_themis556
+    tbl_themis556 -> cond_24
+    cond_24 -> tbl_themis559
+    cond_24 -> cond_26
+    tbl_themis559 -> tbl_themis560
+    tbl_themis560 -> cond_26
+    cond_25 -> tbl_themis566
+    cond_25 -> cond_26
+    tbl_themis566 -> cond_26
+    cond_26 -> count_cnp_0
+    cond_26 -> DEPARSER
+    count_cnp_0 -> DEPARSER
+}

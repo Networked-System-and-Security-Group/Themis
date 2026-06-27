@@ -15,7 +15,13 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #include <poll.h>
+
+#ifndef BFRT_GENERIC_FLAGS
+#define BFRT_GENERIC_FLAGS
+#endif
+
 #include <bf_rt/bf_rt_init.h>
+#include <bf_rt/bf_rt_info.h>
 #include <bf_rt/bf_rt_common.h>
 #include <bf_rt/bf_rt_table_key.h>
 #include <bf_rt/bf_rt_table_data.h>
@@ -86,8 +92,7 @@ typedef struct switch_s {
 
 typedef struct act_l3_table_list_tuple_s{
 	const char* ipv4_addr;
-	// char ipv4_addr[20];
-	uint64_t egress_port;
+	const char* egress_fp_port;
 } act_l3_table_list_tuple_t;
 
 typedef struct act_l3_table_info_s {
@@ -114,8 +119,7 @@ typedef struct act_l3_table_entry_s {
 
 typedef struct act_arp_table_list_tuple_s{
 	const char* ipv4_addr;
-	// char ipv4_addr[20];
-	uint64_t egress_port;
+	const char* egress_fp_port;
 } act_arp_table_list_tuple_t;
 
 typedef struct act_arp_table_info_s {
@@ -161,36 +165,20 @@ typedef struct count_cnp_entry_s {
 } count_cnp_entry_t;
 
 
-typedef struct set_cnp_dstQPN_list_tuple_s{
-	const char* client_ip;
-	uint32_t client_udp_port;
-    uint32_t clientQPN;
-} set_cnp_dstQPN_list_tuple_t;
-
-typedef struct set_cnp_dstQPN_info_s {
-    // Key field ids
-    bf_rt_id_t kid_server_ip;
-    bf_rt_id_t kid_client_ip;
-    bf_rt_id_t kid_serverQPN;
-    // Action Ids
-    bf_rt_id_t aid_set_dstQPN;
-    // Data field Ids for forward
-    bf_rt_id_t did_clientQPN;
-    // Key and Data objects
+typedef struct trp_cnp_store_info_s {
+    bf_rt_id_t kid_dst_ip;
+    bf_rt_id_t kid_dst_qpn;
+    bf_rt_id_t aid_trp_set_loop;
+    bf_rt_id_t did_loop_num;
     bf_rt_table_key_hdl *key;
     bf_rt_table_data_hdl *data;
-} set_cnp_dstQPN_info_t;
+} trp_cnp_store_info_t;
 
-typedef struct set_cnp_dstQPN_entry_s {
-    // Key value
-	uint32_t server_ip;
-	uint32_t client_ip;
-	uint32_t serverQPN;
-    // Action
-    char action[20];
-    // Data value
-    uint32_t clientQPN;
-} set_cnp_dstQPN_entry_t;
+typedef struct trp_cnp_store_entry_s {
+    uint32_t dst_ip;
+    uint32_t dst_qpn;
+    uint32_t loop_num;
+} trp_cnp_store_entry_t;
 
 typedef struct detect_ecn_list_tuple_s{
     uint32_t ecn_value;

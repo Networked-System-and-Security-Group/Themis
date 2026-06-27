@@ -1,0 +1,37 @@
+digraph Egress {
+subgraph cluster {
+graph [
+label="", labeljust=r, style=bold];
+0[label=__START__, margin="", shape=rectangle, style=solid];
+1[label=__EXIT__, margin="", shape=rectangle, style=solid];
+2[label=tbl_themis536, margin="", shape=ellipse, style=solid];
+3[label="meta.is_mirrored == 1;", margin="", shape=rectangle, style=solid];
+4[label=tbl_themis543, margin="", shape=ellipse, style=solid];
+5[label=tbl_themis555, margin="", shape=ellipse, style=solid];
+6[label=tbl_themis556, margin="", shape=ellipse, style=solid];
+7[label="hdr.bth.isValid();", margin="", shape=rectangle, style=solid];
+8[label=tbl_themis559, margin="", shape=ellipse, style=solid];
+9[label=tbl_themis560, margin="", shape=ellipse, style=solid];
+10[label="hdr.udp.isValid() && hdr.bth.isValid() && hdr.udp.dst_port == 4791 && hdr.bth.opcode != 129;", margin="", shape=rectangle, style=solid];
+11[label=tbl_themis566, margin="", shape=ellipse, style=solid];
+12[label="hdr.bth.isValid();", margin="", shape=rectangle, style=solid];
+13[label="Egress.count_cnp", margin="", shape=ellipse, style=solid];
+0 -> 2[label=""];
+2 -> 3[label=""];
+3 -> 4[label=TRUE];
+3 -> 10[label=FALSE];
+4 -> 5[label=""];
+5 -> 6[label=""];
+6 -> 7[label=""];
+7 -> 8[label=TRUE];
+7 -> 12[label=FALSE];
+8 -> 9[label=""];
+9 -> 12[label=""];
+10 -> 11[label=TRUE];
+10 -> 12[label=FALSE];
+11 -> 12[label=""];
+12 -> 13[label=TRUE];
+12 -> 1[label=FALSE];
+13 -> 1[label=""];
+}
+}

@@ -1,0 +1,1310 @@
+FindDependencyGraph : After Instruction Selection
+ingress: [2594165] 0 00 000 0000 00000 000000
+  tbl_themis250
+    stats Ingress.ingress_port_debug_counter  512
+  cond-14(ingress::hdr.ethernet.ether_type == 2048; => $true, 1 => $false)
+    $false: [2594336]
+      arp_table_0
+  cond-15(ingress::hdr.recir.$valid == 1; => $true, 1 => $false)
+    $true: [2594342] 0 00
+      tbl_themis262
+        stats Ingress.recir_return_counter    1
+      cond-16(ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
+        $true: [2594478]
+          tbl_themis266
+            stats Ingress.recir_return_roce_counter    1
+      cond-17(ingress::hdr.recir.cnt == 0; => $true, 1 => $false)
+        $true: [2594484]
+          tbl_themis269
+        $false: [2594564]
+          tbl_themis276
+    $false: [2594784]
+      cond-18(ingress::hdr.ethernet.ether_type == 2048; => $true, 1 => $false)
+        $true: [2594780]
+          tbl_themis300
+        $false: [2594782]
+          tbl_themis303
+  cond-19(ingress::hdr.recir.$valid == 1; => $false, ingress::ig_intr_md.ingress_port == 384; => $false, ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.bth.psn[0:0] != 0; => $false, ingress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
+    $true: [2594899]
+      tbl_start_one_recir
+        stats Ingress.recir_debug_counter    1
+  cond-20(ingress::apply_l3_0 => $true, 1 => $false)
+    $true: [2595001]
+      l3_table_0
+  cond-21(ingress::ig_intr_md_for_tm.ucast_egress_port == 384; => $false, ingress::ig_intr_md.ingress_port == 384; => $false, ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.bth.psn[0:0] != 1; => $false, ingress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
+    $true: [2595007] 0
+      tbl_reconstruct_pnp_sqpn
+      tbl_set_mirror_md
+        stats Ingress.cnp_debug_counter    1
+  cond-22(ingress::ig_intr_md_for_tm.ucast_egress_port == 384; => $false, 1 => $true)
+    $true: [2595197]
+      tbl_themis340
+egress: [2607844] 0 00
+  tbl_themis536
+  cond-23(egress::meta.is_mirrored == 1; => $true, 1 => $false)
+    $true: [2607949] 0 00 000
+      tbl_themis543
+        stats Egress.egress_mirror_seen_counter    1
+      tbl_themis555
+      tbl_themis556
+      cond-24(egress::hdr.bth.$valid == 1; => $true, 1 => $false)
+        $true: [2608245] 0
+          tbl_themis559
+            stats Egress.egress_mirror_bth_counter    1
+          tbl_themis560
+            stats Egress.egress_mirror_cnp_set_counter    1
+    $false: [2608448]
+      cond-25(egress::hdr.udp.$valid != 1; => $false, egress::hdr.bth.$valid != 1; => $false, egress::hdr.bth.opcode == 129; => $false, egress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
+        $true: [2608446]
+          tbl_themis566
+            stats Egress.egress_roce_data_counter    1
+  cond-26(egress::hdr.bth.$valid == 1; => $true, 1 => $false)
+    $true: [2608546]
+      count_cnp_0
+        stats Egress.indirect_counter  512
+
+DepStagesThruDomFrontier postorder : tbl_themis250
+DepStagesThruDomFrontier postorder : arp_table_0
+DepStagesThruDomFrontier postorder : cond-14
+DepStagesThruDomFrontier postorder : tbl_themis262
+DepStagesThruDomFrontier postorder : tbl_themis266
+DepStagesThruDomFrontier postorder : cond-16
+DepStagesThruDomFrontier postorder : tbl_themis269
+DepStagesThruDomFrontier postorder : tbl_themis276
+DepStagesThruDomFrontier postorder : cond-17
+DepStagesThruDomFrontier postorder : tbl_themis300
+DepStagesThruDomFrontier postorder : tbl_themis303
+DepStagesThruDomFrontier postorder : cond-18
+DepStagesThruDomFrontier postorder : cond-15
+DepStagesThruDomFrontier postorder : tbl_start_one_recir
+DepStagesThruDomFrontier postorder : cond-19
+DepStagesThruDomFrontier postorder : l3_table_0
+DepStagesThruDomFrontier postorder : cond-20
+DepStagesThruDomFrontier postorder : tbl_reconstruct_pnp_sqpn
+DepStagesThruDomFrontier postorder : tbl_set_mirror_md
+DepStagesThruDomFrontier postorder : cond-21
+DepStagesThruDomFrontier postorder : tbl_themis340
+DepStagesThruDomFrontier postorder : cond-22
+DepStagesThruDomFrontier postorder : tbl_themis536
+DepStagesThruDomFrontier postorder : tbl_themis543
+DepStagesThruDomFrontier postorder : tbl_themis555
+DepStagesThruDomFrontier postorder : tbl_themis556
+DepStagesThruDomFrontier postorder : tbl_themis559
+DepStagesThruDomFrontier postorder : tbl_themis560
+DepStagesThruDomFrontier postorder : cond-24
+DepStagesThruDomFrontier postorder : tbl_themis566
+DepStagesThruDomFrontier postorder : cond-25
+DepStagesThruDomFrontier postorder : cond-23
+DepStagesThruDomFrontier postorder : count_cnp_0
+DepStagesThruDomFrontier postorder : cond-26
+    Maximum stage number according to dependences: 
+      INGRESS: 4
+      EGRESS: 4
+GRAPH
+    cond-14 -- CONTROL_COND_FALSE --> arp_table_0
+    cond-15 -- CONTROL_COND_TRUE --> tbl_themis262
+    cond-15 -- CONTROL_COND_TRUE --> cond-16
+    cond-15 -- CONTROL_COND_TRUE --> cond-17
+    cond-16 -- CONTROL_COND_TRUE --> tbl_themis266
+    cond-17 -- CONTROL_COND_TRUE --> tbl_themis269
+    cond-17 -- CONTROL_COND_FALSE --> tbl_themis276
+    cond-15 -- CONTROL_COND_FALSE --> cond-18
+    cond-18 -- CONTROL_COND_TRUE --> tbl_themis300
+    cond-18 -- CONTROL_COND_FALSE --> tbl_themis303
+    cond-19 -- CONTROL_COND_TRUE --> tbl_start_one_recir
+    cond-20 -- CONTROL_COND_TRUE --> l3_table_0
+    cond-21 -- CONTROL_COND_TRUE --> tbl_reconstruct_pnp_sqpn
+    cond-21 -- CONTROL_COND_TRUE --> tbl_set_mirror_md
+    cond-22 -- CONTROL_COND_TRUE --> tbl_themis340
+    cond-23 -- CONTROL_COND_TRUE --> tbl_themis543
+    cond-23 -- CONTROL_COND_TRUE --> tbl_themis555
+    cond-23 -- CONTROL_COND_TRUE --> tbl_themis556
+    cond-23 -- CONTROL_COND_TRUE --> cond-24
+    cond-24 -- CONTROL_COND_TRUE --> tbl_themis559
+    cond-24 -- CONTROL_COND_TRUE --> tbl_themis560
+    cond-23 -- CONTROL_COND_FALSE --> cond-25
+    cond-25 -- CONTROL_COND_TRUE --> tbl_themis566
+    cond-26 -- CONTROL_COND_TRUE --> count_cnp_0
+    cond-15 -- ANTI_ACTION_READ --> tbl_themis269
+    cond-17 -- ANTI_ACTION_READ --> tbl_themis276
+    arp_table_0 -- OUTPUT --> tbl_themis276
+    tbl_themis269 -- ACTION_READ --> cond-19
+    cond-15 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    cond-19 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    tbl_themis269 -- OUTPUT --> tbl_start_one_recir
+    cond-17 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    tbl_themis276 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    tbl_themis276 -- OUTPUT --> tbl_start_one_recir
+    tbl_themis300 -- OUTPUT --> tbl_start_one_recir
+    tbl_themis303 -- OUTPUT --> tbl_start_one_recir
+    arp_table_0 -- OUTPUT --> tbl_start_one_recir
+    tbl_themis269 -- ACTION_READ --> cond-20
+    tbl_themis276 -- ACTION_READ --> cond-20
+    tbl_themis300 -- ACTION_READ --> cond-20
+    tbl_themis303 -- ACTION_READ --> cond-20
+    tbl_start_one_recir -- ACTION_READ --> cond-20
+    arp_table_0 -- OUTPUT --> l3_table_0
+    tbl_themis276 -- OUTPUT --> l3_table_0
+    tbl_start_one_recir -- OUTPUT --> l3_table_0
+    l3_table_0 -- ACTION_READ --> cond-21
+    arp_table_0 -- ACTION_READ --> cond-21
+    tbl_themis276 -- ACTION_READ --> cond-21
+    tbl_start_one_recir -- ACTION_READ --> cond-21
+    l3_table_0 -- ACTION_READ --> cond-22
+    arp_table_0 -- ACTION_READ --> cond-22
+    tbl_themis276 -- ACTION_READ --> cond-22
+    tbl_start_one_recir -- ACTION_READ --> cond-22
+    tbl_themis536 -- ANTI_ACTION_READ --> tbl_themis543
+    tbl_themis536 -- ACTION_READ --> tbl_themis543
+    tbl_themis536 -- ANTI_TABLE_READ --> tbl_themis543
+    tbl_themis543 -- OUTPUT --> tbl_themis555
+    tbl_themis555 -- OUTPUT --> tbl_themis556
+    tbl_themis536 -- ACTION_READ --> tbl_themis556
+    tbl_themis556 -- IXBAR_READ --> count_cnp_0
+MIN STAGE INFO
+    Each table also indicates its dependency chain length
+    First number refers to a dependency chain from which each tables are not split
+    Second number refers to a dependency chain from which each tables are split as on  last allocation pass
+ Stage #0
+     cond-14 4 4
+     arp_table_0 4 4
+	- Edge CONTROL_COND_FALSE cond-14
+     cond-15 3 3
+     tbl_themis262 0 0
+	- Edge CONTROL_COND_TRUE cond-15
+     cond-16 0 0
+	- Edge CONTROL_COND_TRUE cond-15
+     cond-17 3 3
+	- Edge CONTROL_COND_TRUE cond-15
+     tbl_themis266 0 0
+	- Edge CONTROL_COND_TRUE cond-16
+     tbl_themis269 3 3
+	- Edge CONTROL_COND_TRUE cond-17
+	- Edge ANTI_ACTION_READ cond-15
+     cond-18 3 3
+	- Edge CONTROL_COND_FALSE cond-15
+     tbl_themis300 3 3
+	- Edge CONTROL_COND_TRUE cond-18
+     tbl_themis303 3 3
+	- Edge CONTROL_COND_FALSE cond-18
+     cond-23 3 3
+     cond-24 0 0
+	- Edge CONTROL_COND_TRUE cond-23
+     tbl_themis559 0 0
+	- Edge CONTROL_COND_TRUE cond-24
+     tbl_themis560 0 0
+	- Edge CONTROL_COND_TRUE cond-24
+     cond-25 0 0
+	- Edge CONTROL_COND_FALSE cond-23
+     tbl_themis566 0 0
+	- Edge CONTROL_COND_TRUE cond-25
+     cond-26 0 0
+     tbl_themis250 0 0
+     tbl_themis536 4 4
+ Stage #1
+     tbl_themis276 3 3
+	- Edge OUTPUT arp_table_0
+     cond-19 2 2
+	- Edge ACTION_READ tbl_themis269
+     tbl_themis543 3 3
+	- Edge ACTION_READ tbl_themis536
+ Stage #2
+     tbl_start_one_recir 2 2
+	- Edge OUTPUT tbl_themis276
+     tbl_themis555 2 2
+	- Edge OUTPUT tbl_themis543
+ Stage #3
+     cond-20 1 1
+	- Edge ACTION_READ tbl_start_one_recir
+     l3_table_0 1 1
+	- Edge CONTROL_COND_TRUE cond-20
+	- Edge OUTPUT tbl_start_one_recir
+     tbl_themis556 1 1
+	- Edge OUTPUT tbl_themis555
+ Stage #4
+     cond-21 0 0
+	- Edge ACTION_READ l3_table_0
+     tbl_reconstruct_pnp_sqpn 0 0
+	- Edge CONTROL_COND_TRUE cond-21
+     tbl_set_mirror_md 0 0
+	- Edge CONTROL_COND_TRUE cond-21
+     cond-22 0 0
+	- Edge ACTION_READ l3_table_0
+     tbl_themis340 0 0
+	- Edge CONTROL_COND_TRUE cond-22
+     count_cnp_0 0 0
+	- Edge IXBAR_READ tbl_themis556
+
+FindDependencyGraph : Just Before PHV allocation
+ingress: [2594165] 0 00 000 0000 00000 000000
+  tbl_themis250
+    stats Ingress.ingress_port_debug_counter  512
+  cond-14(ingress::hdr.ethernet.ether_type == 2048; => $true, 1 => $false)
+    $false: [2594336]
+      arp_table_0
+  cond-15(ingress::hdr.recir.$valid == 1; => $true, 1 => $false)
+    $true: [2594342] 0 00
+      tbl_themis262
+        stats Ingress.recir_return_counter    1
+      cond-16(ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
+        $true: [2594478]
+          tbl_themis266
+            stats Ingress.recir_return_roce_counter    1
+      cond-17(ingress::hdr.recir.cnt == 0; => $true, 1 => $false)
+        $true: [2594484]
+          tbl_themis269
+        $false: [2594564]
+          tbl_themis276
+    $false: [2594784]
+      cond-18(ingress::hdr.ethernet.ether_type == 2048; => $true, 1 => $false)
+        $true: [2594780]
+          tbl_themis300
+        $false: [2594782]
+  cond-19(ingress::hdr.recir.$valid == 1; => $false, ingress::ig_intr_md.ingress_port == 384; => $false, ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.bth.psn[0:0] != 0; => $false, ingress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
+    $true: [2594899]
+      tbl_start_one_recir
+        stats Ingress.recir_debug_counter    1
+  cond-20(ingress::apply_l3_0 => $true, 1 => $false)
+    $true: [2595001]
+      l3_table_0
+  cond-21(ingress::ig_intr_md_for_tm.ucast_egress_port == 384; => $false, ingress::ig_intr_md.ingress_port == 384; => $false, ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.bth.psn[0:0] != 1; => $false, ingress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
+    $true: [2595007]
+      tbl_set_mirror_md
+        stats Ingress.cnp_debug_counter    1
+  cond-22(ingress::ig_intr_md_for_tm.ucast_egress_port == 384; => $false, 1 => $true)
+    $true: [2595197]
+      tbl_themis340
+egress: [2607844] 0 00
+  tbl_themis536
+  cond-23(egress::meta.is_mirrored == 1; => $true, 1 => $false)
+    $true: [2607949] 0 00 000
+      tbl_themis543
+        stats Egress.egress_mirror_seen_counter    1
+      tbl_themis555
+      tbl_themis556
+      cond-24(egress::hdr.bth.$valid == 1; => $true, 1 => $false)
+        $true: [2608245] 0
+          tbl_themis559
+            stats Egress.egress_mirror_bth_counter    1
+          tbl_themis560
+            stats Egress.egress_mirror_cnp_set_counter    1
+    $false: [2608448]
+      cond-25(egress::hdr.udp.$valid != 1; => $false, egress::hdr.bth.$valid != 1; => $false, egress::hdr.bth.opcode == 129; => $false, egress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
+        $true: [2608446]
+          tbl_themis566
+            stats Egress.egress_roce_data_counter    1
+  cond-26(egress::hdr.bth.$valid == 1; => $true, 1 => $false)
+    $true: [2608546]
+      count_cnp_0
+        stats Egress.indirect_counter  512
+
+DepStagesThruDomFrontier postorder : tbl_themis250
+DepStagesThruDomFrontier postorder : arp_table_0
+DepStagesThruDomFrontier postorder : cond-14
+DepStagesThruDomFrontier postorder : tbl_themis262
+DepStagesThruDomFrontier postorder : tbl_themis266
+DepStagesThruDomFrontier postorder : cond-16
+DepStagesThruDomFrontier postorder : tbl_themis269
+DepStagesThruDomFrontier postorder : tbl_themis276
+DepStagesThruDomFrontier postorder : cond-17
+DepStagesThruDomFrontier postorder : tbl_themis300
+DepStagesThruDomFrontier postorder : cond-18
+DepStagesThruDomFrontier postorder : cond-15
+DepStagesThruDomFrontier postorder : tbl_start_one_recir
+DepStagesThruDomFrontier postorder : cond-19
+DepStagesThruDomFrontier postorder : l3_table_0
+DepStagesThruDomFrontier postorder : cond-20
+DepStagesThruDomFrontier postorder : tbl_set_mirror_md
+DepStagesThruDomFrontier postorder : cond-21
+DepStagesThruDomFrontier postorder : tbl_themis340
+DepStagesThruDomFrontier postorder : cond-22
+DepStagesThruDomFrontier postorder : tbl_themis536
+DepStagesThruDomFrontier postorder : tbl_themis543
+DepStagesThruDomFrontier postorder : tbl_themis555
+DepStagesThruDomFrontier postorder : tbl_themis556
+DepStagesThruDomFrontier postorder : tbl_themis559
+DepStagesThruDomFrontier postorder : tbl_themis560
+DepStagesThruDomFrontier postorder : cond-24
+DepStagesThruDomFrontier postorder : tbl_themis566
+DepStagesThruDomFrontier postorder : cond-25
+DepStagesThruDomFrontier postorder : cond-23
+DepStagesThruDomFrontier postorder : count_cnp_0
+DepStagesThruDomFrontier postorder : cond-26
+    Maximum stage number according to dependences: 
+      INGRESS: 4
+      EGRESS: 4
+GRAPH
+    cond-14 -- CONTROL_COND_FALSE --> arp_table_0
+    cond-15 -- CONTROL_COND_TRUE --> tbl_themis262
+    cond-15 -- CONTROL_COND_TRUE --> cond-16
+    cond-15 -- CONTROL_COND_TRUE --> cond-17
+    cond-16 -- CONTROL_COND_TRUE --> tbl_themis266
+    cond-17 -- CONTROL_COND_TRUE --> tbl_themis269
+    cond-17 -- CONTROL_COND_FALSE --> tbl_themis276
+    cond-15 -- CONTROL_COND_FALSE --> cond-18
+    cond-18 -- CONTROL_COND_TRUE --> tbl_themis300
+    cond-19 -- CONTROL_COND_TRUE --> tbl_start_one_recir
+    cond-20 -- CONTROL_COND_TRUE --> l3_table_0
+    cond-21 -- CONTROL_COND_TRUE --> tbl_set_mirror_md
+    cond-22 -- CONTROL_COND_TRUE --> tbl_themis340
+    cond-23 -- CONTROL_COND_TRUE --> tbl_themis543
+    cond-23 -- CONTROL_COND_TRUE --> tbl_themis555
+    cond-23 -- CONTROL_COND_TRUE --> tbl_themis556
+    cond-23 -- CONTROL_COND_TRUE --> cond-24
+    cond-24 -- CONTROL_COND_TRUE --> tbl_themis559
+    cond-24 -- CONTROL_COND_TRUE --> tbl_themis560
+    cond-23 -- CONTROL_COND_FALSE --> cond-25
+    cond-25 -- CONTROL_COND_TRUE --> tbl_themis566
+    cond-26 -- CONTROL_COND_TRUE --> count_cnp_0
+    cond-15 -- ANTI_ACTION_READ --> tbl_themis269
+    cond-17 -- ANTI_ACTION_READ --> tbl_themis276
+    arp_table_0 -- OUTPUT --> tbl_themis276
+    tbl_themis269 -- ACTION_READ --> cond-19
+    cond-15 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    cond-19 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    tbl_themis269 -- OUTPUT --> tbl_start_one_recir
+    cond-17 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    tbl_themis276 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    tbl_themis276 -- OUTPUT --> tbl_start_one_recir
+    tbl_themis300 -- OUTPUT --> tbl_start_one_recir
+    arp_table_0 -- OUTPUT --> tbl_start_one_recir
+    tbl_themis269 -- ACTION_READ --> cond-20
+    tbl_themis300 -- ACTION_READ --> cond-20
+    tbl_start_one_recir -- ACTION_READ --> cond-20
+    arp_table_0 -- OUTPUT --> l3_table_0
+    tbl_themis276 -- OUTPUT --> l3_table_0
+    tbl_start_one_recir -- OUTPUT --> l3_table_0
+    l3_table_0 -- ACTION_READ --> cond-21
+    arp_table_0 -- ACTION_READ --> cond-21
+    tbl_themis276 -- ACTION_READ --> cond-21
+    tbl_start_one_recir -- ACTION_READ --> cond-21
+    l3_table_0 -- ACTION_READ --> cond-22
+    arp_table_0 -- ACTION_READ --> cond-22
+    tbl_themis276 -- ACTION_READ --> cond-22
+    tbl_start_one_recir -- ACTION_READ --> cond-22
+    tbl_themis536 -- ANTI_ACTION_READ --> tbl_themis543
+    tbl_themis536 -- ACTION_READ --> tbl_themis543
+    tbl_themis536 -- ANTI_TABLE_READ --> tbl_themis543
+    tbl_themis543 -- OUTPUT --> tbl_themis555
+    tbl_themis555 -- OUTPUT --> tbl_themis556
+    tbl_themis536 -- ACTION_READ --> tbl_themis556
+    tbl_themis556 -- IXBAR_READ --> count_cnp_0
+MIN STAGE INFO
+    Each table also indicates its dependency chain length
+    First number refers to a dependency chain from which each tables are not split
+    Second number refers to a dependency chain from which each tables are split as on  last allocation pass
+ Stage #0
+     cond-14 4 4
+     arp_table_0 4 4
+	- Edge CONTROL_COND_FALSE cond-14
+     cond-15 3 3
+     tbl_themis262 0 0
+	- Edge CONTROL_COND_TRUE cond-15
+     cond-16 0 0
+	- Edge CONTROL_COND_TRUE cond-15
+     cond-17 3 3
+	- Edge CONTROL_COND_TRUE cond-15
+     tbl_themis266 0 0
+	- Edge CONTROL_COND_TRUE cond-16
+     tbl_themis269 3 3
+	- Edge CONTROL_COND_TRUE cond-17
+	- Edge ANTI_ACTION_READ cond-15
+     cond-18 3 3
+	- Edge CONTROL_COND_FALSE cond-15
+     tbl_themis300 3 3
+	- Edge CONTROL_COND_TRUE cond-18
+     cond-23 3 3
+     cond-24 0 0
+	- Edge CONTROL_COND_TRUE cond-23
+     tbl_themis559 0 0
+	- Edge CONTROL_COND_TRUE cond-24
+     tbl_themis560 0 0
+	- Edge CONTROL_COND_TRUE cond-24
+     cond-25 0 0
+	- Edge CONTROL_COND_FALSE cond-23
+     tbl_themis566 0 0
+	- Edge CONTROL_COND_TRUE cond-25
+     cond-26 0 0
+     tbl_themis250 0 0
+     tbl_themis536 4 4
+ Stage #1
+     tbl_themis276 3 3
+	- Edge OUTPUT arp_table_0
+     cond-19 2 2
+	- Edge ACTION_READ tbl_themis269
+     tbl_themis543 3 3
+	- Edge ACTION_READ tbl_themis536
+ Stage #2
+     tbl_start_one_recir 2 2
+	- Edge OUTPUT tbl_themis276
+     tbl_themis555 2 2
+	- Edge OUTPUT tbl_themis543
+ Stage #3
+     cond-20 1 1
+	- Edge ACTION_READ tbl_start_one_recir
+     l3_table_0 1 1
+	- Edge CONTROL_COND_TRUE cond-20
+	- Edge OUTPUT tbl_start_one_recir
+     tbl_themis556 1 1
+	- Edge OUTPUT tbl_themis555
+ Stage #4
+     cond-21 0 0
+	- Edge ACTION_READ l3_table_0
+     tbl_set_mirror_md 0 0
+	- Edge CONTROL_COND_TRUE cond-21
+     cond-22 0 0
+	- Edge ACTION_READ l3_table_0
+     tbl_themis340 0 0
+	- Edge CONTROL_COND_TRUE cond-22
+     count_cnp_0 0 0
+	- Edge IXBAR_READ tbl_themis556
+
+ingress: [2594165] 0 01 011 0111 01111 011110
+  tbl_themis250
+    stats Ingress.ingress_port_debug_counter  512
+  cond-14(ingress::hdr.ethernet.ether_type == 2048; => $true, 1 => $false)
+    $false: [2594336]
+      arp_table_0{ E 22+0, 2 0K }
+    $true: [2780351]
+  cond-15(ingress::hdr.recir.$valid == 1; => $true, 1 => $false)
+    $true: [2594342] 0 00
+      tbl_themis262
+        stats Ingress.recir_return_counter    1
+      cond-16(ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
+        $true: [2594478]
+          tbl_themis266
+            stats Ingress.recir_return_roce_counter    1
+        $false: [2780498]
+      cond-17(ingress::hdr.recir.cnt == 0; => $true, 1 => $false)
+        $true: [2594484]
+          tbl_themis269
+        $false: [2594564]
+          tbl_themis276
+    $false: [2594784]
+      cond-18(ingress::hdr.ethernet.ether_type == 2048; => $true, 1 => $false)
+        $true: [2594780]
+          tbl_themis300
+        $false: [2594782]
+  cond-19(ingress::hdr.recir.$valid == 1; => $false, ingress::ig_intr_md.ingress_port == 384; => $false, ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, 1 => $gwcont)
+    $false: [2780685]
+    $gwcont: [2788495]
+      cond-19$split(ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.bth.psn[0:0] != 0; => $false, ingress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
+        $true: [2594899]
+          tbl_start_one_recir
+            stats Ingress.recir_debug_counter    1
+        $false: [2780685]...
+  cond-20(ingress::apply_l3_0 => $true, 1 => $false)
+    $true: [2595001]
+      l3_table_0{ E 22+0, 2 0K }
+    $false: [2780775]
+  cond-21(ingress::ig_intr_md_for_tm.ucast_egress_port == 384; => $false, ingress::ig_intr_md.ingress_port == 384; => $false, ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, 1 => $gwcont)
+    $false: [2780902]
+    $gwcont: [2788638]
+      cond-21$split(ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.bth.psn[0:0] != 1; => $false, ingress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
+        $true: [2595007]
+          tbl_set_mirror_md
+            stats Ingress.cnp_debug_counter    1
+        $false: [2780902]...
+  cond-22(ingress::ig_intr_md_for_tm.ucast_egress_port == 384; => $false, 1 => $true)
+    $true: [2595197]
+      tbl_themis340
+    $false: [2780944]
+egress: [2607844] 1 11
+  tbl_themis536
+  cond-23(egress::meta.is_mirrored == 1; => $true, 1 => $false)
+    $true: [2607949] 1 11 000
+      tbl_themis543
+        stats Egress.egress_mirror_seen_counter    1
+      tbl_themis555
+      tbl_themis556
+      cond-24(egress::hdr.bth.$valid == 1; => $true, 1 => $false)
+        $true: [2608245] 0
+          tbl_themis559
+            stats Egress.egress_mirror_bth_counter    1
+          tbl_themis560
+            stats Egress.egress_mirror_cnp_set_counter    1
+        $false: [2781179]
+    $false: [2608448]
+      cond-25(egress::hdr.udp.$valid != 1; => $false, egress::hdr.bth.$valid != 1; => $false, egress::hdr.bth.opcode == 129; => $false, egress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
+        $true: [2608446]
+          tbl_themis566
+            stats Egress.egress_roce_data_counter    1
+        $false: [2781227]
+  cond-26(egress::hdr.bth.$valid == 1; => $true, 1 => $false)
+    $true: [2608546]
+      count_cnp_0{ E -2+0, 0 0K }
+        stats Egress.indirect_counter  512
+    $false: [2781277]
+
+DepStagesThruDomFrontier postorder : tbl_themis250
+DepStagesThruDomFrontier postorder : arp_table_0
+DepStagesThruDomFrontier postorder : cond-14
+DepStagesThruDomFrontier postorder : tbl_themis262
+DepStagesThruDomFrontier postorder : tbl_themis266
+DepStagesThruDomFrontier postorder : cond-16
+DepStagesThruDomFrontier postorder : tbl_themis269
+DepStagesThruDomFrontier postorder : tbl_themis276
+DepStagesThruDomFrontier postorder : cond-17
+DepStagesThruDomFrontier postorder : tbl_themis300
+DepStagesThruDomFrontier postorder : cond-18
+DepStagesThruDomFrontier postorder : cond-15
+DepStagesThruDomFrontier postorder : tbl_start_one_recir
+DepStagesThruDomFrontier postorder : cond-19$split
+DepStagesThruDomFrontier postorder : cond-19
+DepStagesThruDomFrontier postorder : l3_table_0
+DepStagesThruDomFrontier postorder : cond-20
+DepStagesThruDomFrontier postorder : tbl_set_mirror_md
+DepStagesThruDomFrontier postorder : cond-21$split
+DepStagesThruDomFrontier postorder : cond-21
+DepStagesThruDomFrontier postorder : tbl_themis340
+DepStagesThruDomFrontier postorder : cond-22
+DepStagesThruDomFrontier postorder : tbl_themis536
+DepStagesThruDomFrontier postorder : tbl_themis543
+DepStagesThruDomFrontier postorder : tbl_themis555
+DepStagesThruDomFrontier postorder : tbl_themis556
+DepStagesThruDomFrontier postorder : tbl_themis559
+DepStagesThruDomFrontier postorder : tbl_themis560
+DepStagesThruDomFrontier postorder : cond-24
+DepStagesThruDomFrontier postorder : tbl_themis566
+DepStagesThruDomFrontier postorder : cond-25
+DepStagesThruDomFrontier postorder : cond-23
+DepStagesThruDomFrontier postorder : count_cnp_0
+DepStagesThruDomFrontier postorder : cond-26
+    Maximum stage number according to dependences: 
+      INGRESS: 4
+      EGRESS: 4
+GRAPH
+    cond-14 -- CONTROL_COND_FALSE --> arp_table_0
+    cond-15 -- CONTROL_COND_TRUE --> tbl_themis262
+    cond-15 -- CONTROL_COND_TRUE --> cond-16
+    cond-15 -- CONTROL_COND_TRUE --> cond-17
+    cond-16 -- CONTROL_COND_TRUE --> tbl_themis266
+    cond-17 -- CONTROL_COND_TRUE --> tbl_themis269
+    cond-17 -- CONTROL_COND_FALSE --> tbl_themis276
+    cond-15 -- CONTROL_COND_FALSE --> cond-18
+    cond-18 -- CONTROL_COND_TRUE --> tbl_themis300
+    cond-19 -- CONTROL_ACTION --> cond-19$split
+    cond-19$split -- CONTROL_COND_TRUE --> tbl_start_one_recir
+    cond-20 -- CONTROL_COND_TRUE --> l3_table_0
+    cond-21 -- CONTROL_ACTION --> cond-21$split
+    cond-21$split -- CONTROL_COND_TRUE --> tbl_set_mirror_md
+    cond-22 -- CONTROL_COND_TRUE --> tbl_themis340
+    cond-23 -- CONTROL_COND_TRUE --> tbl_themis543
+    cond-23 -- CONTROL_COND_TRUE --> tbl_themis555
+    cond-23 -- CONTROL_COND_TRUE --> tbl_themis556
+    cond-23 -- CONTROL_COND_TRUE --> cond-24
+    cond-24 -- CONTROL_COND_TRUE --> tbl_themis559
+    cond-24 -- CONTROL_COND_TRUE --> tbl_themis560
+    cond-23 -- CONTROL_COND_FALSE --> cond-25
+    cond-25 -- CONTROL_COND_TRUE --> tbl_themis566
+    cond-26 -- CONTROL_COND_TRUE --> count_cnp_0
+    cond-15 -- ANTI_ACTION_READ --> tbl_themis269
+    cond-17 -- ANTI_ACTION_READ --> tbl_themis276
+    arp_table_0 -- OUTPUT --> tbl_themis276
+    tbl_themis269 -- ACTION_READ --> cond-19
+    cond-15 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    cond-19 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    tbl_themis269 -- OUTPUT --> tbl_start_one_recir
+    cond-17 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    tbl_themis276 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    tbl_themis276 -- OUTPUT --> tbl_start_one_recir
+    tbl_themis300 -- OUTPUT --> tbl_start_one_recir
+    arp_table_0 -- OUTPUT --> tbl_start_one_recir
+    tbl_themis269 -- ACTION_READ --> cond-20
+    tbl_themis300 -- ACTION_READ --> cond-20
+    tbl_start_one_recir -- ACTION_READ --> cond-20
+    arp_table_0 -- OUTPUT --> l3_table_0
+    tbl_themis276 -- OUTPUT --> l3_table_0
+    tbl_start_one_recir -- OUTPUT --> l3_table_0
+    l3_table_0 -- ACTION_READ --> cond-21
+    arp_table_0 -- ACTION_READ --> cond-21
+    tbl_themis276 -- ACTION_READ --> cond-21
+    tbl_start_one_recir -- ACTION_READ --> cond-21
+    l3_table_0 -- ACTION_READ --> cond-22
+    arp_table_0 -- ACTION_READ --> cond-22
+    tbl_themis276 -- ACTION_READ --> cond-22
+    tbl_start_one_recir -- ACTION_READ --> cond-22
+    tbl_themis536 -- ANTI_ACTION_READ --> tbl_themis543
+    tbl_themis536 -- ACTION_READ --> tbl_themis543
+    tbl_themis536 -- ANTI_TABLE_READ --> tbl_themis543
+    tbl_themis543 -- OUTPUT --> tbl_themis555
+    tbl_themis555 -- OUTPUT --> tbl_themis556
+    tbl_themis536 -- ACTION_READ --> tbl_themis556
+    tbl_themis556 -- IXBAR_READ --> count_cnp_0
+MIN STAGE INFO
+    Each table also indicates its dependency chain length
+    First number refers to a dependency chain from which each tables are not split
+    Second number refers to a dependency chain from which each tables are split as on  last allocation pass
+ Stage #0
+     cond-14 4 4
+     arp_table_0 4 4
+	- Edge CONTROL_COND_FALSE cond-14
+     cond-15 3 3
+     tbl_themis262 0 0
+	- Edge CONTROL_COND_TRUE cond-15
+     cond-16 0 0
+	- Edge CONTROL_COND_TRUE cond-15
+     cond-17 3 3
+	- Edge CONTROL_COND_TRUE cond-15
+     tbl_themis266 0 0
+	- Edge CONTROL_COND_TRUE cond-16
+     tbl_themis269 3 3
+	- Edge CONTROL_COND_TRUE cond-17
+	- Edge ANTI_ACTION_READ cond-15
+     cond-18 3 3
+	- Edge CONTROL_COND_FALSE cond-15
+     tbl_themis300 3 3
+	- Edge CONTROL_COND_TRUE cond-18
+     cond-23 3 3
+     cond-24 0 0
+	- Edge CONTROL_COND_TRUE cond-23
+     tbl_themis559 0 0
+	- Edge CONTROL_COND_TRUE cond-24
+     tbl_themis560 0 0
+	- Edge CONTROL_COND_TRUE cond-24
+     cond-25 0 0
+	- Edge CONTROL_COND_FALSE cond-23
+     tbl_themis566 0 0
+	- Edge CONTROL_COND_TRUE cond-25
+     cond-26 0 0
+     tbl_themis250 0 0
+     tbl_themis536 4 4
+ Stage #1
+     tbl_themis276 3 3
+	- Edge OUTPUT arp_table_0
+     cond-19 2 2
+	- Edge ACTION_READ tbl_themis269
+     cond-19$split 2 2
+	- Edge CONTROL_ACTION cond-19
+     tbl_themis543 3 3
+	- Edge ACTION_READ tbl_themis536
+ Stage #2
+     tbl_start_one_recir 2 2
+	- Edge OUTPUT tbl_themis276
+     tbl_themis555 2 2
+	- Edge OUTPUT tbl_themis543
+ Stage #3
+     cond-20 1 1
+	- Edge ACTION_READ tbl_start_one_recir
+     l3_table_0 1 1
+	- Edge CONTROL_COND_TRUE cond-20
+	- Edge OUTPUT tbl_start_one_recir
+     tbl_themis556 1 1
+	- Edge OUTPUT tbl_themis555
+ Stage #4
+     cond-21 0 0
+	- Edge ACTION_READ l3_table_0
+     cond-21$split 0 0
+	- Edge CONTROL_ACTION cond-21
+     tbl_set_mirror_md 0 0
+	- Edge CONTROL_COND_TRUE cond-21$split
+     cond-22 0 0
+	- Edge ACTION_READ l3_table_0
+     tbl_themis340 0 0
+	- Edge CONTROL_COND_TRUE cond-22
+     count_cnp_0 0 0
+	- Edge IXBAR_READ tbl_themis556
+
+FindDependencyGraph : Before Table Placement
+ingress: [2594165] 0 01 011 0111 01111 011110
+  tbl_themis250
+    stats Ingress.ingress_port_debug_counter  512
+  cond-14(ingress::hdr.ethernet.ether_type == 2048; => $true, 1 => $false)
+    $false: [2594336]
+      arp_table_0{ E 22+0, 2 0K }
+    $true: [2780351]
+  cond-15(ingress::hdr.recir.$valid == 1; => $true, 1 => $false)
+    $true: [2594342] 0 00
+      tbl_themis262
+        stats Ingress.recir_return_counter    1
+      cond-16(ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
+        $true: [2594478]
+          tbl_themis266
+            stats Ingress.recir_return_roce_counter    1
+        $false: [2780498]
+      cond-17(ingress::hdr.recir.cnt == 0; => $true, 1 => $false)
+        $true: [2594484]
+          tbl_themis269
+        $false: [2594564]
+          tbl_themis276
+    $false: [2594784]
+      cond-18(ingress::hdr.ethernet.ether_type == 2048; => $true, 1 => $false)
+        $true: [2594780]
+          tbl_themis300
+        $false: [2594782]
+  cond-19(ingress::hdr.recir.$valid == 1; => $false, ingress::ig_intr_md.ingress_port == 384; => $false, ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, 1 => $gwcont)
+    $false: [2780685]
+    $gwcont: [2788495]
+      cond-19$split(ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.bth.psn[0:0] != 0; => $false, ingress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
+        $true: [2594899]
+          tbl_start_one_recir
+            stats Ingress.recir_debug_counter    1
+        $false: [2780685]...
+  cond-20(ingress::apply_l3_0 => $true, 1 => $false)
+    $true: [2595001]
+      l3_table_0{ E 22+0, 2 0K }
+    $false: [2780775]
+  cond-21(ingress::ig_intr_md_for_tm.ucast_egress_port == 384; => $false, ingress::ig_intr_md.ingress_port == 384; => $false, ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, 1 => $gwcont)
+    $false: [2780902]
+    $gwcont: [2788638]
+      cond-21$split(ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.bth.psn[0:0] != 1; => $false, ingress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
+        $true: [2595007]
+          tbl_set_mirror_md
+            stats Ingress.cnp_debug_counter    1
+        $false: [2780902]...
+  cond-22(ingress::ig_intr_md_for_tm.ucast_egress_port == 384; => $false, 1 => $true)
+    $true: [2595197]
+      tbl_themis340
+    $false: [2780944]
+egress: [2607844] 1 11
+  tbl_themis536
+  cond-23(egress::meta.is_mirrored == 1; => $true, 1 => $false)
+    $true: [2607949] 1 11 000
+      tbl_themis543
+        stats Egress.egress_mirror_seen_counter    1
+      tbl_themis555
+      tbl_themis556
+      cond-24(egress::hdr.bth.$valid == 1; => $true, 1 => $false)
+        $true: [2608245] 0
+          tbl_themis559
+            stats Egress.egress_mirror_bth_counter    1
+          tbl_themis560
+            stats Egress.egress_mirror_cnp_set_counter    1
+        $false: [2781179]
+    $false: [2608448]
+      cond-25(egress::hdr.udp.$valid != 1; => $false, egress::hdr.bth.$valid != 1; => $false, egress::hdr.bth.opcode == 129; => $false, egress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
+        $true: [2608446]
+          tbl_themis566
+            stats Egress.egress_roce_data_counter    1
+        $false: [2781227]
+  cond-26(egress::hdr.bth.$valid == 1; => $true, 1 => $false)
+    $true: [2608546]
+      count_cnp_0{ E -2+0, 0 0K }
+        stats Egress.indirect_counter  512
+    $false: [2781277]
+
+DepStagesThruDomFrontier postorder : tbl_themis250
+DepStagesThruDomFrontier postorder : arp_table_0
+DepStagesThruDomFrontier postorder : cond-14
+DepStagesThruDomFrontier postorder : tbl_themis262
+DepStagesThruDomFrontier postorder : tbl_themis266
+DepStagesThruDomFrontier postorder : cond-16
+DepStagesThruDomFrontier postorder : tbl_themis269
+DepStagesThruDomFrontier postorder : tbl_themis276
+DepStagesThruDomFrontier postorder : cond-17
+DepStagesThruDomFrontier postorder : tbl_themis300
+DepStagesThruDomFrontier postorder : cond-18
+DepStagesThruDomFrontier postorder : cond-15
+DepStagesThruDomFrontier postorder : tbl_start_one_recir
+DepStagesThruDomFrontier postorder : cond-19$split
+DepStagesThruDomFrontier postorder : cond-19
+DepStagesThruDomFrontier postorder : l3_table_0
+DepStagesThruDomFrontier postorder : cond-20
+DepStagesThruDomFrontier postorder : tbl_set_mirror_md
+DepStagesThruDomFrontier postorder : cond-21$split
+DepStagesThruDomFrontier postorder : cond-21
+DepStagesThruDomFrontier postorder : tbl_themis340
+DepStagesThruDomFrontier postorder : cond-22
+DepStagesThruDomFrontier postorder : tbl_themis536
+DepStagesThruDomFrontier postorder : tbl_themis543
+DepStagesThruDomFrontier postorder : tbl_themis555
+DepStagesThruDomFrontier postorder : tbl_themis556
+DepStagesThruDomFrontier postorder : tbl_themis559
+DepStagesThruDomFrontier postorder : tbl_themis560
+DepStagesThruDomFrontier postorder : cond-24
+DepStagesThruDomFrontier postorder : tbl_themis566
+DepStagesThruDomFrontier postorder : cond-25
+DepStagesThruDomFrontier postorder : cond-23
+DepStagesThruDomFrontier postorder : count_cnp_0
+DepStagesThruDomFrontier postorder : cond-26
+    Maximum stage number according to dependences: 
+      INGRESS: 4
+      EGRESS: 4
+GRAPH
+    cond-14 -- CONTROL_COND_FALSE --> arp_table_0
+    cond-15 -- CONTROL_COND_TRUE --> tbl_themis262
+    cond-15 -- CONTROL_COND_TRUE --> cond-16
+    cond-15 -- CONTROL_COND_TRUE --> cond-17
+    cond-16 -- CONTROL_COND_TRUE --> tbl_themis266
+    cond-17 -- CONTROL_COND_TRUE --> tbl_themis269
+    cond-17 -- CONTROL_COND_FALSE --> tbl_themis276
+    cond-15 -- CONTROL_COND_FALSE --> cond-18
+    cond-18 -- CONTROL_COND_TRUE --> tbl_themis300
+    cond-19 -- CONTROL_ACTION --> cond-19$split
+    cond-19$split -- CONTROL_COND_TRUE --> tbl_start_one_recir
+    cond-20 -- CONTROL_COND_TRUE --> l3_table_0
+    cond-21 -- CONTROL_ACTION --> cond-21$split
+    cond-21$split -- CONTROL_COND_TRUE --> tbl_set_mirror_md
+    cond-22 -- CONTROL_COND_TRUE --> tbl_themis340
+    cond-23 -- CONTROL_COND_TRUE --> tbl_themis543
+    cond-23 -- CONTROL_COND_TRUE --> tbl_themis555
+    cond-23 -- CONTROL_COND_TRUE --> tbl_themis556
+    cond-23 -- CONTROL_COND_TRUE --> cond-24
+    cond-24 -- CONTROL_COND_TRUE --> tbl_themis559
+    cond-24 -- CONTROL_COND_TRUE --> tbl_themis560
+    cond-23 -- CONTROL_COND_FALSE --> cond-25
+    cond-25 -- CONTROL_COND_TRUE --> tbl_themis566
+    cond-26 -- CONTROL_COND_TRUE --> count_cnp_0
+    cond-15 -- ANTI_ACTION_READ --> tbl_themis269
+    cond-17 -- ANTI_ACTION_READ --> tbl_themis276
+    arp_table_0 -- OUTPUT --> tbl_themis276
+    tbl_themis269 -- ACTION_READ --> cond-19
+    cond-15 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    cond-19 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    tbl_themis269 -- OUTPUT --> tbl_start_one_recir
+    cond-17 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    tbl_themis276 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    tbl_themis276 -- OUTPUT --> tbl_start_one_recir
+    tbl_themis300 -- OUTPUT --> tbl_start_one_recir
+    arp_table_0 -- OUTPUT --> tbl_start_one_recir
+    tbl_themis269 -- ACTION_READ --> cond-20
+    tbl_themis300 -- ACTION_READ --> cond-20
+    tbl_start_one_recir -- ACTION_READ --> cond-20
+    arp_table_0 -- OUTPUT --> l3_table_0
+    tbl_themis276 -- OUTPUT --> l3_table_0
+    tbl_start_one_recir -- OUTPUT --> l3_table_0
+    l3_table_0 -- ACTION_READ --> cond-21
+    arp_table_0 -- ACTION_READ --> cond-21
+    tbl_themis276 -- ACTION_READ --> cond-21
+    tbl_start_one_recir -- ACTION_READ --> cond-21
+    l3_table_0 -- ACTION_READ --> cond-22
+    arp_table_0 -- ACTION_READ --> cond-22
+    tbl_themis276 -- ACTION_READ --> cond-22
+    tbl_start_one_recir -- ACTION_READ --> cond-22
+    tbl_themis536 -- ANTI_ACTION_READ --> tbl_themis543
+    tbl_themis536 -- ACTION_READ --> tbl_themis543
+    tbl_themis536 -- ANTI_TABLE_READ --> tbl_themis543
+    tbl_themis543 -- OUTPUT --> tbl_themis555
+    tbl_themis555 -- OUTPUT --> tbl_themis556
+    tbl_themis536 -- ACTION_READ --> tbl_themis556
+    tbl_themis556 -- IXBAR_READ --> count_cnp_0
+MIN STAGE INFO
+    Each table also indicates its dependency chain length
+    First number refers to a dependency chain from which each tables are not split
+    Second number refers to a dependency chain from which each tables are split as on  last allocation pass
+ Stage #0
+     cond-14 4 4
+     arp_table_0 4 4
+	- Edge CONTROL_COND_FALSE cond-14
+     cond-15 3 3
+     tbl_themis262 0 0
+	- Edge CONTROL_COND_TRUE cond-15
+     cond-16 0 0
+	- Edge CONTROL_COND_TRUE cond-15
+     cond-17 3 3
+	- Edge CONTROL_COND_TRUE cond-15
+     tbl_themis266 0 0
+	- Edge CONTROL_COND_TRUE cond-16
+     tbl_themis269 3 3
+	- Edge CONTROL_COND_TRUE cond-17
+	- Edge ANTI_ACTION_READ cond-15
+     cond-18 3 3
+	- Edge CONTROL_COND_FALSE cond-15
+     tbl_themis300 3 3
+	- Edge CONTROL_COND_TRUE cond-18
+     cond-23 3 3
+     cond-24 0 0
+	- Edge CONTROL_COND_TRUE cond-23
+     tbl_themis559 0 0
+	- Edge CONTROL_COND_TRUE cond-24
+     tbl_themis560 0 0
+	- Edge CONTROL_COND_TRUE cond-24
+     cond-25 0 0
+	- Edge CONTROL_COND_FALSE cond-23
+     tbl_themis566 0 0
+	- Edge CONTROL_COND_TRUE cond-25
+     cond-26 0 0
+     tbl_themis250 0 0
+     tbl_themis536 4 4
+ Stage #1
+     tbl_themis276 3 3
+	- Edge OUTPUT arp_table_0
+     cond-19 2 2
+	- Edge ACTION_READ tbl_themis269
+     cond-19$split 2 2
+	- Edge CONTROL_ACTION cond-19
+     tbl_themis543 3 3
+	- Edge ACTION_READ tbl_themis536
+ Stage #2
+     tbl_start_one_recir 2 2
+	- Edge OUTPUT tbl_themis276
+     tbl_themis555 2 2
+	- Edge OUTPUT tbl_themis543
+ Stage #3
+     cond-20 1 1
+	- Edge ACTION_READ tbl_start_one_recir
+     l3_table_0 1 1
+	- Edge CONTROL_COND_TRUE cond-20
+	- Edge OUTPUT tbl_start_one_recir
+     tbl_themis556 1 1
+	- Edge OUTPUT tbl_themis555
+ Stage #4
+     cond-21 0 0
+	- Edge ACTION_READ l3_table_0
+     cond-21$split 0 0
+	- Edge CONTROL_ACTION cond-21
+     tbl_set_mirror_md 0 0
+	- Edge CONTROL_COND_TRUE cond-21$split
+     cond-22 0 0
+	- Edge ACTION_READ l3_table_0
+     tbl_themis340 0 0
+	- Edge CONTROL_COND_TRUE cond-22
+     count_cnp_0 0 0
+	- Edge IXBAR_READ tbl_themis556
+
+FindDependencyGraph : After Table Placement
+ingress: [2594165] 1 00 110 1101 11011 110110
+  1: arp_table_0(ingress::hdr.ethernet.ether_type == 2048; => $true, 1){ GE 22+9, 2 [1x1 1K 1K 1K 1K] }
+    $true: [2780351]
+  2: tbl_themis262(ingress::hdr.recir.$valid == 1;, 1 => $false){ GE 0+10, 0 0K }
+    stats Ingress.recir_return_counter 1   
+    $false: [2594784]
+      3: tbl_themis300(ingress::hdr.ethernet.ether_type == 2048;, 1 => $false)
+        $false: [2594782]
+    $default: [2594342] 0
+      4: tbl_themis266(ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.udp.dst_port == 4791;, 1 => $false){ GE 0+10, 0 0K }
+        stats Ingress.recir_return_roce_counter 1   
+        $false: [2780498]
+      10: tbl_themis269(ingress::hdr.recir.cnt == 0;, 1 => $false)
+        $false: [2594564]
+          11: tbl_themis276
+  5: tbl_themis250
+    stats Ingress.ingress_port_debug_counter 512 
+  21: cond-19(ingress::hdr.recir.$valid == 1; => $false, ingress::ig_intr_md.ingress_port == 384; => $false, ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, 1 => $gwcont)
+    $false: [2780685]
+    $gwcont: [2788495]
+      22: tbl_start_one_recir(ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.bth.psn[0:0] != 0; => $false, ingress::hdr.udp.dst_port == 4791;, 1 => $false){ GE 0+30, 4 0K }
+        stats Ingress.recir_debug_counter 1   
+        $false: [2780685]...
+  31: l3_table_0(ingress::apply_l3_0, 1 => $false){ GE 22+9, 2 [1x1 1K 1K 1K 1K] }
+    $false: [2780775]
+  41: tbl_themis340(ingress::ig_intr_md_for_tm.ucast_egress_port == 384; => $false, 1)
+    $false: [2780944]
+  42: cond-21(ingress::ig_intr_md_for_tm.ucast_egress_port == 384; => $false, ingress::ig_intr_md.ingress_port == 384; => $false, ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, 1 => $gwcont)
+    $false: [2780902]
+    $gwcont: [2788638]
+      50: tbl_set_mirror_md(ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.bth.psn[0:0] != 1; => $false, ingress::hdr.udp.dst_port == 4791;, 1 => $false){ GE 0+10, 0 0K }
+        stats Ingress.cnp_debug_counter 1   
+        $false: [2780902]...
+egress: [2607844] 1 11
+  0: tbl_themis536
+  12: tbl_themis543(egress::meta.is_mirrored == 1;, 1 => $false){ GE 0+10, 0 0K }
+    stats Egress.egress_mirror_seen_counter 1   
+    $false: [2608448]
+      13: tbl_themis566(egress::hdr.udp.$valid != 1; => $false, egress::hdr.bth.$valid != 1; => $false, egress::hdr.bth.opcode == 129; => $false, egress::hdr.udp.dst_port == 4791;, 1 => $false){ GE 0+10, 0 0K }
+        stats Egress.egress_roce_data_counter 1   
+        $false: [2781227]
+    $default: [2607949] 0 01
+      14: tbl_themis560(egress::hdr.bth.$valid == 1;, 1 => $false){ GE 0+10, 0 0K }
+        stats Egress.egress_mirror_cnp_set_counter 1   
+        $false: [2781179]
+        $default: [2608245]
+          15: tbl_themis559{ E 0+10, 0 0K }
+            stats Egress.egress_mirror_bth_counter 1   
+      20: tbl_themis555
+      30: tbl_themis556
+  40: count_cnp_0(egress::hdr.bth.$valid == 1;, 1 => $false){ GE -2+10, 0 [1x1 1K] }
+    stats Egress.indirect_counter 512 
+    $false: [2781277]
+
+DepStagesThruDomFrontier postorder : arp_table_0
+DepStagesThruDomFrontier postorder : tbl_themis300
+DepStagesThruDomFrontier postorder : tbl_themis266
+DepStagesThruDomFrontier postorder : tbl_themis276
+DepStagesThruDomFrontier postorder : tbl_themis269
+DepStagesThruDomFrontier postorder : tbl_themis262
+DepStagesThruDomFrontier postorder : tbl_themis250
+DepStagesThruDomFrontier postorder : tbl_start_one_recir
+DepStagesThruDomFrontier postorder : cond-19
+DepStagesThruDomFrontier postorder : l3_table_0
+DepStagesThruDomFrontier postorder : tbl_themis340
+DepStagesThruDomFrontier postorder : tbl_set_mirror_md
+DepStagesThruDomFrontier postorder : cond-21
+DepStagesThruDomFrontier postorder : tbl_themis536
+DepStagesThruDomFrontier postorder : tbl_themis566
+DepStagesThruDomFrontier postorder : tbl_themis559
+DepStagesThruDomFrontier postorder : tbl_themis560
+DepStagesThruDomFrontier postorder : tbl_themis555
+DepStagesThruDomFrontier postorder : tbl_themis556
+DepStagesThruDomFrontier postorder : tbl_themis543
+DepStagesThruDomFrontier postorder : count_cnp_0
+    Maximum stage number according to dependences: 
+      INGRESS: 4
+      EGRESS: 4
+GRAPH
+    tbl_themis262 -- CONTROL_COND_FALSE --> tbl_themis300
+    tbl_themis262 -- CONTROL_DEFAULT_NEXT_TABLE --> tbl_themis266
+    tbl_themis262 -- CONTROL_DEFAULT_NEXT_TABLE --> tbl_themis269
+    tbl_themis269 -- CONTROL_COND_FALSE --> tbl_themis276
+    cond-19 -- CONTROL_ACTION --> tbl_start_one_recir
+    cond-21 -- CONTROL_ACTION --> tbl_set_mirror_md
+    tbl_themis543 -- CONTROL_COND_FALSE --> tbl_themis566
+    tbl_themis543 -- CONTROL_DEFAULT_NEXT_TABLE --> tbl_themis560
+    tbl_themis543 -- CONTROL_DEFAULT_NEXT_TABLE --> tbl_themis555
+    tbl_themis543 -- CONTROL_DEFAULT_NEXT_TABLE --> tbl_themis556
+    tbl_themis560 -- CONTROL_DEFAULT_NEXT_TABLE --> tbl_themis559
+    tbl_themis262 -- ANTI_ACTION_READ --> tbl_themis269
+    tbl_themis269 -- ANTI_ACTION_READ --> tbl_themis276
+    arp_table_0 -- OUTPUT --> tbl_themis276
+    tbl_themis269 -- ACTION_READ --> cond-19
+    tbl_themis269 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    tbl_themis276 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    tbl_themis276 -- OUTPUT --> tbl_start_one_recir
+    tbl_themis269 -- OUTPUT --> tbl_start_one_recir
+    tbl_themis300 -- OUTPUT --> tbl_start_one_recir
+    tbl_themis276 -- ACTION_READ --> tbl_start_one_recir
+    tbl_themis262 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    cond-19 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    arp_table_0 -- ACTION_READ --> tbl_start_one_recir
+    arp_table_0 -- OUTPUT --> tbl_start_one_recir
+    tbl_themis269 -- ACTION_READ --> l3_table_0
+    tbl_themis300 -- ACTION_READ --> l3_table_0
+    tbl_start_one_recir -- ACTION_READ --> l3_table_0
+    arp_table_0 -- OUTPUT --> l3_table_0
+    tbl_themis276 -- OUTPUT --> l3_table_0
+    tbl_start_one_recir -- OUTPUT --> l3_table_0
+    tbl_start_one_recir -- ANTI_ACTION_READ --> l3_table_0
+    l3_table_0 -- ACTION_READ --> tbl_themis340
+    arp_table_0 -- ACTION_READ --> tbl_themis340
+    tbl_themis276 -- ACTION_READ --> tbl_themis340
+    tbl_start_one_recir -- ACTION_READ --> tbl_themis340
+    l3_table_0 -- ACTION_READ --> cond-21
+    arp_table_0 -- ACTION_READ --> cond-21
+    tbl_themis276 -- ACTION_READ --> cond-21
+    tbl_start_one_recir -- ACTION_READ --> cond-21
+    tbl_themis536 -- ANTI_ACTION_READ --> tbl_themis543
+    tbl_themis536 -- ACTION_READ --> tbl_themis543
+    tbl_themis536 -- ANTI_TABLE_READ --> tbl_themis543
+    tbl_themis543 -- OUTPUT --> tbl_themis555
+    tbl_themis555 -- OUTPUT --> tbl_themis556
+    tbl_themis536 -- ACTION_READ --> tbl_themis556
+    tbl_themis556 -- IXBAR_READ --> count_cnp_0
+MIN STAGE INFO
+    Each table also indicates its dependency chain length
+    First number refers to a dependency chain from which each tables are not split
+    Second number refers to a dependency chain from which each tables are split as on  last allocation pass
+ Stage #0
+     tbl_themis262 3 3
+     tbl_themis300 3 3
+	- Edge CONTROL_COND_FALSE tbl_themis262
+     tbl_themis266 0 0
+	- Edge CONTROL_DEFAULT_NEXT_TABLE tbl_themis262
+     tbl_themis269 3 3
+	- Edge CONTROL_DEFAULT_NEXT_TABLE tbl_themis262
+	- Edge ANTI_ACTION_READ tbl_themis262
+     arp_table_0 4 4
+     tbl_themis250 0 0
+     tbl_themis536 4 4
+ Stage #1
+     tbl_themis276 3 3
+	- Edge OUTPUT arp_table_0
+     cond-19 2 2
+	- Edge ACTION_READ tbl_themis269
+     tbl_themis543 3 3
+	- Edge ACTION_READ tbl_themis536
+     tbl_themis566 0 0
+	- Edge CONTROL_COND_FALSE tbl_themis543
+     tbl_themis560 0 0
+	- Edge CONTROL_DEFAULT_NEXT_TABLE tbl_themis543
+     tbl_themis559 0 0
+	- Edge CONTROL_DEFAULT_NEXT_TABLE tbl_themis560
+ Stage #2
+     tbl_start_one_recir 2 2
+	- Edge OUTPUT tbl_themis276
+	- Edge ACTION_READ tbl_themis276
+     tbl_themis555 2 2
+	- Edge OUTPUT tbl_themis543
+ Stage #3
+     tbl_themis556 1 1
+	- Edge OUTPUT tbl_themis555
+     l3_table_0 1 1
+	- Edge ACTION_READ tbl_start_one_recir
+	- Edge OUTPUT tbl_start_one_recir
+ Stage #4
+     cond-21 0 0
+	- Edge ACTION_READ l3_table_0
+     tbl_set_mirror_md 0 0
+	- Edge CONTROL_ACTION cond-21
+     tbl_themis340 0 0
+	- Edge ACTION_READ l3_table_0
+     count_cnp_0 0 0
+	- Edge IXBAR_READ tbl_themis556
+
+FindDependencyGraph : Power Calculation
+ingress: [2594165] 1 00 110 1101 11011 110110
+  1: arp_table_0(ingress::hdr.ethernet.ether_type == 2048; => $true, 1){ GE 22+9, 2 [1x1 1K 1K 1K 1K] }
+    $true: [2780351]
+  2: tbl_themis262(ingress::hdr.recir.$valid == 1;, 1 => $false){ GE 0+10, 0 0K }
+    stats Ingress.recir_return_counter 1   
+    $false: [2594784]
+      3: tbl_themis300(ingress::hdr.ethernet.ether_type == 2048;, 1 => $false)
+        $false: [2594782]
+    $default: [2594342] 0
+      4: tbl_themis266(ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.udp.dst_port == 4791;, 1 => $false){ GE 0+10, 0 0K }
+        stats Ingress.recir_return_roce_counter 1   
+        $false: [2780498]
+      10: tbl_themis269(ingress::hdr.recir.cnt == 0;, 1 => $false)
+        $false: [2594564]
+          11: tbl_themis276
+  5: tbl_themis250
+    stats Ingress.ingress_port_debug_counter 512 
+  21: cond-19(ingress::hdr.recir.$valid == 1; => $false, ingress::ig_intr_md.ingress_port == 384; => $false, ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, 1 => $gwcont)
+    $false: [2780685]
+    $gwcont: [2788495]
+      22: tbl_start_one_recir(ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.bth.psn[0:0] != 0; => $false, ingress::hdr.udp.dst_port == 4791;, 1 => $false){ GE 0+30, 4 0K }
+        stats Ingress.recir_debug_counter 1   
+        $false: [2780685]...
+  31: l3_table_0(ingress::apply_l3_0, 1 => $false){ GE 22+9, 2 [1x1 1K 1K 1K 1K] }
+    $false: [2780775]
+  41: tbl_themis340(ingress::ig_intr_md_for_tm.ucast_egress_port == 384; => $false, 1)
+    $false: [2780944]
+  42: cond-21(ingress::ig_intr_md_for_tm.ucast_egress_port == 384; => $false, ingress::ig_intr_md.ingress_port == 384; => $false, ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, 1 => $gwcont)
+    $false: [2780902]
+    $gwcont: [2788638]
+      50: tbl_set_mirror_md(ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.bth.psn[0:0] != 1; => $false, ingress::hdr.udp.dst_port == 4791;, 1 => $false){ GE 0+10, 0 0K }
+        stats Ingress.cnp_debug_counter 1   
+        $false: [2780902]...
+egress: [2607844] 1 11
+  0: tbl_themis536
+  12: tbl_themis543(egress::meta.is_mirrored == 1;, 1 => $false){ GE 0+10, 0 0K }
+    stats Egress.egress_mirror_seen_counter 1   
+    $false: [2608448]
+      13: tbl_themis566(egress::hdr.udp.$valid != 1; => $false, egress::hdr.bth.$valid != 1; => $false, egress::hdr.bth.opcode == 129; => $false, egress::hdr.udp.dst_port == 4791;, 1 => $false){ GE 0+10, 0 0K }
+        stats Egress.egress_roce_data_counter 1   
+        $false: [2781227]
+    $default: [2607949] 0 01
+      14: tbl_themis560(egress::hdr.bth.$valid == 1;, 1 => $false){ GE 0+10, 0 0K }
+        stats Egress.egress_mirror_cnp_set_counter 1   
+        $false: [2781179]
+        $default: [2608245]
+          15: tbl_themis559{ E 0+10, 0 0K }
+            stats Egress.egress_mirror_bth_counter 1   
+      20: tbl_themis555
+      30: tbl_themis556
+  40: count_cnp_0(egress::hdr.bth.$valid == 1;, 1 => $false){ GE -2+10, 0 [1x1 1K] }
+    stats Egress.indirect_counter 512 
+    $false: [2781277]
+
+DepStagesThruDomFrontier postorder : arp_table_0
+DepStagesThruDomFrontier postorder : tbl_themis300
+DepStagesThruDomFrontier postorder : tbl_themis266
+DepStagesThruDomFrontier postorder : tbl_themis276
+DepStagesThruDomFrontier postorder : tbl_themis269
+DepStagesThruDomFrontier postorder : tbl_themis262
+DepStagesThruDomFrontier postorder : tbl_themis250
+DepStagesThruDomFrontier postorder : tbl_start_one_recir
+DepStagesThruDomFrontier postorder : cond-19
+DepStagesThruDomFrontier postorder : l3_table_0
+DepStagesThruDomFrontier postorder : tbl_themis340
+DepStagesThruDomFrontier postorder : tbl_set_mirror_md
+DepStagesThruDomFrontier postorder : cond-21
+DepStagesThruDomFrontier postorder : tbl_themis536
+DepStagesThruDomFrontier postorder : tbl_themis566
+DepStagesThruDomFrontier postorder : tbl_themis559
+DepStagesThruDomFrontier postorder : tbl_themis560
+DepStagesThruDomFrontier postorder : tbl_themis555
+DepStagesThruDomFrontier postorder : tbl_themis556
+DepStagesThruDomFrontier postorder : tbl_themis543
+DepStagesThruDomFrontier postorder : count_cnp_0
+    Maximum stage number according to dependences: 
+      INGRESS: 4
+      EGRESS: 4
+GRAPH
+    tbl_themis262 -- CONTROL_COND_FALSE --> tbl_themis300
+    tbl_themis262 -- CONTROL_DEFAULT_NEXT_TABLE --> tbl_themis266
+    tbl_themis262 -- CONTROL_DEFAULT_NEXT_TABLE --> tbl_themis269
+    tbl_themis269 -- CONTROL_COND_FALSE --> tbl_themis276
+    cond-19 -- CONTROL_ACTION --> tbl_start_one_recir
+    cond-21 -- CONTROL_ACTION --> tbl_set_mirror_md
+    tbl_themis543 -- CONTROL_COND_FALSE --> tbl_themis566
+    tbl_themis543 -- CONTROL_DEFAULT_NEXT_TABLE --> tbl_themis560
+    tbl_themis543 -- CONTROL_DEFAULT_NEXT_TABLE --> tbl_themis555
+    tbl_themis543 -- CONTROL_DEFAULT_NEXT_TABLE --> tbl_themis556
+    tbl_themis560 -- CONTROL_DEFAULT_NEXT_TABLE --> tbl_themis559
+    tbl_themis262 -- ANTI_ACTION_READ --> tbl_themis269
+    tbl_themis269 -- ANTI_ACTION_READ --> tbl_themis276
+    arp_table_0 -- OUTPUT --> tbl_themis276
+    tbl_themis269 -- ACTION_READ --> cond-19
+    tbl_themis269 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    tbl_themis276 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    tbl_themis276 -- OUTPUT --> tbl_start_one_recir
+    tbl_themis269 -- OUTPUT --> tbl_start_one_recir
+    tbl_themis300 -- OUTPUT --> tbl_start_one_recir
+    tbl_themis276 -- ACTION_READ --> tbl_start_one_recir
+    tbl_themis262 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    cond-19 -- ANTI_ACTION_READ --> tbl_start_one_recir
+    arp_table_0 -- ACTION_READ --> tbl_start_one_recir
+    arp_table_0 -- OUTPUT --> tbl_start_one_recir
+    tbl_themis269 -- ACTION_READ --> l3_table_0
+    tbl_themis300 -- ACTION_READ --> l3_table_0
+    tbl_start_one_recir -- ACTION_READ --> l3_table_0
+    arp_table_0 -- OUTPUT --> l3_table_0
+    tbl_themis276 -- OUTPUT --> l3_table_0
+    tbl_start_one_recir -- OUTPUT --> l3_table_0
+    tbl_start_one_recir -- ANTI_ACTION_READ --> l3_table_0
+    l3_table_0 -- ACTION_READ --> tbl_themis340
+    arp_table_0 -- ACTION_READ --> tbl_themis340
+    tbl_themis276 -- ACTION_READ --> tbl_themis340
+    tbl_start_one_recir -- ACTION_READ --> tbl_themis340
+    l3_table_0 -- ACTION_READ --> cond-21
+    arp_table_0 -- ACTION_READ --> cond-21
+    tbl_themis276 -- ACTION_READ --> cond-21
+    tbl_start_one_recir -- ACTION_READ --> cond-21
+    tbl_themis536 -- ANTI_ACTION_READ --> tbl_themis543
+    tbl_themis536 -- ACTION_READ --> tbl_themis543
+    tbl_themis536 -- ANTI_TABLE_READ --> tbl_themis543
+    tbl_themis543 -- OUTPUT --> tbl_themis555
+    tbl_themis555 -- OUTPUT --> tbl_themis556
+    tbl_themis536 -- ACTION_READ --> tbl_themis556
+    tbl_themis556 -- IXBAR_READ --> count_cnp_0
+MIN STAGE INFO
+    Each table also indicates its dependency chain length
+    First number refers to a dependency chain from which each tables are not split
+    Second number refers to a dependency chain from which each tables are split as on  last allocation pass
+ Stage #0
+     tbl_themis262 3 3
+     tbl_themis300 3 3
+	- Edge CONTROL_COND_FALSE tbl_themis262
+     tbl_themis266 0 0
+	- Edge CONTROL_DEFAULT_NEXT_TABLE tbl_themis262
+     tbl_themis269 3 3
+	- Edge CONTROL_DEFAULT_NEXT_TABLE tbl_themis262
+	- Edge ANTI_ACTION_READ tbl_themis262
+     arp_table_0 4 4
+     tbl_themis250 0 0
+     tbl_themis536 4 4
+ Stage #1
+     tbl_themis276 3 3
+	- Edge OUTPUT arp_table_0
+     cond-19 2 2
+	- Edge ACTION_READ tbl_themis269
+     tbl_themis543 3 3
+	- Edge ACTION_READ tbl_themis536
+     tbl_themis566 0 0
+	- Edge CONTROL_COND_FALSE tbl_themis543
+     tbl_themis560 0 0
+	- Edge CONTROL_DEFAULT_NEXT_TABLE tbl_themis543
+     tbl_themis559 0 0
+	- Edge CONTROL_DEFAULT_NEXT_TABLE tbl_themis560
+ Stage #2
+     tbl_start_one_recir 2 2
+	- Edge OUTPUT tbl_themis276
+	- Edge ACTION_READ tbl_themis276
+     tbl_themis555 2 2
+	- Edge OUTPUT tbl_themis543
+ Stage #3
+     tbl_themis556 1 1
+	- Edge OUTPUT tbl_themis555
+     l3_table_0 1 1
+	- Edge ACTION_READ tbl_start_one_recir
+	- Edge OUTPUT tbl_start_one_recir
+ Stage #4
+     cond-21 0 0
+	- Edge ACTION_READ l3_table_0
+     tbl_set_mirror_md 0 0
+	- Edge CONTROL_ACTION cond-21
+     tbl_themis340 0 0
+	- Edge ACTION_READ l3_table_0
+     count_cnp_0 0 0
+	- Edge IXBAR_READ tbl_themis556
+

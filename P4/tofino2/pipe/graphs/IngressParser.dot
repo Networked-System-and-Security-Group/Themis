@@ -1,0 +1,37 @@
+digraph IngressParser{
+start [shape=rectangle,label="start
+(ig_intr_md.resubmit_flag)"]
+TofinoIngressParser_parse_resubmit [shape=rectangle,label="TofinoIngressParser_parse_resubmit"]
+TofinoIngressParser_parse_port_metadata [shape=rectangle,label="TofinoIngressParser_parse_port_metadata
+(ig_intr_md.ingress_port)"]
+parse_recir [shape=rectangle,label="parse_recir"]
+parse_ethernet [shape=rectangle,label="parse_ethernet
+(hdr.ethernet.ether_type)"]
+parse_ipv4 [shape=rectangle,label="parse_ipv4
+(hdr.ipv4.protocol)"]
+parse_arp [shape=rectangle,label="parse_arp"]
+parse_tcp [shape=rectangle,label="parse_tcp"]
+parse_udp [shape=rectangle,label="parse_udp
+(hdr.udp.dst_port)"]
+parse_bth [shape=rectangle,label="parse_bth"]
+accept [shape=rectangle,label="accept"]
+reject [shape=rectangle,label="reject"]
+start -> TofinoIngressParser_parse_resubmit [label="1w1"]
+start -> TofinoIngressParser_parse_port_metadata [label="1w0"]
+start -> reject [label="fallthrough"]
+TofinoIngressParser_parse_resubmit -> reject [label="always"]
+TofinoIngressParser_parse_port_metadata -> parse_recir [label="9w384"]
+TofinoIngressParser_parse_port_metadata -> parse_ethernet [label="default"]
+parse_recir -> parse_ethernet [label="always"]
+parse_ethernet -> parse_ipv4 [label="16w0x800"]
+parse_ethernet -> parse_arp [label="16w0x806"]
+parse_ethernet -> accept [label="default"]
+parse_ipv4 -> parse_tcp [label="8w6"]
+parse_ipv4 -> parse_udp [label="8w17"]
+parse_ipv4 -> accept [label="default"]
+parse_arp -> accept [label="always"]
+parse_tcp -> accept [label="always"]
+parse_udp -> parse_bth [label="16w4791"]
+parse_udp -> accept [label="default"]
+parse_bth -> accept [label="always"]
+}

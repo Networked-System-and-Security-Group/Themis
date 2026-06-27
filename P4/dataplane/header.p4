@@ -18,13 +18,16 @@ const ip_protocol_t IP_PROTOCOLS_TCP = 6;
 const ip_protocol_t IP_PROTOCOLS_UDP = 17;
 
 const l4_port_t UDP_ROCE_DST_PORT = 4791;
+const bit<8> CNP_OPCODE = 129;
+const bit<2> ECN_CE = 3;
+const bit<2> ECN_NOT_ECT = 0;
 
 // rixin: 由于使用了mirror，所以需要区分
 typedef bit<8>  pkt_type_t;
 const pkt_type_t PKT_TYPE_NORMAL = 6;
 const pkt_type_t PKT_TYPE_MIRROR = 9;
 
-const PortId_t RECIRC_PORT = 196;
+const PortId_t RECIRC_PORT = 384;
 
 const bit<32> INIT_RECIR_CNT = 3;
 
@@ -42,6 +45,7 @@ const int HOST_IF_NUM = 32;
 const int CNP_SES_ID = 1;
 // rixin: 造成拥塞的跨DC流的最大个数(concurrent)
 const int MAX_NUM_CONGESTION_FLOW = 10000;
+const int MAX_NUM_TRP_FLOW = 1024;
 
 /*************************************************************************
  ***********************  H E A D E R S  *********************************
@@ -118,6 +122,12 @@ header arp_h {
 
 header recir_h {
     bit<32> cnt;
+    // OLD LOGIC DISABLED:
+    // This field was temporarily added to select the CNP mirror session based
+    // on the original ingress dev_port. The user chose to revert to one fixed
+    // CNP mirror port, so the active recirculation header only needs cnt.
+    //
+    // bit<16> orig_ingress_port;
 }
 
 header mirror_bridged_metadata_h {
@@ -126,7 +136,17 @@ header mirror_bridged_metadata_h {
 
 header mirror_h {
     pkt_type_t  pkt_type;
-    bit<8> is_last_recir_pkt;
+    // OLD LOGIC DISABLED:
+    // The previous mirror metadata carried is_last_recir_pkt, encoded UDP
+    // source port, and dIP hash. On Tofino2 this made egress mirror parsing
+    // fragile because the mirror packet's post-metadata offset did not line up
+    // with ethernet in practice. The active path follows the SDE tna_mirror
+    // example and keeps mirror metadata to a single pkt_type byte; egress
+    // reconstructs sQPN directly from the mirrored RoCE packet fields.
+    //
+    // bit<8> is_last_recir_pkt;
+    // bit<16> pnp_udp_src_port;
+    // bit<8> pnp_dip_hash;
 }
 
 struct my_ingress_headers_t {
@@ -137,6 +157,7 @@ struct my_ingress_headers_t {
     arp_h arp;
     tcp_h tcp;
     udp_h udp;
+    bth_h bth;
 }
 
 struct my_egress_headers_t {
@@ -144,6 +165,7 @@ struct my_egress_headers_t {
     mirror_h mirror_md;
     ethernet_h ethernet;
     ipv4_h ipv4;
+    arp_h arp;
     tcp_h tcp;
     udp_h udp;
     bth_h bth;

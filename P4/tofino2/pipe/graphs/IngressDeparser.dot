@@ -1,0 +1,24 @@
+digraph IngressDeparser {
+subgraph cluster {
+graph [
+label="", labeljust=r, style=bold];
+0[label=__START__, margin="", shape=rectangle, style=solid];
+1[label=__EXIT__, margin="", shape=rectangle, style=solid];
+2[label="ig_dprsr_md.mirror_type == 1;", margin="", shape=rectangle, style=solid];
+3[label="mirror_md_0/mirror_md.$valid = 0;
+...
+mirror_0/mirror.emit<mirror_h>(meta.ing_mir_ses, {
+  pkt_type:meta.pkt_type;
+  is_last_recir_pkt:mirror_md_0/mirror_md.is_last_recir_pkt;
+  pnp_udp_src_port:mirror_md_0/mirror_md.pnp_udp_src_port;
+  pnp_dip_hash:mirror_md_0/mirror_md.pnp_dip_hash; });", margin="", shape=rectangle, style=solid];
+4[label="pkt.emit<mirror_bridged_metadata_h>(hdr.bridged_md);
+...
+pkt.emit<bth_h>(hdr.bth);", margin="", shape=rectangle, style=solid];
+0 -> 2[label=""];
+2 -> 3[label=TRUE];
+2 -> 4[label=FALSE];
+3 -> 4[label=""];
+4 -> 1[label=""];
+}
+}
