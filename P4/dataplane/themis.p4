@@ -15,6 +15,14 @@ struct my_ingress_metadata_t {
     bit<8> is_last_recir_pkt; // rixin: 对于最后一次recirculate的包，recir_h 头部还在hdr里，所以mirror出来的包也会包含recir_h，此变量是为了告知egress需要extract recir_h header
     MirrorId_t ing_mir_ses; // rixin: mirror session id
     pkt_type_t pkt_type; // rixin: 用于让ingress pipeline告诉ingress deparser是什么类型
+    bit<16> pnp_udp_src_port; // carries encoded sQPN[16:3] in low 14 bits
+    bit<8> pnp_dip_hash; // egress uses low 3 bits as sQPN[2:0]
+    // OLD LOGIC DISABLED:
+    // This metadata was used by the temporary dynamic mirror-session path that
+    // returned CNP to the original ingress dev_port. The active path uses one
+    // fixed CNP mirror session/egress port again.
+    //
+    // bit<16> original_ingress_port;
 }
     /***********************  P A R S E R  **************************/
 parser IngressParser(packet_in        pkt,
@@ -27,6 +35,11 @@ parser IngressParser(packet_in        pkt,
     TofinoIngressParser() tofino_parser;
 
     state start {
+        meta.is_last_recir_pkt = 0;
+        meta.ing_mir_ses = 0;
+        meta.pkt_type = PKT_TYPE_NORMAL;
+        meta.pnp_udp_src_port = 0;
+        meta.pnp_dip_hash = 0;
         tofino_parser.apply(pkt, ig_intr_md);
         transition select(ig_intr_md.ingress_port) {
             // rixin: 当前正在parse一个已循环的包
@@ -70,6 +83,14 @@ parser IngressParser(packet_in        pkt,
 
     state parse_udp {
         pkt.extract(hdr.udp);
+        transition select(hdr.udp.dst_port) {
+            UDP_ROCE_DST_PORT: parse_bth;
+            default: accept;
+        }
+    }
+
+    state parse_bth {
+        pkt.extract(hdr.bth);
         transition accept;
     }
 
@@ -88,6 +109,12 @@ control Ingress(
         
     // rixin: P4中，一个table只能被apply一次
     bool apply_l3 = false;
+    Hash<bit<8>>(HashAlgorithm_t.CRC8) pnp_dip_hash_calc;
+    Counter<bit<32>, bit<32>>(1, CounterType_t.PACKETS) recir_debug_counter;
+    Counter<bit<32>, bit<32>>(1, CounterType_t.PACKETS) recir_return_counter;
+    Counter<bit<32>, bit<32>>(1, CounterType_t.PACKETS) recir_return_roce_counter;
+    Counter<bit<32>, bit<32>>(1, CounterType_t.PACKETS) cnp_debug_counter;
+    Counter<bit<32>, bit<32>>(512, CounterType_t.PACKETS) ingress_port_debug_counter;
 
     // rixin: 确保可通信
     action forward(PortId_t egress_port) {
@@ -118,52 +145,110 @@ control Ingress(
 
     // rixin: 采用ing-to-eg mirror机制，mirrored pkt作cnp
     // 下面是对origin pkt的处理
+    action reconstruct_pnp_sqpn() {
+        meta.pnp_udp_src_port = hdr.udp.src_port;
+        meta.pnp_dip_hash = pnp_dip_hash_calc.get({hdr.ipv4.dst_addr});
+    }
+
     action set_mirror_md() {
         // rixin: 设置一些信息，用于deparser进行mirror操作
-        meta.ing_mir_ses =  CNP_SES_ID; // rixin: session id按照ingress_port选择
+        meta.ing_mir_ses =  CNP_SES_ID; // rixin: fixed CNP mirror session
+        // OLD LOGIC DISABLED:
+        // This temporarily selected a mirror session from the original ingress
+        // dev_port low 8 bits. It is disabled because the user wants CNP to go
+        // back through one fixed mirror port again.
+        //
+        // meta.ing_mir_ses = (MirrorId_t)meta.original_ingress_port[7:0];
         meta.pkt_type = PKT_TYPE_MIRROR; // rixin: 这个包需要被mirror
         ig_dprsr_md.mirror_type = MIRROR_TYPE_I2E; // rixin: mirror类型告知deparser
+
+        // OLD LOGIC DISABLED:
+        // This used to modify the original RoCE data packet while requesting
+        // the CNP mirror. That can break RC delivery because the RNIC validates
+        // RoCE packet integrity; changing fields such as UDP source port after
+        // the packet leaves the sender can make the receiver drop the packet
+        // and therefore never send the ACK needed for RDMA WRITE completion.
+        // The active path keeps the original packet untouched; the mirrored
+        // CNP path reconstructs sQPN from the mirrored packet's original UDP
+        // source port and destination IP.
+        //
+        // hdr.ipv4.ecn = ECN_NOT_ECT;
+        // hdr.udp.src_port = UDP_ROCE_DST_PORT;
+        cnp_debug_counter.count(0);
     }
 
-    // rixin: 检测ecn
-    table detect_ecn {
-        key = {
-            hdr.ipv4.ecn :exact;
-        }
-        actions = {
-            set_mirror_md;
-            @defaultonly NoAction;
-        }
-	    size = HOST_IF_NUM;
-    }
-    
-    action init_recir() {
-        apply_l3 = false;
-
+    action start_one_recir() {
         hdr.recir.setValid();
-        hdr.recir.cnt = INIT_RECIR_CNT;
-        hdr.recir.cnt = hdr.recir.cnt - 1;
-
+        hdr.recir.cnt = 0;
+        apply_l3 = false;
         ig_tm_md.ucast_egress_port = RECIRC_PORT;
         ig_tm_md.bypass_egress = 1;
+        recir_debug_counter.count(0);
     }
 
-    // Rixin: action很难用，最好不要加if-else语句，不然编译会出现奇奇怪怪的问题（下面这个action是用不了的）
-    // Rixin: Conditions in an action must be simple comparisons of an action data parameter
-    action decrease_recir(bit<32> recir_cnt) {
-        if (recir_cnt == 0) {
-            apply_l3 = true;
-            hdr.recir.setInvalid();
-        }
-        else {
-            hdr.recir.cnt = hdr.recir.cnt - 1;
-            apply_l3 = false;
-            ig_tm_md.ucast_egress_port = RECIRC_PORT;
-            ig_tm_md.bypass_egress = 1;
-        }
-    }
+    // OLD LOGIC DISABLED:
+    // The previous TRP path recirculated only flows installed in trp_cnp_store,
+    // with the loop count supplied by control plane. The active path below no
+    // longer uses this table; it splits original RoCE data packets by PSN low
+    // bit, and only one half enters start_one_recir().
+    //
+    // action trp_set_loop(bit<32> loop_num) {
+    //     hdr.recir.setValid();
+    //     hdr.recir.cnt = loop_num - 1;
+    //     apply_l3 = false;
+    //     ig_tm_md.ucast_egress_port = RECIRC_PORT;
+    //     ig_tm_md.bypass_egress = 1;
+    // }
+    //
+    // table trp_cnp_store {
+    //     key = {
+    //         hdr.ipv4.dst_addr: exact;
+    //         hdr.bth.dst_qpn: exact;
+    //     }
+    //     actions = {
+    //         trp_set_loop;
+    //         @defaultonly NoAction;
+    //     }
+    //     size = MAX_NUM_TRP_FLOW;
+    // }
+
+    // OLD LOGIC DISABLED:
+    // init_recir() used INIT_RECIR_CNT and therefore could loop packets multiple
+    // times. The active path now uses start_one_recir() only for the
+    // recirculation half of original RoCE data packets.
+    //
+    // action init_recir() {
+    //     apply_l3 = false;
+    //
+    //     hdr.recir.setValid();
+    //     hdr.recir.cnt = INIT_RECIR_CNT;
+    //     hdr.recir.cnt = hdr.recir.cnt - 1;
+    //
+    //     ig_tm_md.ucast_egress_port = RECIRC_PORT;
+    //     ig_tm_md.bypass_egress = 1;
+    // }
+
+    // OLD LOGIC DISABLED:
+    // This helper was kept out of the active path because conditional control
+    // inside actions has caused Tofino compiler issues in this codebase. The
+    // active apply block performs the recirculation counter handling directly.
+    //
+    // action decrease_recir(bit<32> recir_cnt) {
+    //     if (recir_cnt == 0) {
+    //         apply_l3 = true;
+    //         hdr.recir.setInvalid();
+    //     }
+    //     else {
+    //         hdr.recir.cnt = hdr.recir.cnt - 1;
+    //         apply_l3 = false;
+    //         ig_tm_md.ucast_egress_port = RECIRC_PORT;
+    //         ig_tm_md.bypass_egress = 1;
+    //     }
+    // }
 
 	apply {
+        ingress_port_debug_counter.count((bit<32>)ig_intr_md.ingress_port);
+
         // rixin: 确保可通信
 	    if (hdr.ethernet.ether_type == ETHERTYPE_IPV4) {
 		    apply_l3 = true;
@@ -174,10 +259,15 @@ control Ingress(
         
         // rixin: 开始循环
         if (hdr.recir.isValid()) {
-            // decrease_recir(hdr.recir.cnt);
+            recir_return_counter.count(0);
+            if (hdr.udp.isValid() && hdr.bth.isValid() &&
+                hdr.udp.dst_port == UDP_ROCE_DST_PORT &&
+                hdr.bth.opcode != CNP_OPCODE) {
+                recir_return_roce_counter.count(0);
+            }
             if (hdr.recir.cnt == 0) {
                 apply_l3 = true;
-                meta.is_last_recir_pkt = 1;
+                meta.is_last_recir_pkt = 0;
                 hdr.recir.setInvalid();
                 // rixin: 这里不能bypass egress，不然bridged_md会被emit到包头里
                 // ig_tm_md.bypass_egress = 1;
@@ -190,26 +280,57 @@ control Ingress(
             }
         }
         else {
+            // OLD LOGIC DISABLED:
+            // The previous behavior recirculated every non-recirculated packet
+            // immediately, regardless of whether it was RoCE. That also used
+            // INIT_RECIR_CNT and could create multiple loops. The active logic
+            // below restricts this to RoCE data packets and loops them once.
+            //
             // init_recir();
-            apply_l3 = false;
+            // apply_l3 = false;
+            //
+            // hdr.recir.setValid();
+            // hdr.recir.cnt = INIT_RECIR_CNT;
+            // hdr.recir.cnt = hdr.recir.cnt - 1;
+            //
+            // ig_tm_md.ucast_egress_port = RECIRC_PORT;
+            // ig_tm_md.bypass_egress = 1;
 
-            hdr.recir.setValid();
-            hdr.recir.cnt = INIT_RECIR_CNT;
-            hdr.recir.cnt = hdr.recir.cnt - 1;
+            if (hdr.ethernet.ether_type == ETHERTYPE_IPV4) {
+                apply_l3 = true;
+            }
+            else {
+                apply_l3 = false;
+            }
+        }
 
-            ig_tm_md.ucast_egress_port = RECIRC_PORT;
-            ig_tm_md.bypass_egress = 1;
+        // Split RoCE data packets into two mutually exclusive groups:
+        // PSN low bit 0 -> recirculation once; PSN low bit 1 -> CNP mirror.
+        if (!hdr.recir.isValid() &&
+            ig_intr_md.ingress_port != RECIRC_PORT &&
+            hdr.udp.isValid() && hdr.bth.isValid() &&
+            hdr.udp.dst_port == UDP_ROCE_DST_PORT &&
+            hdr.bth.opcode != CNP_OPCODE &&
+            hdr.bth.psn[0:0] == 1w0) {
+            start_one_recir();
         }
 
         // rixin: 只调用一次 l3_table.apply()
         if (apply_l3) {
             l3_table.apply();
         }
-        
-        // rixin: 判断是否为循环包
-        // rixin: 只对RoCE包检测ECN标记
-        if (ig_tm_md.ucast_egress_port != RECIRC_PORT && hdr.udp.dst_port == 4791) {
-            detect_ecn.apply();
+
+        // Generate CNP only for the other half of original RoCE data packets.
+        // Returned recirculation packets are excluded by ingress_port check, so
+        // no packet takes both recirculation and CNP paths.
+        if (ig_tm_md.ucast_egress_port != RECIRC_PORT &&
+            ig_intr_md.ingress_port != RECIRC_PORT &&
+            hdr.udp.isValid() && hdr.bth.isValid() &&
+            hdr.udp.dst_port == UDP_ROCE_DST_PORT &&
+            hdr.bth.opcode != CNP_OPCODE &&
+            hdr.bth.psn[0:0] == 1w1) {
+            reconstruct_pnp_sqpn();
+            set_mirror_md();
         }
 
         // rixin: 设置mirrored pkt的bridge header (相关信息见Figure3 from "P4_16 Tofino Native Architecture")
@@ -234,9 +355,27 @@ control IngressDeparser(packet_out pkt,
 
     apply {
         if (ig_dprsr_md.mirror_type == MIRROR_TYPE_I2E) {
-            // rixin: 此处，是真正的创建mirror包的地方，把meta.pkt_type和meta.is_last_recir_pkt作为头部加进去
-            // NOTE: 我只用了2个字节，还有31个字节可以使用
-            mirror.emit<mirror_h>(meta.ing_mir_ses, {meta.pkt_type, meta.is_last_recir_pkt});
+            mirror_h mirror_md;
+            mirror_md.setValid();
+            mirror_md.pkt_type = meta.pkt_type;
+            // OLD LOGIC DISABLED:
+            // This used to emit extra fields in mirror_h:
+            // {pkt_type, is_last_recir_pkt, pnp_udp_src_port, pnp_dip_hash}.
+            // The resulting mirrored packet reached egress, but parsing did not
+            // line up with BTH on this Tofino2/SDE stack. The active path matches
+            // the SDE tna_mirror pattern and emits only pkt_type; egress
+            // reconstructs sQPN from the mirrored packet itself.
+            //
+            // mirror.emit<mirror_h>(meta.ing_mir_ses, {meta.pkt_type, meta.is_last_recir_pkt, meta.pnp_udp_src_port, meta.pnp_dip_hash});
+            //
+            // OLD LOGIC DISABLED:
+            // This single-field list expression matches the SDE tna_mirror
+            // example, but this SDE 9.7.1 build rejected it with T bound to
+            // header mirror_h. The active path passes an explicitly typed
+            // mirror_h variable instead.
+            //
+            // mirror.emit<mirror_h>(meta.ing_mir_ses, {meta.pkt_type});
+            mirror.emit<mirror_h>(meta.ing_mir_ses, mirror_md);
         }
         // rixin: 此处是对original pkt的deparse
         pkt.emit(hdr);
@@ -267,6 +406,8 @@ parser EgressParser(packet_in        pkt,
     TofinoEgressParser() tofino_parser;
 
     state start {
+        meta.is_mirrored = 0;
+        meta.udp_tmp_checksum = 0;
         tofino_parser.apply(pkt, eg_intr_md);
         transition parse_metadata;
     }
@@ -289,11 +430,17 @@ parser EgressParser(packet_in        pkt,
     state parse_mirror_md {
         pkt.extract(hdr.mirror_md);
         meta.is_mirrored = 1;
-        transition select(hdr.mirror_md.is_last_recir_pkt) {
-            // rixin: egress目前正在处理已完成循环的包所mirror出来的包，所以其中会有recir_h header
-            1: parse_recir;
-            default: parse_ethernet;
-        }
+        // OLD LOGIC DISABLED:
+        // This previously selected between parse_recir and parse_bridged_md
+        // using hdr.mirror_md.is_last_recir_pkt. The active mirror metadata now
+        // follows the SDE tna_mirror example and carries only pkt_type, so the
+        // mirrored payload begins at ethernet after mirror_h.
+        //
+        // transition select(hdr.mirror_md.is_last_recir_pkt) {
+        //     1: parse_recir;
+        //     default: parse_bridged_md;
+        // }
+        transition parse_ethernet;
     }
 
     state parse_recir {
@@ -305,7 +452,16 @@ parser EgressParser(packet_in        pkt,
 
     state parse_ethernet {
         pkt.extract(hdr.ethernet);
-        transition parse_ipv4;
+        transition select(hdr.ethernet.ether_type) {
+            ETHERTYPE_IPV4: parse_ipv4;
+            ETHERTYPE_ARP:  parse_arp;
+            default: accept;
+        }
+    }
+
+    state parse_arp {
+        pkt.extract(hdr.arp);
+        transition accept;
     }
 
     state parse_ipv4 {
@@ -352,29 +508,14 @@ control Egress(
     inout egress_intrinsic_metadata_for_deparser_t     eg_dprsr_md,
     inout egress_intrinsic_metadata_for_output_port_t  eg_oport_md)
 {
-    DirectCounter<bit<32>>(CounterType_t.PACKETS) cnp_counter;
+    Hash<bit<8>>(HashAlgorithm_t.CRC8) egress_pnp_dip_hash_calc;
     // Create indirect counter
     Counter<bit<32>, bit<32>>(
         512, CounterType_t.PACKETS) indirect_counter;
-
-    action set_dstQPN (bit<24> clientQPN) {
-        hdr.bth.dst_qpn = clientQPN;
-        hdr.bth.opcode = 129;
-    }
-
-    table set_cnp_dstQPN {
-        key = {
-            // rixin: 下面两个字段用来match需要修改dstQPN字段的CNP
-            hdr.ipv4.src_addr: exact;
-            hdr.ipv4.dst_addr: exact;
-            hdr.bth.dst_qpn: exact;
-        }
-        actions = {
-            set_dstQPN;
-            @defaultonly NoAction;
-        }
-        size = MAX_NUM_CONGESTION_FLOW;
-    }
+    Counter<bit<32>, bit<32>>(1, CounterType_t.PACKETS) egress_mirror_seen_counter;
+    Counter<bit<32>, bit<32>>(1, CounterType_t.PACKETS) egress_mirror_bth_counter;
+    Counter<bit<32>, bit<32>>(1, CounterType_t.PACKETS) egress_mirror_cnp_set_counter;
+    Counter<bit<32>, bit<32>>(1, CounterType_t.PACKETS) egress_roce_data_counter;
 
     action inc_cnp_counter () {
         indirect_counter.count(0);
@@ -388,26 +529,45 @@ control Egress(
             inc_cnp_counter;
             @defaultonly NoAction;
         }
+        size = 1;
     }
 
     apply {
+        bit<8> pnp_dip_hash = egress_pnp_dip_hash_calc.get({hdr.ipv4.dst_addr});
+        mac_addr_t tmp1 = hdr.ethernet.dst_addr;
+        ipv4_addr_t tmp2 = hdr.ipv4.dst_addr;
+
         // rixin: 判断出当前是个mirrored pkt即cnp
         if (meta.is_mirrored == 1)
         {
+            egress_mirror_seen_counter.count(0);
             // rixin: 设置好cnp的mac地址
-            mac_addr_t tmp1 = hdr.ethernet.dst_addr;
             hdr.ethernet.dst_addr = hdr.ethernet.src_addr;
             hdr.ethernet.src_addr = tmp1;
             // rixin: 设置好cnp的ip地址
-            ipv4_addr_t tmp2 = hdr.ipv4.dst_addr;
             hdr.ipv4.dst_addr = hdr.ipv4.src_addr;
             hdr.ipv4.src_addr = tmp2;
-            // rixin: udp port不需要改变
-            // rixin: BTH中的dstQPN字段应该等到后续的MAT修改
-            set_cnp_dstQPN.apply();
-            // hdr.bth.opcode = 129;
+            hdr.ipv4.ecn = ECN_NOT_ECT;
+            // PNP reconstructs sQPN from the mirrored original data packet.
+            // Before the IP swap above, hdr.ipv4.dst_addr is the original server
+            // IP and hdr.udp.src_port still carries encoded sQPN[16:3].
+            hdr.bth.dst_qpn[23:17] = 0;
+            hdr.bth.dst_qpn[16:3] = hdr.udp.src_port[13:0];
+            hdr.bth.dst_qpn[2:0] = pnp_dip_hash[2:0];
+            hdr.bth.opcode = CNP_OPCODE;
+            if (hdr.bth.isValid()) {
+                egress_mirror_bth_counter.count(0);
+                egress_mirror_cnp_set_counter.count(0);
+            }
         }
-        count_cnp.apply();
+        else if (hdr.udp.isValid() && hdr.bth.isValid() &&
+                 hdr.udp.dst_port == UDP_ROCE_DST_PORT &&
+                 hdr.bth.opcode != CNP_OPCODE) {
+            egress_roce_data_counter.count(0);
+        }
+        if (hdr.bth.isValid()) {
+            count_cnp.apply();
+        }
     }
 }
 
@@ -441,6 +601,7 @@ control EgressDeparser(packet_out pkt,
         }
         pkt.emit(hdr.ethernet);
         pkt.emit(hdr.ipv4);
+        pkt.emit(hdr.arp);
         pkt.emit(hdr.tcp);
         pkt.emit(hdr.udp);
         pkt.emit(hdr.bth);
