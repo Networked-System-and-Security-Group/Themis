@@ -1,0 +1,22 @@
+digraph egress {
+0 [label="$root" shape=box color="black"];
+8 [label="count_cnp_0" shape=box color="black"];
+1 [label="tbl_themis536" shape=box color="black"];
+2 [label="tbl_themis543" shape=box color="black"];
+6 [label="tbl_themis555" shape=box color="black"];
+7 [label="tbl_themis556" shape=box color="black"];
+5 [label="tbl_themis559" shape=box color="black"];
+3 [label="tbl_themis560" shape=box color="black"];
+4 [label="tbl_themis566" shape=box color="black"];
+0-> 1 [label="$start" color="black"];
+1-> 2 [label="$always" color="black"];
+2-> 3 [label="themis543" color="black"];
+2-> 4 [label="$false" color="black"];
+6-> 7 [label="themis555" color="black"];
+7-> 8 [label="$always" color="black"];
+5-> 8 [label="$always" color="black"];
+3-> 5 [label="themis560" color="red"];
+3-> 6 [label="themis560" color="red"];
+3-> 6 [label="$false" color="black"];
+4-> 8 [label="$always" color="black"];
+}

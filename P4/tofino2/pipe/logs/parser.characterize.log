@@ -1,0 +1,87 @@
+Parser Characterization Report:
+Number of states on ingress: 11
+
+Number of matches on ingress: 18
+
+Longest path (8 states) on ingress:
+    $entry_point
+    start
+    TofinoIngressParser_parse_port_metadata
+    parse_recir
+    parse_ethernet
+    parse_ipv4
+    parse_udp
+    parse_bth
+
+Shortest path (2 states) on ingress:
+    $entry_point
+    start
+
+Average rate: 9.125 Bps
+Min packet size at 100 Gbps: 82 B (9 B payload)
+Max data rate for min-sized packets: 89.06 Gbps / 152.5 MPps
+
+Extractor usage:
++------------------------------------------------------+--------------------+-------+--------+--------+---------------------------+---------+
+|State                                                 |Match               |8-bit  |16-bit  |32-bit  |Total Extractors (16-bit)  |Other    |
++------------------------------------------------------+--------------------+-------+--------+--------+---------------------------+---------+
+|$entry_point                                          |*                   |0      |0       |0       |0                          |         |
+|start                                                 |0b1*******          |1      |1       |0       |2                          |         |
+|-                                                     |0b0*******          |1      |1       |0       |2                          |         |
+|TofinoIngressParser_parse_port_metadata               |0b*******110000000  |0      |0       |0       |0                          |         |
+|-                                                     |0x****              |0      |0       |0       |0                          |         |
+|TofinoIngressParser_parse_port_metadata.$oob_stall_0  |*                   |0      |0       |0       |0                          |         |
+|parse_recir                                           |*                   |0      |1       |1       |3                          |         |
+|parse_ethernet                                        |0x0800              |0      |2       |0       |2                          |clot 3   |
+|-                                                     |0x0806              |0      |2       |0       |2                          |clot 3   |
+|-                                                     |0x****              |0      |2       |0       |2                          |clot 3   |
+|parse_arp                                             |*                   |0      |1       |1       |3                          |clot 1   |
+|parse_ipv4                                            |0x06                |0      |1       |1       |3                          |clot 2   |
+|-                                                     |0x11                |0      |1       |1       |3                          |clot 2   |
+|-                                                     |0x**                |0      |1       |1       |3                          |clot 2   |
+|parse_udp                                             |0x12b7              |0      |2       |0       |2                          |clot 5   |
+|-                                                     |0x****              |0      |2       |0       |2                          |clot 5   |
+|parse_bth                                             |*                   |2      |2       |0       |4                          |clot 4   |
+|parse_tcp                                             |*                   |0      |1       |0       |1                          |clot 0   |
++------------------------------------------------------+--------------------+-------+--------+--------+---------------------------+---------+
+Number of states on egress: 10
+
+Number of matches on egress: 17
+
+Longest path (7 states) on egress:
+    $entry_point
+    start
+    parse_mirror_md
+    parse_ethernet
+    parse_ipv4
+    parse_udp
+    parse_bth
+
+Shortest path (2 states) on egress:
+    $entry_point
+    start
+
+Timing is met for min-sized packet (73 B) running at 100 Gbps
+
+Extractor usage:
++------------------+--------+-------+--------+--------+---------------------------+------------------+
+|State             |Match   |8-bit  |16-bit  |32-bit  |Total Extractors (16-bit)  |Other             |
++------------------+--------+-------+--------+--------+---------------------------+------------------+
+|$entry_point      |*       |0      |0       |0       |0                          |                  |
+|start             |0x09    |1      |2       |0       |3                          |                  |
+|-                 |0x06    |1      |2       |0       |3                          |                  |
+|-                 |0x**    |1      |2       |0       |3                          |                  |
+|parse_bridged_md  |*       |0      |0       |0       |0                          |                  |
+|parse_mirror_md   |*       |0      |1       |0       |1                          |                  |
+|parse_ethernet    |0x0800  |1      |2       |2       |7                          |clot 5            |
+|-                 |0x0806  |1      |2       |2       |7                          |clot 5            |
+|-                 |0x****  |1      |2       |2       |7                          |clot 5            |
+|parse_arp         |*       |1      |0       |0       |1                          |clot 1            |
+|parse_ipv4        |0x06    |2      |1       |2       |7                          |clot 2 csum 2     |
+|-                 |0x11    |2      |1       |2       |7                          |clot 2 csum 2     |
+|-                 |0x**    |2      |1       |2       |7                          |clot 2 csum 2     |
+|parse_udp         |0x12b7  |1      |3       |0       |4                          |clot 4 csum 2 3   |
+|-                 |0x****  |1      |3       |0       |4                          |clot 4 csum 2 3   |
+|parse_bth         |*       |2      |2       |0       |4                          |clot 3            |
+|parse_tcp         |*       |1      |0       |0       |1                          |clot 0            |
++------------------+--------+-------+--------+--------+---------------------------+------------------+

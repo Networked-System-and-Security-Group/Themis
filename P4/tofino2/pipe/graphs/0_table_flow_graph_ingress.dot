@@ -1,0 +1,111 @@
+digraph ingress {
+tbl_themis250 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_themis250\l\l
+ "];
+cond_14 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.ethernet.ether_type == 2048\l\l
+ "];
+arp_table_0 [ shape=record, style="filled", fillcolor=cornsilk, label="arp_table_0\l\l
+M:\l
+ hdr.arp.dstIpv4Addr\l
+\lW:\l
+ ig_intr_md_for_tm.ucast_egress_port\l
+ ig_intr_md_for_tm.ucast_egress_port.$valid\l
+ "];
+cond_15 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.recir.$valid == 1\l\l
+ "];
+tbl_themis262 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_themis262\l\l
+ "];
+cond_18 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.ethernet.ether_type == 2048\l\l
+ "];
+cond_16 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.udp.$valid == 1 && hdr.bth.$valid == 1 && hdr.udp.dst_port == 4791 && hdr.bth.opcode != 129\l\l
+ "];
+tbl_themis266 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_themis266\l\l
+ "];
+cond_17 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.recir.cnt == 0\l\l
+ "];
+tbl_themis269 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_themis269\l\l
+W:\l
+ apply_l3_0\l
+ hdr.recir.$valid\l
+ "];
+tbl_themis276 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_themis276\l\l
+R:\l
+ hdr.recir.cnt\l
+\lW:\l
+ hdr.recir.cnt\l
+ ig_intr_md_for_tm.ucast_egress_port\l
+ ig_intr_md_for_tm.ucast_egress_port.$valid\l
+ ig_intr_md_for_tm.bypass_egress\l
+ ig_intr_md_for_tm.bypass_egress.$valid\l
+ "];
+cond_19 [ shape=record, style="filled", fillcolor=cornsilk, label="!(hdr.recir.$valid == 1) && ig_intr_md.ingress_port != 384 && hdr.udp.$valid == 1 && hdr.bth.$valid == 1 && hdr.udp.dst_port == 4791 && hdr.bth.opcode != 129 && hdr.bth.psn[0:0] == 0\l\l
+ "];
+tbl_themis300 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_themis300\l\l
+W:\l
+ apply_l3_0\l
+ "];
+tbl_start_one_recir [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_start_one_recir\l\l
+W:\l
+ hdr.recir.$valid\l
+ hdr.recir.cnt\l
+ apply_l3_0\l
+ ig_intr_md_for_tm.ucast_egress_port\l
+ ig_intr_md_for_tm.ucast_egress_port.$valid\l
+ ig_intr_md_for_tm.bypass_egress\l
+ ig_intr_md_for_tm.bypass_egress.$valid\l
+ "];
+cond_20 [ shape=record, style="filled", fillcolor=cornsilk, label="apply_l3_0\l\l
+ "];
+l3_table_0 [ shape=record, style="filled", fillcolor=cornsilk, label="l3_table_0\l\l
+M:\l
+ hdr.ipv4.dst_addr\l
+\lW:\l
+ ig_intr_md_for_tm.ucast_egress_port\l
+ ig_intr_md_for_tm.ucast_egress_port.$valid\l
+ "];
+cond_21 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_intr_md_for_tm.ucast_egress_port != 384 && ig_intr_md.ingress_port != 384 && hdr.udp.$valid == 1 && hdr.bth.$valid == 1 && hdr.udp.dst_port == 4791 && hdr.bth.opcode != 129 && hdr.bth.psn[0:0] == 1\l\l
+ "];
+tbl_set_mirror_md [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_set_mirror_md\l\l
+W:\l
+ meta.ing_mir_ses\l
+ meta.pkt_type\l
+ ig_intr_md_for_dprsr.mirror_type\l
+ ig_intr_md_for_dprsr.mirror_type.$valid\l
+ "];
+cond_22 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_intr_md_for_tm.ucast_egress_port != 384\l\l
+ "];
+tbl_themis340 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_themis340\l\l
+W:\l
+ hdr.bridged_md.$valid\l
+ hdr.bridged_md.pkt_type\l
+ "];
+    PARSER -> tbl_themis250
+    tbl_themis250 -> cond_14
+    cond_14 -> arp_table_0
+    cond_14 -> cond_15
+    arp_table_0 -> cond_15
+    cond_15 -> tbl_themis262
+    cond_15 -> cond_18
+    tbl_themis262 -> cond_16
+    cond_16 -> tbl_themis266
+    cond_16 -> cond_17
+    tbl_themis266 -> cond_17
+    cond_17 -> tbl_themis269
+    cond_17 -> tbl_themis276
+    tbl_themis269 -> cond_19
+    tbl_themis276 -> cond_19
+    cond_18 -> tbl_themis300
+    cond_18 -> cond_19
+    tbl_themis300 -> cond_19
+    cond_19 -> tbl_start_one_recir
+    cond_19 -> cond_20
+    tbl_start_one_recir -> cond_20
+    cond_20 -> l3_table_0
+    cond_20 -> cond_21
+    l3_table_0 -> cond_21
+    cond_21 -> tbl_set_mirror_md
+    cond_21 -> cond_22
+    tbl_set_mirror_md -> cond_22
+    cond_22 -> tbl_themis340
+    cond_22 -> DEPARSER
+    tbl_themis340 -> DEPARSER
+}

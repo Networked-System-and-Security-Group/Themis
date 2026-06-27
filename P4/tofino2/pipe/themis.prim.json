@@ -1,0 +1,785 @@
+{
+  "tables" : [
+    {
+      "name" : "tbl_themis250",
+      "actions" : [
+        {
+          "name" : "themis250",
+          "primitives" : [
+            {
+              "name" : "CountFromHashPrimitive",
+              "dst" : {
+                "type" : "counter",
+                "name" : "Ingress.ingress_port_debug_counter"
+              },
+              "idx" : {
+                "type" : "hash",
+                "name" : "hash_Ingress.ingress_port_debug_counter",
+                "algorithm" : "identity"
+              },
+              "hash_inputs" : ["ig_intr_md.ingress_port"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "Ingress.arp_table",
+      "actions" : [
+        {
+          "name" : "Ingress.forward",
+          "primitives" : [
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "ig_intr_md_for_tm.ucast_egress_port"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "511"
+              },
+              "src1" : {
+                "type" : "action_param",
+                "name" : "egress_port"
+              }
+            },
+            {
+              "name" : "AddHeaderPrimitive",
+              "dst" : {
+                "type" : "header",
+                "name" : "ig_intr_md_for_tm.ucast_egress_port.$valid"
+              }
+            }
+          ]
+        },
+        {
+          "name" : "NoAction",
+          "primitives" : []
+        }
+      ]
+    },
+    {
+      "name" : "tbl_themis262",
+      "actions" : [
+        {
+          "name" : "themis262",
+          "primitives" : [
+            {
+              "name" : "CountPrimitive",
+              "dst" : {
+                "type" : "counter",
+                "name" : "Ingress.recir_return_counter"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "tbl_themis266",
+      "actions" : [
+        {
+          "name" : "themis266",
+          "primitives" : [
+            {
+              "name" : "CountPrimitive",
+              "dst" : {
+                "type" : "counter",
+                "name" : "Ingress.recir_return_roce_counter"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "tbl_themis269",
+      "actions" : [
+        {
+          "name" : "themis269",
+          "primitives" : [
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "apply_l3_0"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "1"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "1w1"
+              }
+            },
+            {
+              "name" : "RemoveHeaderPrimitive",
+              "dst" : {
+                "type" : "header",
+                "name" : "hdr.recir.$valid"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "tbl_themis276",
+      "actions" : [
+        {
+          "name" : "themis276",
+          "primitives" : [
+            {
+              "name" : "DirectAluPrimitive",
+              "operation" : "add",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.recir.cnt"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "0"
+              },
+              "src1" : {
+                "type" : "phv",
+                "name" : "hdr.recir.cnt"
+              },
+              "src2" : {
+                "type" : "immediate",
+                "name" : "32w4294967295"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "ig_intr_md_for_tm.ucast_egress_port"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "511"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "9w384"
+              }
+            },
+            {
+              "name" : "AddHeaderPrimitive",
+              "dst" : {
+                "type" : "header",
+                "name" : "ig_intr_md_for_tm.ucast_egress_port.$valid"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "ig_intr_md_for_tm.bypass_egress"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "1"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "1w1"
+              }
+            },
+            {
+              "name" : "AddHeaderPrimitive",
+              "dst" : {
+                "type" : "header",
+                "name" : "ig_intr_md_for_tm.bypass_egress.$valid"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "tbl_themis300",
+      "actions" : [
+        {
+          "name" : "themis300",
+          "primitives" : [
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "apply_l3_0"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "1"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "1w1"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "tbl_start_one_recir",
+      "actions" : [
+        {
+          "name" : "Ingress.start_one_recir",
+          "primitives" : [
+            {
+              "name" : "CountPrimitive",
+              "dst" : {
+                "type" : "counter",
+                "name" : "Ingress.recir_debug_counter"
+              }
+            },
+            {
+              "name" : "AddHeaderPrimitive",
+              "dst" : {
+                "type" : "header",
+                "name" : "hdr.recir.$valid"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.recir.cnt"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "0"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "32w0"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "apply_l3_0"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "1"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "1w0"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "ig_intr_md_for_tm.ucast_egress_port"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "511"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "9w384"
+              }
+            },
+            {
+              "name" : "AddHeaderPrimitive",
+              "dst" : {
+                "type" : "header",
+                "name" : "ig_intr_md_for_tm.ucast_egress_port.$valid"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "ig_intr_md_for_tm.bypass_egress"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "1"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "1w1"
+              }
+            },
+            {
+              "name" : "AddHeaderPrimitive",
+              "dst" : {
+                "type" : "header",
+                "name" : "ig_intr_md_for_tm.bypass_egress.$valid"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "Ingress.l3_table",
+      "actions" : [
+        {
+          "name" : "Ingress.forward",
+          "primitives" : [
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "ig_intr_md_for_tm.ucast_egress_port"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "511"
+              },
+              "src1" : {
+                "type" : "action_param",
+                "name" : "egress_port"
+              }
+            },
+            {
+              "name" : "AddHeaderPrimitive",
+              "dst" : {
+                "type" : "header",
+                "name" : "ig_intr_md_for_tm.ucast_egress_port.$valid"
+              }
+            }
+          ]
+        },
+        {
+          "name" : "NoAction",
+          "primitives" : []
+        }
+      ]
+    },
+    {
+      "name" : "tbl_set_mirror_md",
+      "actions" : [
+        {
+          "name" : "Ingress.set_mirror_md",
+          "primitives" : [
+            {
+              "name" : "CountPrimitive",
+              "dst" : {
+                "type" : "counter",
+                "name" : "Ingress.cnp_debug_counter"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "meta.ing_mir_ses"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "255"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "8w1"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "meta.pkt_type"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "255"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "8w9"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "ig_intr_md_for_dprsr.mirror_type"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "15"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "4w1"
+              }
+            },
+            {
+              "name" : "AddHeaderPrimitive",
+              "dst" : {
+                "type" : "header",
+                "name" : "ig_intr_md_for_dprsr.mirror_type.$valid"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "tbl_themis340",
+      "actions" : [
+        {
+          "name" : "themis340",
+          "primitives" : [
+            {
+              "name" : "AddHeaderPrimitive",
+              "dst" : {
+                "type" : "header",
+                "name" : "hdr.bridged_md.$valid"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.bridged_md.pkt_type"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "255"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "8w6"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "tbl_themis536",
+      "actions" : [
+        {
+          "name" : "themis536",
+          "primitives" : [
+            {
+              "name" : "SetFieldToHashIndexPrimitive",
+              "dst" : {
+                "type" : "phv",
+                "name" : "pnp_dip_hash_0"
+              },
+              "idx" : {
+                "type" : "hash",
+                "name" : "hash_pnp_dip_hash_0",
+                "algorithm" : "crc_8"
+              },
+              "hash_inputs" : ["hdr.ipv4.dst_addr"]
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "tmp1_0"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "65535"
+              },
+              "src1" : {
+                "type" : "phv",
+                "name" : "hdr.ethernet.dst_addr"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "tmp2_0"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "0"
+              },
+              "src1" : {
+                "type" : "phv",
+                "name" : "hdr.ipv4.dst_addr"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "tbl_themis543",
+      "actions" : [
+        {
+          "name" : "themis543",
+          "primitives" : [
+            {
+              "name" : "CountPrimitive",
+              "dst" : {
+                "type" : "counter",
+                "name" : "Egress.egress_mirror_seen_counter"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.ethernet.dst_addr"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "65535"
+              },
+              "src1" : {
+                "type" : "phv",
+                "name" : "hdr.ethernet.src_addr"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.ethernet.src_addr"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "65535"
+              },
+              "src1" : {
+                "type" : "phv",
+                "name" : "tmp1_0"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.ipv4.dst_addr"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "0"
+              },
+              "src1" : {
+                "type" : "phv",
+                "name" : "hdr.ipv4.src_addr"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.ipv4.src_addr"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "0"
+              },
+              "src1" : {
+                "type" : "phv",
+                "name" : "tmp2_0"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.ipv4.ecn"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "3"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "2w0"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.bth.dst_qpn"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "127"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "7w0"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "tbl_themis555",
+      "actions" : [
+        {
+          "name" : "themis555",
+          "primitives" : [
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.bth.dst_qpn"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "16383"
+              },
+              "src1" : {
+                "type" : "phv",
+                "name" : "hdr.udp.src_port"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "tbl_themis556",
+      "actions" : [
+        {
+          "name" : "themis556",
+          "primitives" : [
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.bth.dst_qpn"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "7"
+              },
+              "src1" : {
+                "type" : "phv",
+                "name" : "pnp_dip_hash_0"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.bth.opcode"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "255"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "8w129"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "tbl_themis559",
+      "actions" : [
+        {
+          "name" : "themis559",
+          "primitives" : [
+            {
+              "name" : "CountPrimitive",
+              "dst" : {
+                "type" : "counter",
+                "name" : "Egress.egress_mirror_bth_counter"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "tbl_themis560",
+      "actions" : [
+        {
+          "name" : "themis560",
+          "primitives" : [
+            {
+              "name" : "CountPrimitive",
+              "dst" : {
+                "type" : "counter",
+                "name" : "Egress.egress_mirror_cnp_set_counter"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "tbl_themis566",
+      "actions" : [
+        {
+          "name" : "themis566",
+          "primitives" : [
+            {
+              "name" : "CountPrimitive",
+              "dst" : {
+                "type" : "counter",
+                "name" : "Egress.egress_roce_data_counter"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "Egress.count_cnp",
+      "actions" : [
+        {
+          "name" : "Egress.inc_cnp_counter",
+          "primitives" : [
+            {
+              "name" : "CountPrimitive",
+              "dst" : {
+                "type" : "counter",
+                "name" : "Egress.indirect_counter"
+              }
+            }
+          ]
+        },
+        {
+          "name" : "NoAction",
+          "primitives" : []
+        }
+      ]
+    }
+  ]
+}

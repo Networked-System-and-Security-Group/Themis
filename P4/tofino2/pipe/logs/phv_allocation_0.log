@@ -1,0 +1,9 @@
+--- BEGIN PHV ALLOCATION ----------------------------------------------------
+There are 280 containers.
+Ingress only: 0
+Egress  only: 0
+Add @pa_container_size that: 152:egress::meta.udp_tmp_checksum<16> ^x ^x meta solitary(pragma_container_size ) no_split mocha checksummed must be allocated to  [ H  ]  container(s)
+
+
+allocation(default_alloc_config): Try allocation for the 1th time
+allocation(default_alloc_config): Succeeded

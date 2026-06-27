@@ -1,0 +1,290 @@
+{
+  "dynamic_hash_calculations" : [
+    {
+      "name" : "Egress.egress_pnp_dip_hash_calc.configure",
+      "handle" : 570425344,
+      "any_hash_algorithm_allowed" : true,
+      "algorithms" : [
+        {
+          "name" : "crc_8",
+          "type" : "crc",
+          "handle" : 587202560,
+          "is_default" : true,
+          "msb" : false,
+          "extend" : false,
+          "reverse" : false,
+          "poly" : "0x107",
+          "init" : "0x0",
+          "final_xor" : "0x0"
+        }
+      ],
+      "field_lists" : [
+        {
+          "name" : "$field_list_1",
+          "handle" : 553648128,
+          "is_default" : true,
+          "can_permute" : true,
+          "can_rotate" : true,
+          "fields" : [
+            {
+              "name" : "hdr.ipv4.dst_addr",
+              "start_bit" : 0,
+              "bit_width" : 32,
+              "optional" : true,
+              "is_constant" : false
+            }
+          ],
+          "crossbar_configuration" : [
+            {
+              "stage_number" : 0,
+              "crossbar" : [
+                {
+                  "byte_number" : 0,
+                  "bit_in_byte" : 0,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 0
+                },
+                {
+                  "byte_number" : 0,
+                  "bit_in_byte" : 1,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 1
+                },
+                {
+                  "byte_number" : 0,
+                  "bit_in_byte" : 2,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 2
+                },
+                {
+                  "byte_number" : 0,
+                  "bit_in_byte" : 3,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 3
+                },
+                {
+                  "byte_number" : 0,
+                  "bit_in_byte" : 4,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 4
+                },
+                {
+                  "byte_number" : 0,
+                  "bit_in_byte" : 5,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 5
+                },
+                {
+                  "byte_number" : 0,
+                  "bit_in_byte" : 6,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 6
+                },
+                {
+                  "byte_number" : 0,
+                  "bit_in_byte" : 7,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 7
+                },
+                {
+                  "byte_number" : 1,
+                  "bit_in_byte" : 0,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 8
+                },
+                {
+                  "byte_number" : 1,
+                  "bit_in_byte" : 1,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 9
+                },
+                {
+                  "byte_number" : 1,
+                  "bit_in_byte" : 2,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 10
+                },
+                {
+                  "byte_number" : 1,
+                  "bit_in_byte" : 3,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 11
+                },
+                {
+                  "byte_number" : 1,
+                  "bit_in_byte" : 4,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 12
+                },
+                {
+                  "byte_number" : 1,
+                  "bit_in_byte" : 5,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 13
+                },
+                {
+                  "byte_number" : 1,
+                  "bit_in_byte" : 6,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 14
+                },
+                {
+                  "byte_number" : 1,
+                  "bit_in_byte" : 7,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 15
+                },
+                {
+                  "byte_number" : 2,
+                  "bit_in_byte" : 0,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 16
+                },
+                {
+                  "byte_number" : 2,
+                  "bit_in_byte" : 1,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 17
+                },
+                {
+                  "byte_number" : 2,
+                  "bit_in_byte" : 2,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 18
+                },
+                {
+                  "byte_number" : 2,
+                  "bit_in_byte" : 3,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 19
+                },
+                {
+                  "byte_number" : 2,
+                  "bit_in_byte" : 4,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 20
+                },
+                {
+                  "byte_number" : 2,
+                  "bit_in_byte" : 5,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 21
+                },
+                {
+                  "byte_number" : 2,
+                  "bit_in_byte" : 6,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 22
+                },
+                {
+                  "byte_number" : 2,
+                  "bit_in_byte" : 7,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 23
+                },
+                {
+                  "byte_number" : 3,
+                  "bit_in_byte" : 0,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 24
+                },
+                {
+                  "byte_number" : 3,
+                  "bit_in_byte" : 1,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 25
+                },
+                {
+                  "byte_number" : 3,
+                  "bit_in_byte" : 2,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 26
+                },
+                {
+                  "byte_number" : 3,
+                  "bit_in_byte" : 3,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 27
+                },
+                {
+                  "byte_number" : 3,
+                  "bit_in_byte" : 4,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 28
+                },
+                {
+                  "byte_number" : 3,
+                  "bit_in_byte" : 5,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 29
+                },
+                {
+                  "byte_number" : 3,
+                  "bit_in_byte" : 6,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 30
+                },
+                {
+                  "byte_number" : 3,
+                  "bit_in_byte" : 7,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 31
+                }
+              ],
+              "crossbar_mod" : []
+            }
+          ]
+        }
+      ],
+      "hash_configuration" : [
+        {
+          "stage_number" : 0,
+          "hash" : {
+            "hash_id" : 0,
+            "num_hash_bits" : 8,
+            "hash_bits" : [
+              {
+                "gfm_hash_bit" : 0,
+                "p4_hash_bit" : 0
+              },
+              {
+                "gfm_hash_bit" : 1,
+                "p4_hash_bit" : 1
+              },
+              {
+                "gfm_hash_bit" : 2,
+                "p4_hash_bit" : 2
+              },
+              {
+                "gfm_hash_bit" : 3,
+                "p4_hash_bit" : 3
+              },
+              {
+                "gfm_hash_bit" : 4,
+                "p4_hash_bit" : 4
+              },
+              {
+                "gfm_hash_bit" : 5,
+                "p4_hash_bit" : 5
+              },
+              {
+                "gfm_hash_bit" : 6,
+                "p4_hash_bit" : 6
+              },
+              {
+                "gfm_hash_bit" : 7,
+                "p4_hash_bit" : 7
+              }
+            ]
+          },
+          "hash_mod" : {
+            "hash_id" : 0,
+            "num_hash_bits" : 0,
+            "hash_bits" : []
+          }
+        }
+      ],
+      "hash_bit_width" : 8
+    }
+  ]
+}
