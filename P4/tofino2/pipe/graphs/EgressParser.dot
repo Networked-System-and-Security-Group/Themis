@@ -1,6 +1,6 @@
 digraph EgressParser{
 start [shape=rectangle,label="start
-(tmp[39:32])"]
+(tmp)"]
 parse_bridged_md [shape=rectangle,label="parse_bridged_md"]
 parse_mirror_md [shape=rectangle,label="parse_mirror_md"]
 parse_ethernet [shape=rectangle,label="parse_ethernet

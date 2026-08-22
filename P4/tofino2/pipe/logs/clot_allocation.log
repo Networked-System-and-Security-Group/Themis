@@ -510,68 +510,6 @@ CLOT candidate 8:
 |         Total bits          |      224      |          |
 +-----------------------------+---------------+----------+
 
-CLOT candidate 7:
-  states: egress::parse_ipv4
-+---------------------------------+-------------+----------+
-|             Fields              |    Bits     | Property |
-+---------------------------------+-------------+----------+
-|    egress::hdr.ipv4.version     |  4 [0..3]   |  unused  |
-|      egress::hdr.ipv4.ihl       |  4 [4..7]   |  unused  |
-|    egress::hdr.ipv4.diffserv    |  6 [8..13]  | modified |
-|      egress::hdr.ipv4.ecn       | 2 [14..15]  | modified |
-|   egress::hdr.ipv4.total_len    | 16 [16..31] |  unused  |
-| egress::hdr.ipv4.identification | 16 [32..47] |  unused  |
-|     egress::hdr.ipv4.flags      | 3 [48..50]  |  unused  |
-|  egress::hdr.ipv4.frag_offset   | 13 [51..63] |  unused  |
-|      egress::hdr.ipv4.ttl       | 8 [64..71]  |  unused  |
-|    egress::hdr.ipv4.protocol    | 8 [72..79]  |  unused  |
-+---------------------------------+-------------+----------+
-|           Unused bits           |     72      |          |
-|         Read-only bits          |      0      |          |
-|          Modified bits          |      8      |          |
-|          Checksum bits          |      0      |          |
-|           Total bits            |     80      |          |
-+---------------------------------+-------------+----------+
-
-CLOT candidate 11:
-  states: egress::parse_bth
-+---------------------------------+-------------+----------+
-|             Fields              |    Bits     | Property |
-+---------------------------------+-------------+----------+
-| egress::hdr.bth.solicited_event |  1 [0..0]   |  unused  |
-|     egress::hdr.bth.mig_req     |  1 [1..1]   |  unused  |
-|    egress::hdr.bth.pad_count    |  2 [2..3]   |  unused  |
-|    egress::hdr.bth.header_v     |  4 [4..7]   |  unused  |
-|    egress::hdr.bth.parti_key    | 16 [8..23]  |  unused  |
-|    egress::hdr.bth.reserved1    | 8 [24..31]  |  unused  |
-|     egress::hdr.bth.dst_qpn     | 24 [32..55] | modified |
-|     egress::hdr.bth.ack_req     | 1 [56..56]  |  unused  |
-|    egress::hdr.bth.reserved2    | 7 [57..63]  |  unused  |
-|       egress::hdr.bth.psn       | 24 [64..87] |  unused  |
-+---------------------------------+-------------+----------+
-|           Unused bits           |     64      |          |
-|         Read-only bits          |      0      |          |
-|          Modified bits          |     24      |          |
-|          Checksum bits          |      0      |          |
-|           Total bits            |     88      |          |
-+---------------------------------+-------------+----------+
-
-CLOT candidate 10:
-  states: egress::parse_udp
-+----------------------------+-------------+-----------+
-|           Fields           |    Bits     | Property  |
-+----------------------------+-------------+-----------+
-|  egress::hdr.udp.src_port  | 16 [0..15]  | read-only |
-|  egress::hdr.udp.dst_port  | 16 [16..31] | read-only |
-| egress::hdr.udp.hdr_length | 16 [32..47] |  unused   |
-+----------------------------+-------------+-----------+
-|        Unused bits         |     16      |           |
-|       Read-only bits       |     32      |           |
-|       Modified bits        |      0      |           |
-|       Checksum bits        |      0      |           |
-|         Total bits         |     48      |           |
-+----------------------------+-------------+-----------+
-
 CLOT candidate 6:
   states: egress::parse_ethernet
 +---------------------------------+------------+----------+
@@ -585,6 +523,48 @@ CLOT candidate 6:
 |          Checksum bits          |     0      |          |
 |           Total bits            |     16     |          |
 +---------------------------------+------------+----------+
+
+CLOT candidate 11:
+  states: egress::parse_bth
++---------------------------+------------+-----------+
+|          Fields           |    Bits    | Property  |
++---------------------------+------------+-----------+
+| egress::hdr.bth.parti_key | 16 [0..15] | read-only |
++---------------------------+------------+-----------+
+|        Unused bits        |     0      |           |
+|      Read-only bits       |     16     |           |
+|       Modified bits       |     0      |           |
+|       Checksum bits       |     0      |           |
+|        Total bits         |     16     |           |
++---------------------------+------------+-----------+
+
+CLOT candidate 10:
+  states: egress::parse_udp
++--------------------------+------------+-----------+
+|          Fields          |    Bits    | Property  |
++--------------------------+------------+-----------+
+| egress::hdr.udp.src_port | 16 [0..15] | read-only |
++--------------------------+------------+-----------+
+|       Unused bits        |     0      |           |
+|      Read-only bits      |     16     |           |
+|      Modified bits       |     0      |           |
+|      Checksum bits       |     0      |           |
+|        Total bits        |     16     |           |
++--------------------------+------------+-----------+
+
+CLOT candidate 7:
+  states: egress::parse_ipv4
++---------------------------------+------------+-----------+
+|             Fields              |    Bits    | Property  |
++---------------------------------+------------+-----------+
+| egress::hdr.ipv4.identification | 16 [0..15] | read-only |
++---------------------------------+------------+-----------+
+|           Unused bits           |     0      |           |
+|         Read-only bits          |     16     |           |
+|          Modified bits          |     0      |           |
+|          Checksum bits          |     0      |           |
+|           Total bits            |     16     |           |
++---------------------------------+------------+-----------+
 
 Allocating CLOT 0 to candidate 9
   states: egress::parse_tcp
@@ -612,68 +592,6 @@ CLOT candidate 8:
 |         Total bits          |      224      |          |
 +-----------------------------+---------------+----------+
 
-CLOT candidate 7:
-  states: egress::parse_ipv4
-+---------------------------------+-------------+----------+
-|             Fields              |    Bits     | Property |
-+---------------------------------+-------------+----------+
-|    egress::hdr.ipv4.version     |  4 [0..3]   |  unused  |
-|      egress::hdr.ipv4.ihl       |  4 [4..7]   |  unused  |
-|    egress::hdr.ipv4.diffserv    |  6 [8..13]  | modified |
-|      egress::hdr.ipv4.ecn       | 2 [14..15]  | modified |
-|   egress::hdr.ipv4.total_len    | 16 [16..31] |  unused  |
-| egress::hdr.ipv4.identification | 16 [32..47] |  unused  |
-|     egress::hdr.ipv4.flags      | 3 [48..50]  |  unused  |
-|  egress::hdr.ipv4.frag_offset   | 13 [51..63] |  unused  |
-|      egress::hdr.ipv4.ttl       | 8 [64..71]  |  unused  |
-|    egress::hdr.ipv4.protocol    | 8 [72..79]  |  unused  |
-+---------------------------------+-------------+----------+
-|           Unused bits           |     72      |          |
-|         Read-only bits          |      0      |          |
-|          Modified bits          |      8      |          |
-|          Checksum bits          |      0      |          |
-|           Total bits            |     80      |          |
-+---------------------------------+-------------+----------+
-
-CLOT candidate 11:
-  states: egress::parse_bth
-+---------------------------------+-------------+----------+
-|             Fields              |    Bits     | Property |
-+---------------------------------+-------------+----------+
-| egress::hdr.bth.solicited_event |  1 [0..0]   |  unused  |
-|     egress::hdr.bth.mig_req     |  1 [1..1]   |  unused  |
-|    egress::hdr.bth.pad_count    |  2 [2..3]   |  unused  |
-|    egress::hdr.bth.header_v     |  4 [4..7]   |  unused  |
-|    egress::hdr.bth.parti_key    | 16 [8..23]  |  unused  |
-|    egress::hdr.bth.reserved1    | 8 [24..31]  |  unused  |
-|     egress::hdr.bth.dst_qpn     | 24 [32..55] | modified |
-|     egress::hdr.bth.ack_req     | 1 [56..56]  |  unused  |
-|    egress::hdr.bth.reserved2    | 7 [57..63]  |  unused  |
-|       egress::hdr.bth.psn       | 24 [64..87] |  unused  |
-+---------------------------------+-------------+----------+
-|           Unused bits           |     64      |          |
-|         Read-only bits          |      0      |          |
-|          Modified bits          |     24      |          |
-|          Checksum bits          |      0      |          |
-|           Total bits            |     88      |          |
-+---------------------------------+-------------+----------+
-
-CLOT candidate 10:
-  states: egress::parse_udp
-+----------------------------+-------------+-----------+
-|           Fields           |    Bits     | Property  |
-+----------------------------+-------------+-----------+
-|  egress::hdr.udp.src_port  | 16 [0..15]  | read-only |
-|  egress::hdr.udp.dst_port  | 16 [16..31] | read-only |
-| egress::hdr.udp.hdr_length | 16 [32..47] |  unused   |
-+----------------------------+-------------+-----------+
-|        Unused bits         |     16      |           |
-|       Read-only bits       |     32      |           |
-|       Modified bits        |      0      |           |
-|       Checksum bits        |      0      |           |
-|         Total bits         |     48      |           |
-+----------------------------+-------------+-----------+
-
 CLOT candidate 6:
   states: egress::parse_ethernet
 +---------------------------------+------------+----------+
@@ -687,73 +605,53 @@ CLOT candidate 6:
 |          Checksum bits          |     0      |          |
 |           Total bits            |     16     |          |
 +---------------------------------+------------+----------+
+
+CLOT candidate 11:
+  states: egress::parse_bth
++---------------------------+------------+-----------+
+|          Fields           |    Bits    | Property  |
++---------------------------+------------+-----------+
+| egress::hdr.bth.parti_key | 16 [0..15] | read-only |
++---------------------------+------------+-----------+
+|        Unused bits        |     0      |           |
+|      Read-only bits       |     16     |           |
+|       Modified bits       |     0      |           |
+|       Checksum bits       |     0      |           |
+|        Total bits         |     16     |           |
++---------------------------+------------+-----------+
+
+CLOT candidate 10:
+  states: egress::parse_udp
++--------------------------+------------+-----------+
+|          Fields          |    Bits    | Property  |
++--------------------------+------------+-----------+
+| egress::hdr.udp.src_port | 16 [0..15] | read-only |
++--------------------------+------------+-----------+
+|       Unused bits        |     0      |           |
+|      Read-only bits      |     16     |           |
+|      Modified bits       |     0      |           |
+|      Checksum bits       |     0      |           |
+|        Total bits        |     16     |           |
++--------------------------+------------+-----------+
+
+CLOT candidate 7:
+  states: egress::parse_ipv4
++---------------------------------+------------+-----------+
+|             Fields              |    Bits    | Property  |
++---------------------------------+------------+-----------+
+| egress::hdr.ipv4.identification | 16 [0..15] | read-only |
++---------------------------------+------------+-----------+
+|           Unused bits           |     0      |           |
+|         Read-only bits          |     16     |           |
+|          Modified bits          |     0      |           |
+|          Checksum bits          |     0      |           |
+|           Total bits            |     16     |           |
++---------------------------------+------------+-----------+
 
 Allocating CLOT 1 to candidate 8
   states: egress::parse_arp
 
 Remaining CLOT candidates:
-CLOT candidate 7:
-  states: egress::parse_ipv4
-+---------------------------------+-------------+----------+
-|             Fields              |    Bits     | Property |
-+---------------------------------+-------------+----------+
-|    egress::hdr.ipv4.version     |  4 [0..3]   |  unused  |
-|      egress::hdr.ipv4.ihl       |  4 [4..7]   |  unused  |
-|    egress::hdr.ipv4.diffserv    |  6 [8..13]  | modified |
-|      egress::hdr.ipv4.ecn       | 2 [14..15]  | modified |
-|   egress::hdr.ipv4.total_len    | 16 [16..31] |  unused  |
-| egress::hdr.ipv4.identification | 16 [32..47] |  unused  |
-|     egress::hdr.ipv4.flags      | 3 [48..50]  |  unused  |
-|  egress::hdr.ipv4.frag_offset   | 13 [51..63] |  unused  |
-|      egress::hdr.ipv4.ttl       | 8 [64..71]  |  unused  |
-|    egress::hdr.ipv4.protocol    | 8 [72..79]  |  unused  |
-+---------------------------------+-------------+----------+
-|           Unused bits           |     72      |          |
-|         Read-only bits          |      0      |          |
-|          Modified bits          |      8      |          |
-|          Checksum bits          |      0      |          |
-|           Total bits            |     80      |          |
-+---------------------------------+-------------+----------+
-
-CLOT candidate 11:
-  states: egress::parse_bth
-+---------------------------------+-------------+----------+
-|             Fields              |    Bits     | Property |
-+---------------------------------+-------------+----------+
-| egress::hdr.bth.solicited_event |  1 [0..0]   |  unused  |
-|     egress::hdr.bth.mig_req     |  1 [1..1]   |  unused  |
-|    egress::hdr.bth.pad_count    |  2 [2..3]   |  unused  |
-|    egress::hdr.bth.header_v     |  4 [4..7]   |  unused  |
-|    egress::hdr.bth.parti_key    | 16 [8..23]  |  unused  |
-|    egress::hdr.bth.reserved1    | 8 [24..31]  |  unused  |
-|     egress::hdr.bth.dst_qpn     | 24 [32..55] | modified |
-|     egress::hdr.bth.ack_req     | 1 [56..56]  |  unused  |
-|    egress::hdr.bth.reserved2    | 7 [57..63]  |  unused  |
-|       egress::hdr.bth.psn       | 24 [64..87] |  unused  |
-+---------------------------------+-------------+----------+
-|           Unused bits           |     64      |          |
-|         Read-only bits          |      0      |          |
-|          Modified bits          |     24      |          |
-|          Checksum bits          |      0      |          |
-|           Total bits            |     88      |          |
-+---------------------------------+-------------+----------+
-
-CLOT candidate 10:
-  states: egress::parse_udp
-+----------------------------+-------------+-----------+
-|           Fields           |    Bits     | Property  |
-+----------------------------+-------------+-----------+
-|  egress::hdr.udp.src_port  | 16 [0..15]  | read-only |
-|  egress::hdr.udp.dst_port  | 16 [16..31] | read-only |
-| egress::hdr.udp.hdr_length | 16 [32..47] |  unused   |
-+----------------------------+-------------+-----------+
-|        Unused bits         |     16      |           |
-|       Read-only bits       |     32      |           |
-|       Modified bits        |      0      |           |
-|       Checksum bits        |      0      |           |
-|         Total bits         |     48      |           |
-+----------------------------+-------------+-----------+
-
 CLOT candidate 6:
   states: egress::parse_ethernet
   appears before an allocated CLOT with 0-byte gap
@@ -769,63 +667,93 @@ CLOT candidate 6:
 |           Total bits            |     16     |          |
 +---------------------------------+------------+----------+
 
-Allocating CLOT 2 to candidate 7
+CLOT candidate 11:
+  states: egress::parse_bth
++---------------------------+------------+-----------+
+|          Fields           |    Bits    | Property  |
++---------------------------+------------+-----------+
+| egress::hdr.bth.parti_key | 16 [0..15] | read-only |
++---------------------------+------------+-----------+
+|        Unused bits        |     0      |           |
+|      Read-only bits       |     16     |           |
+|       Modified bits       |     0      |           |
+|       Checksum bits       |     0      |           |
+|        Total bits         |     16     |           |
++---------------------------+------------+-----------+
+
+CLOT candidate 10:
+  states: egress::parse_udp
++--------------------------+------------+-----------+
+|          Fields          |    Bits    | Property  |
++--------------------------+------------+-----------+
+| egress::hdr.udp.src_port | 16 [0..15] | read-only |
++--------------------------+------------+-----------+
+|       Unused bits        |     0      |           |
+|      Read-only bits      |     16     |           |
+|      Modified bits       |     0      |           |
+|      Checksum bits       |     0      |           |
+|        Total bits        |     16     |           |
++--------------------------+------------+-----------+
+
+CLOT candidate 7:
   states: egress::parse_ipv4
++---------------------------------+------------+-----------+
+|             Fields              |    Bits    | Property  |
++---------------------------------+------------+-----------+
+| egress::hdr.ipv4.identification | 16 [0..15] | read-only |
++---------------------------------+------------+-----------+
+|           Unused bits           |     0      |           |
+|         Read-only bits          |     16     |           |
+|          Modified bits          |     0      |           |
+|          Checksum bits          |     0      |           |
+|           Total bits            |     16     |           |
++---------------------------------+------------+-----------+
+
+Allocating CLOT 2 to candidate 6
+  states: egress::parse_ethernet
 
 Remaining CLOT candidates:
 CLOT candidate 11:
   states: egress::parse_bth
-+---------------------------------+-------------+----------+
-|             Fields              |    Bits     | Property |
-+---------------------------------+-------------+----------+
-| egress::hdr.bth.solicited_event |  1 [0..0]   |  unused  |
-|     egress::hdr.bth.mig_req     |  1 [1..1]   |  unused  |
-|    egress::hdr.bth.pad_count    |  2 [2..3]   |  unused  |
-|    egress::hdr.bth.header_v     |  4 [4..7]   |  unused  |
-|    egress::hdr.bth.parti_key    | 16 [8..23]  |  unused  |
-|    egress::hdr.bth.reserved1    | 8 [24..31]  |  unused  |
-|     egress::hdr.bth.dst_qpn     | 24 [32..55] | modified |
-|     egress::hdr.bth.ack_req     | 1 [56..56]  |  unused  |
-|    egress::hdr.bth.reserved2    | 7 [57..63]  |  unused  |
-|       egress::hdr.bth.psn       | 24 [64..87] |  unused  |
-+---------------------------------+-------------+----------+
-|           Unused bits           |     64      |          |
-|         Read-only bits          |      0      |          |
-|          Modified bits          |     24      |          |
-|          Checksum bits          |      0      |          |
-|           Total bits            |     88      |          |
-+---------------------------------+-------------+----------+
++---------------------------+------------+-----------+
+|          Fields           |    Bits    | Property  |
++---------------------------+------------+-----------+
+| egress::hdr.bth.parti_key | 16 [0..15] | read-only |
++---------------------------+------------+-----------+
+|        Unused bits        |     0      |           |
+|      Read-only bits       |     16     |           |
+|       Modified bits       |     0      |           |
+|       Checksum bits       |     0      |           |
+|        Total bits         |     16     |           |
++---------------------------+------------+-----------+
 
 CLOT candidate 10:
   states: egress::parse_udp
-+----------------------------+-------------+-----------+
-|           Fields           |    Bits     | Property  |
-+----------------------------+-------------+-----------+
-|  egress::hdr.udp.src_port  | 16 [0..15]  | read-only |
-|  egress::hdr.udp.dst_port  | 16 [16..31] | read-only |
-| egress::hdr.udp.hdr_length | 16 [32..47] |  unused   |
-+----------------------------+-------------+-----------+
-|        Unused bits         |     16      |           |
-|       Read-only bits       |     32      |           |
-|       Modified bits        |      0      |           |
-|       Checksum bits        |      0      |           |
-|         Total bits         |     48      |           |
-+----------------------------+-------------+-----------+
++--------------------------+------------+-----------+
+|          Fields          |    Bits    | Property  |
++--------------------------+------------+-----------+
+| egress::hdr.udp.src_port | 16 [0..15] | read-only |
++--------------------------+------------+-----------+
+|       Unused bits        |     0      |           |
+|      Read-only bits      |     16     |           |
+|      Modified bits       |     0      |           |
+|      Checksum bits       |     0      |           |
+|        Total bits        |     16     |           |
++--------------------------+------------+-----------+
 
-CLOT candidate 6:
-  states: egress::parse_ethernet
-  appears before an allocated CLOT with 0-byte gap
-+---------------------------------+------------+----------+
-|             Fields              |    Bits    | Property |
-+---------------------------------+------------+----------+
-| egress::hdr.ethernet.ether_type | 16 [0..15] |  unused  |
-+---------------------------------+------------+----------+
-|           Unused bits           |     16     |          |
-|         Read-only bits          |     0      |          |
-|          Modified bits          |     0      |          |
-|          Checksum bits          |     0      |          |
-|           Total bits            |     16     |          |
-+---------------------------------+------------+----------+
+CLOT candidate 7:
+  states: egress::parse_ipv4
++---------------------------------+------------+-----------+
+|             Fields              |    Bits    | Property  |
++---------------------------------+------------+-----------+
+| egress::hdr.ipv4.identification | 16 [0..15] | read-only |
++---------------------------------+------------+-----------+
+|           Unused bits           |     0      |           |
+|         Read-only bits          |     16     |           |
+|          Modified bits          |     0      |           |
+|          Checksum bits          |     0      |           |
+|           Total bits            |     16     |           |
++---------------------------------+------------+-----------+
 
 Allocating CLOT 3 to candidate 11
   states: egress::parse_bth
@@ -833,56 +761,52 @@ Allocating CLOT 3 to candidate 11
 Remaining CLOT candidates:
 CLOT candidate 10:
   states: egress::parse_udp
-+----------------------------+-------------+-----------+
-|           Fields           |    Bits     | Property  |
-+----------------------------+-------------+-----------+
-|  egress::hdr.udp.src_port  | 16 [0..15]  | read-only |
-|  egress::hdr.udp.dst_port  | 16 [16..31] | read-only |
-| egress::hdr.udp.hdr_length | 16 [32..47] |  unused   |
-+----------------------------+-------------+-----------+
-|        Unused bits         |     16      |           |
-|       Read-only bits       |     32      |           |
-|       Modified bits        |      0      |           |
-|       Checksum bits        |      0      |           |
-|         Total bits         |     48      |           |
-+----------------------------+-------------+-----------+
++--------------------------+------------+-----------+
+|          Fields          |    Bits    | Property  |
++--------------------------+------------+-----------+
+| egress::hdr.udp.src_port | 16 [0..15] | read-only |
++--------------------------+------------+-----------+
+|       Unused bits        |     0      |           |
+|      Read-only bits      |     16     |           |
+|      Modified bits       |     0      |           |
+|      Checksum bits       |     0      |           |
+|        Total bits        |     16     |           |
++--------------------------+------------+-----------+
 
-CLOT candidate 6:
-  states: egress::parse_ethernet
-  appears before an allocated CLOT with 0-byte gap
-+---------------------------------+------------+----------+
-|             Fields              |    Bits    | Property |
-+---------------------------------+------------+----------+
-| egress::hdr.ethernet.ether_type | 16 [0..15] |  unused  |
-+---------------------------------+------------+----------+
-|           Unused bits           |     16     |          |
-|         Read-only bits          |     0      |          |
-|          Modified bits          |     0      |          |
-|          Checksum bits          |     0      |          |
-|           Total bits            |     16     |          |
-+---------------------------------+------------+----------+
+CLOT candidate 7:
+  states: egress::parse_ipv4
++---------------------------------+------------+-----------+
+|             Fields              |    Bits    | Property  |
++---------------------------------+------------+-----------+
+| egress::hdr.ipv4.identification | 16 [0..15] | read-only |
++---------------------------------+------------+-----------+
+|           Unused bits           |     0      |           |
+|         Read-only bits          |     16     |           |
+|          Modified bits          |     0      |           |
+|          Checksum bits          |     0      |           |
+|           Total bits            |     16     |           |
++---------------------------------+------------+-----------+
 
 Allocating CLOT 4 to candidate 10
   states: egress::parse_udp
 
 Remaining CLOT candidates:
-CLOT candidate 6:
-  states: egress::parse_ethernet
-  appears before an allocated CLOT with 0-byte gap
-+---------------------------------+------------+----------+
-|             Fields              |    Bits    | Property |
-+---------------------------------+------------+----------+
-| egress::hdr.ethernet.ether_type | 16 [0..15] |  unused  |
-+---------------------------------+------------+----------+
-|           Unused bits           |     16     |          |
-|         Read-only bits          |     0      |          |
-|          Modified bits          |     0      |          |
-|          Checksum bits          |     0      |          |
-|           Total bits            |     16     |          |
-+---------------------------------+------------+----------+
+CLOT candidate 7:
+  states: egress::parse_ipv4
++---------------------------------+------------+-----------+
+|             Fields              |    Bits    | Property  |
++---------------------------------+------------+-----------+
+| egress::hdr.ipv4.identification | 16 [0..15] | read-only |
++---------------------------------+------------+-----------+
+|           Unused bits           |     0      |           |
+|         Read-only bits          |     16     |           |
+|          Modified bits          |     0      |           |
+|          Checksum bits          |     0      |           |
+|           Total bits            |     16     |           |
++---------------------------------+------------+-----------+
 
-Allocating CLOT 5 to candidate 6
-  states: egress::parse_ethernet
+Allocating CLOT 5 to candidate 7
+  states: egress::parse_ipv4
 
 CLOT allocation complete: no remaining CLOT candidates.
 
@@ -1003,43 +927,23 @@ CLOT Allocation (egress):
 |      |   egress::hdr.arp.dstMacAddr    | 48 [144..191] |           |
 |      |   egress::hdr.arp.dstIpv4Addr   | 32 [192..223] |           |
 +------+---------------------------------+---------------+-----------+
-|  2   |    state egress::parse_ipv4     |   10 bytes    |           |
-|      |                                 |               |           |
-|      |    egress::hdr.ipv4.version     |   4 [0..3]    |           |
-|      |      egress::hdr.ipv4.ihl       |   4 [4..7]    |           |
-|      |    egress::hdr.ipv4.diffserv    |   6 [8..13]   |  ( phv )  |
-|      |      egress::hdr.ipv4.ecn       |  2 [14..15]   |  ( phv )  |
-|      |   egress::hdr.ipv4.total_len    |  16 [16..31]  |           |
-|      | egress::hdr.ipv4.identification |  16 [32..47]  |           |
-|      |     egress::hdr.ipv4.flags      |  3 [48..50]   |           |
-|      |  egress::hdr.ipv4.frag_offset   |  13 [51..63]  |           |
-|      |      egress::hdr.ipv4.ttl       |  8 [64..71]   |           |
-|      |    egress::hdr.ipv4.protocol    |  8 [72..79]   |           |
-+------+---------------------------------+---------------+-----------+
-|  3   |     state egress::parse_bth     |   11 bytes    |           |
-|      |                                 |               |           |
-|      | egress::hdr.bth.solicited_event |   1 [0..0]    |           |
-|      |     egress::hdr.bth.mig_req     |   1 [1..1]    |           |
-|      |    egress::hdr.bth.pad_count    |   2 [2..3]    |           |
-|      |    egress::hdr.bth.header_v     |   4 [4..7]    |           |
-|      |    egress::hdr.bth.parti_key    |  16 [8..23]   |           |
-|      |    egress::hdr.bth.reserved1    |  8 [24..31]   |           |
-|      |     egress::hdr.bth.dst_qpn     |  24 [32..55]  |  ( phv )  |
-|      |     egress::hdr.bth.ack_req     |  1 [56..56]   |           |
-|      |    egress::hdr.bth.reserved2    |  7 [57..63]   |           |
-|      |       egress::hdr.bth.psn       |  24 [64..87]  |           |
-+------+---------------------------------+---------------+-----------+
-|  4   |     state egress::parse_udp     |    6 bytes    |           |
-|      |                                 |               |           |
-|      |    egress::hdr.udp.src_port     |  16 [0..15]   |  ( phv )  |
-|      |    egress::hdr.udp.dst_port     |  16 [16..31]  |  ( phv )  |
-|      |   egress::hdr.udp.hdr_length    |  16 [32..47]  |           |
-+------+---------------------------------+---------------+-----------+
-|  5   |  state egress::parse_ethernet   |    2 bytes    |           |
+|  2   |  state egress::parse_ethernet   |    2 bytes    |           |
 |      |                                 |               |           |
 |      | egress::hdr.ethernet.ether_type |  16 [0..15]   |           |
 +------+---------------------------------+---------------+-----------+
-|      |           Total Bits            |      712      |           |
+|  3   |     state egress::parse_bth     |    2 bytes    |           |
+|      |                                 |               |           |
+|      |    egress::hdr.bth.parti_key    |  16 [0..15]   |  ( phv )  |
++------+---------------------------------+---------------+-----------+
+|  4   |     state egress::parse_udp     |    2 bytes    |           |
+|      |                                 |               |           |
+|      |    egress::hdr.udp.src_port     |  16 [0..15]   |  ( phv )  |
++------+---------------------------------+---------------+-----------+
+|  5   |    state egress::parse_ipv4     |    2 bytes    |           |
+|      |                                 |               |           |
+|      | egress::hdr.ipv4.identification |  16 [0..15]   |  ( phv )  |
++------+---------------------------------+---------------+-----------+
+|      |           Total Bits            |      544      |           |
 +------+---------------------------------+---------------+-----------+
 
   Packets will use up to 4 CLOTs.
@@ -1113,17 +1017,17 @@ All fields:
 |  egress::eg_intr_md.egress_port  |  9   |       | read-only |
 |  egress::hdr.ethernet.dst_addr   |  48  |       | modified  |
 |  egress::hdr.ethernet.src_addr   |  48  |       | modified  |
-| egress::hdr.ethernet.ether_type  |  16  |   5   |  unused   |
-|     egress::hdr.ipv4.version     |  4   |   2   |  unused   |
-|       egress::hdr.ipv4.ihl       |  4   |   2   |  unused   |
-|    egress::hdr.ipv4.diffserv     |  6   |   2   | modified  |
-|       egress::hdr.ipv4.ecn       |  2   |   2   | modified  |
-|    egress::hdr.ipv4.total_len    |  16  |   2   |  unused   |
-| egress::hdr.ipv4.identification  |  16  |   2   |  unused   |
-|      egress::hdr.ipv4.flags      |  3   |   2   |  unused   |
-|   egress::hdr.ipv4.frag_offset   |  13  |   2   |  unused   |
-|       egress::hdr.ipv4.ttl       |  8   |   2   |  unused   |
-|    egress::hdr.ipv4.protocol     |  8   |   2   |  unused   |
+| egress::hdr.ethernet.ether_type  |  16  |   2   |  unused   |
+|     egress::hdr.ipv4.version     |  4   |       | modified  |
+|       egress::hdr.ipv4.ihl       |  4   |       | modified  |
+|    egress::hdr.ipv4.diffserv     |  6   |       | modified  |
+|       egress::hdr.ipv4.ecn       |  2   |       | modified  |
+|    egress::hdr.ipv4.total_len    |  16  |       | modified  |
+| egress::hdr.ipv4.identification  |  16  |   5   | read-only |
+|      egress::hdr.ipv4.flags      |  3   |       | modified  |
+|   egress::hdr.ipv4.frag_offset   |  13  |       | modified  |
+|       egress::hdr.ipv4.ttl       |  8   |       | modified  |
+|    egress::hdr.ipv4.protocol     |  8   |       | modified  |
 |  egress::hdr.ipv4.hdr_checksum   |  16  |       | checksum  |
 |    egress::hdr.ipv4.src_addr     |  32  |       | modified  |
 |    egress::hdr.ipv4.dst_addr     |  32  |       | modified  |
@@ -1139,20 +1043,20 @@ All fields:
 |    egress::hdr.tcp.urgent_ptr    |  16  |   0   |  unused   |
 |     egress::hdr.tcp.options      |  96  |   0   |  unused   |
 |     egress::hdr.udp.src_port     |  16  |   4   | read-only |
-|     egress::hdr.udp.dst_port     |  16  |   4   | read-only |
-|    egress::hdr.udp.hdr_length    |  16  |   4   |  unused   |
+|     egress::hdr.udp.dst_port     |  16  |       | modified  |
+|    egress::hdr.udp.hdr_length    |  16  |       | modified  |
 |     egress::hdr.udp.checksum     |  16  |       | checksum  |
 |      egress::hdr.bth.opcode      |  8   |       | modified  |
-| egress::hdr.bth.solicited_event  |  1   |   3   |  unused   |
-|     egress::hdr.bth.mig_req      |  1   |   3   |  unused   |
-|    egress::hdr.bth.pad_count     |  2   |   3   |  unused   |
-|     egress::hdr.bth.header_v     |  4   |   3   |  unused   |
-|    egress::hdr.bth.parti_key     |  16  |   3   |  unused   |
-|    egress::hdr.bth.reserved1     |  8   |   3   |  unused   |
-|     egress::hdr.bth.dst_qpn      |  24  |   3   | modified  |
-|     egress::hdr.bth.ack_req      |  1   |   3   |  unused   |
-|    egress::hdr.bth.reserved2     |  7   |   3   |  unused   |
-|       egress::hdr.bth.psn        |  24  |   3   |  unused   |
+| egress::hdr.bth.solicited_event  |  1   |       | modified  |
+|     egress::hdr.bth.mig_req      |  1   |       | modified  |
+|    egress::hdr.bth.pad_count     |  2   |       | modified  |
+|     egress::hdr.bth.header_v     |  4   |       | modified  |
+|    egress::hdr.bth.parti_key     |  16  |   3   | read-only |
+|    egress::hdr.bth.reserved1     |  8   |       | modified  |
+|     egress::hdr.bth.dst_qpn      |  24  |       | modified  |
+|     egress::hdr.bth.ack_req      |  1   |       | modified  |
+|    egress::hdr.bth.reserved2     |  7   |       | modified  |
+|       egress::hdr.bth.psn        |  24  |       | modified  |
 |     egress::hdr.arp.hw_type      |  16  |   1   |  unused   |
 |    egress::hdr.arp.proto_type    |  16  |   1   |  unused   |
 |      egress::hdr.arp.hw_sz       |  8   |   1   |  unused   |
@@ -1163,10 +1067,10 @@ All fields:
 |    egress::hdr.arp.dstMacAddr    |  48  |   1   |  unused   |
 |   egress::hdr.arp.dstIpv4Addr    |  32  |   1   |  unused   |
 +----------------------------------+------+-------+-----------+
-|          Unused fields           |  84  |       |           |
-|           Unused bits            | 1432 |       |           |
-|   Unused CLOT-allocated fields   |  84  |       |           |
-|    Unused CLOT-allocated bits    | 1432 |       |           |
+|          Unused fields           |  66  |       |           |
+|           Unused bits            | 1280 |       |           |
+|   Unused CLOT-allocated fields   |  66  |       |           |
+|    Unused CLOT-allocated bits    | 1280 |       |           |
 +----------------------------------+------+-------+-----------+
 
 
@@ -1258,79 +1162,53 @@ CLOT Allocation (ingress):
     ingress::$entry_point (0 CLOTs)
 
 CLOT Allocation (egress):
-+------+---------------------------------+---------------+------------+
-| CLOT |             Fields              |     Bits      |  Property  |
-+------+---------------------------------+---------------+------------+
-|  0   |     state egress::parse_tcp     |   32 bytes    |            |
-|      |                                 |               |            |
-|      |    egress::hdr.tcp.src_port     |  16 [0..15]   |            |
-|      |    egress::hdr.tcp.dst_port     |  16 [16..31]  |            |
-|      |     egress::hdr.tcp.seq_no      |  32 [32..63]  |            |
-|      |     egress::hdr.tcp.ack_no      |  32 [64..95]  |            |
-|      |   egress::hdr.tcp.data_offset   |  4 [96..99]   |            |
-|      |       egress::hdr.tcp.res       | 4 [100..103]  |            |
-|      |      egress::hdr.tcp.flags      | 8 [104..111]  |            |
-|      |     egress::hdr.tcp.window      | 16 [112..127] |            |
-|      |    egress::hdr.tcp.checksum     | 16 [128..143] |            |
-|      |   egress::hdr.tcp.urgent_ptr    | 16 [144..159] |            |
-|      |     egress::hdr.tcp.options     | 96 [160..255] |            |
-+------+---------------------------------+---------------+------------+
-|  1   |     state egress::parse_arp     |   28 bytes    |            |
-|      |                                 |               |            |
-|      |     egress::hdr.arp.hw_type     |  16 [0..15]   |            |
-|      |   egress::hdr.arp.proto_type    |  16 [16..31]  |            |
-|      |      egress::hdr.arp.hw_sz      |  8 [32..39]   |            |
-|      |    egress::hdr.arp.proto_sz     |  8 [40..47]   |            |
-|      |     egress::hdr.arp.opcode      |  16 [48..63]  |            |
-|      |   egress::hdr.arp.srcMacAddr    | 48 [64..111]  |            |
-|      |   egress::hdr.arp.srcIpv4Addr   | 32 [112..143] |            |
-|      |   egress::hdr.arp.dstMacAddr    | 48 [144..191] |            |
-|      |   egress::hdr.arp.dstIpv4Addr   | 32 [192..223] |            |
-+------+---------------------------------+---------------+------------+
-|  2   |    state egress::parse_ipv4     |   10 bytes    |            |
-|      |                                 |               |            |
-|      |    egress::hdr.ipv4.version     |   4 [0..3]    |            |
-|      |      egress::hdr.ipv4.ihl       |   4 [4..7]    |            |
-|      |    egress::hdr.ipv4.diffserv    |   6 [8..13]   |  ( phv* )  |
-|      |      egress::hdr.ipv4.ecn       |  2 [14..15]   |  ( phv* )  |
-|      |   egress::hdr.ipv4.total_len    |  16 [16..31]  |            |
-|      | egress::hdr.ipv4.identification |  16 [32..47]  |            |
-|      |     egress::hdr.ipv4.flags      |  3 [48..50]   |            |
-|      |  egress::hdr.ipv4.frag_offset   |  13 [51..63]  |            |
-|      |      egress::hdr.ipv4.ttl       |  8 [64..71]   |            |
-|      |    egress::hdr.ipv4.protocol    |  8 [72..79]   |            |
-+------+---------------------------------+---------------+------------+
-|  3   |     state egress::parse_bth     |   11 bytes    |            |
-|      |                                 |               |            |
-|      | egress::hdr.bth.solicited_event |   1 [0..0]    |            |
-|      |     egress::hdr.bth.mig_req     |   1 [1..1]    |            |
-|      |    egress::hdr.bth.pad_count    |   2 [2..3]    |            |
-|      |    egress::hdr.bth.header_v     |   4 [4..7]    |            |
-|      |    egress::hdr.bth.parti_key    |  16 [8..23]   |            |
-|      |    egress::hdr.bth.reserved1    |  8 [24..31]   |            |
-|      |     egress::hdr.bth.dst_qpn     |  24 [32..55]  |  ( phv* )  |
-|      |     egress::hdr.bth.ack_req     |  1 [56..56]   |            |
-|      |    egress::hdr.bth.reserved2    |  7 [57..63]   |            |
-|      |       egress::hdr.bth.psn       |  24 [64..87]  |            |
-+------+---------------------------------+---------------+------------+
-|  4   |     state egress::parse_udp     |    6 bytes    |            |
-|      |                                 |               |            |
-|      |    egress::hdr.udp.src_port     |  16 [0..15]   |  ( phv )   |
-|      |    egress::hdr.udp.dst_port     |  16 [16..31]  |  ( phv )   |
-|      |   egress::hdr.udp.hdr_length    |  16 [32..47]  |            |
-+------+---------------------------------+---------------+------------+
-|  5   |  state egress::parse_ethernet   |    2 bytes    |            |
-|      |                                 |               |            |
-|      | egress::hdr.ethernet.ether_type |  16 [0..15]   |            |
-+------+---------------------------------+---------------+------------+
-|      |           Total Bits            |      712      |            |
-+------+---------------------------------+---------------+------------+
++------+---------------------------------+---------------+-----------+
+| CLOT |             Fields              |     Bits      | Property  |
++------+---------------------------------+---------------+-----------+
+|  0   |     state egress::parse_tcp     |   32 bytes    |           |
+|      |                                 |               |           |
+|      |    egress::hdr.tcp.src_port     |  16 [0..15]   |           |
+|      |    egress::hdr.tcp.dst_port     |  16 [16..31]  |           |
+|      |     egress::hdr.tcp.seq_no      |  32 [32..63]  |           |
+|      |     egress::hdr.tcp.ack_no      |  32 [64..95]  |           |
+|      |   egress::hdr.tcp.data_offset   |  4 [96..99]   |           |
+|      |       egress::hdr.tcp.res       | 4 [100..103]  |           |
+|      |      egress::hdr.tcp.flags      | 8 [104..111]  |           |
+|      |     egress::hdr.tcp.window      | 16 [112..127] |           |
+|      |    egress::hdr.tcp.checksum     | 16 [128..143] |           |
+|      |   egress::hdr.tcp.urgent_ptr    | 16 [144..159] |           |
+|      |     egress::hdr.tcp.options     | 96 [160..255] |           |
++------+---------------------------------+---------------+-----------+
+|  1   |     state egress::parse_arp     |   28 bytes    |           |
+|      |                                 |               |           |
+|      |     egress::hdr.arp.hw_type     |  16 [0..15]   |           |
+|      |   egress::hdr.arp.proto_type    |  16 [16..31]  |           |
+|      |      egress::hdr.arp.hw_sz      |  8 [32..39]   |           |
+|      |    egress::hdr.arp.proto_sz     |  8 [40..47]   |           |
+|      |     egress::hdr.arp.opcode      |  16 [48..63]  |           |
+|      |   egress::hdr.arp.srcMacAddr    | 48 [64..111]  |           |
+|      |   egress::hdr.arp.srcIpv4Addr   | 32 [112..143] |           |
+|      |   egress::hdr.arp.dstMacAddr    | 48 [144..191] |           |
+|      |   egress::hdr.arp.dstIpv4Addr   | 32 [192..223] |           |
++------+---------------------------------+---------------+-----------+
+|  2   |  state egress::parse_ethernet   |    2 bytes    |           |
+|      |                                 |               |           |
+|      | egress::hdr.ethernet.ether_type |  16 [0..15]   |           |
++------+---------------------------------+---------------+-----------+
+|  4   |     state egress::parse_udp     |    2 bytes    |           |
+|      |                                 |               |           |
+|      |    egress::hdr.udp.src_port     |  16 [0..15]   |  ( phv )  |
++------+---------------------------------+---------------+-----------+
+|      |           Total Bits            |      512      |           |
++------+---------------------------------+---------------+-----------+
 
-  Packets will use up to 4 CLOTs.
+  Packets will use up to 2 CLOTs.
   The parser path(s) that will use the most CLOTs contain the following states:
-    egress::parse_bth (1 CLOTs)
+    egress::parse_tcp (1 CLOTs)
+    egress::parse_bth (0 CLOTs)
     egress::parse_udp (1 CLOTs)
-    egress::parse_ipv4 (1 CLOTs)
+    egress::parse_ipv4 (0 CLOTs)
+    egress::parse_arp (1 CLOTs)
     egress::parse_ethernet (1 CLOTs)
     egress::parse_mirror_md (0 CLOTs)
     egress::parse_bridged_md (0 CLOTs)
@@ -1397,17 +1275,17 @@ All fields:
 |  egress::eg_intr_md.egress_port  |  9   |       | read-only |
 |  egress::hdr.ethernet.dst_addr   |  48  |       | modified  |
 |  egress::hdr.ethernet.src_addr   |  48  |       | modified  |
-| egress::hdr.ethernet.ether_type  |  16  |   5   |  unused   |
-|     egress::hdr.ipv4.version     |  4   |   2   |  unused   |
-|       egress::hdr.ipv4.ihl       |  4   |   2   |  unused   |
-|    egress::hdr.ipv4.diffserv     |  6   |   2   | modified  |
-|       egress::hdr.ipv4.ecn       |  2   |   2   | modified  |
-|    egress::hdr.ipv4.total_len    |  16  |   2   |  unused   |
-| egress::hdr.ipv4.identification  |  16  |   2   |  unused   |
-|      egress::hdr.ipv4.flags      |  3   |   2   |  unused   |
-|   egress::hdr.ipv4.frag_offset   |  13  |   2   |  unused   |
-|       egress::hdr.ipv4.ttl       |  8   |   2   |  unused   |
-|    egress::hdr.ipv4.protocol     |  8   |   2   |  unused   |
+| egress::hdr.ethernet.ether_type  |  16  |   2   |  unused   |
+|     egress::hdr.ipv4.version     |  4   |       | modified  |
+|       egress::hdr.ipv4.ihl       |  4   |       | modified  |
+|    egress::hdr.ipv4.diffserv     |  6   |       | modified  |
+|       egress::hdr.ipv4.ecn       |  2   |       | modified  |
+|    egress::hdr.ipv4.total_len    |  16  |       | modified  |
+| egress::hdr.ipv4.identification  |  16  |       | read-only |
+|      egress::hdr.ipv4.flags      |  3   |       | modified  |
+|   egress::hdr.ipv4.frag_offset   |  13  |       | modified  |
+|       egress::hdr.ipv4.ttl       |  8   |       | modified  |
+|    egress::hdr.ipv4.protocol     |  8   |       | modified  |
 |  egress::hdr.ipv4.hdr_checksum   |  16  |       | checksum  |
 |    egress::hdr.ipv4.src_addr     |  32  |       | modified  |
 |    egress::hdr.ipv4.dst_addr     |  32  |       | modified  |
@@ -1423,20 +1301,20 @@ All fields:
 |    egress::hdr.tcp.urgent_ptr    |  16  |   0   |  unused   |
 |     egress::hdr.tcp.options      |  96  |   0   |  unused   |
 |     egress::hdr.udp.src_port     |  16  |   4   | read-only |
-|     egress::hdr.udp.dst_port     |  16  |   4   | read-only |
-|    egress::hdr.udp.hdr_length    |  16  |   4   |  unused   |
+|     egress::hdr.udp.dst_port     |  16  |       | modified  |
+|    egress::hdr.udp.hdr_length    |  16  |       | modified  |
 |     egress::hdr.udp.checksum     |  16  |       | checksum  |
 |      egress::hdr.bth.opcode      |  8   |       | modified  |
-| egress::hdr.bth.solicited_event  |  1   |   3   |  unused   |
-|     egress::hdr.bth.mig_req      |  1   |   3   |  unused   |
-|    egress::hdr.bth.pad_count     |  2   |   3   |  unused   |
-|     egress::hdr.bth.header_v     |  4   |   3   |  unused   |
-|    egress::hdr.bth.parti_key     |  16  |   3   |  unused   |
-|    egress::hdr.bth.reserved1     |  8   |   3   |  unused   |
-|     egress::hdr.bth.dst_qpn      |  24  |   3   | modified  |
-|     egress::hdr.bth.ack_req      |  1   |   3   |  unused   |
-|    egress::hdr.bth.reserved2     |  7   |   3   |  unused   |
-|       egress::hdr.bth.psn        |  24  |   3   |  unused   |
+| egress::hdr.bth.solicited_event  |  1   |       | modified  |
+|     egress::hdr.bth.mig_req      |  1   |       | modified  |
+|    egress::hdr.bth.pad_count     |  2   |       | modified  |
+|     egress::hdr.bth.header_v     |  4   |       | modified  |
+|    egress::hdr.bth.parti_key     |  16  |       | read-only |
+|    egress::hdr.bth.reserved1     |  8   |       | modified  |
+|     egress::hdr.bth.dst_qpn      |  24  |       | modified  |
+|     egress::hdr.bth.ack_req      |  1   |       | modified  |
+|    egress::hdr.bth.reserved2     |  7   |       | modified  |
+|       egress::hdr.bth.psn        |  24  |       | modified  |
 |     egress::hdr.arp.hw_type      |  16  |   1   |  unused   |
 |    egress::hdr.arp.proto_type    |  16  |   1   |  unused   |
 |      egress::hdr.arp.hw_sz       |  8   |   1   |  unused   |
@@ -1447,9 +1325,9 @@ All fields:
 |    egress::hdr.arp.dstMacAddr    |  48  |   1   |  unused   |
 |   egress::hdr.arp.dstIpv4Addr    |  32  |   1   |  unused   |
 +----------------------------------+------+-------+-----------+
-|          Unused fields           |  84  |       |           |
-|           Unused bits            | 1432 |       |           |
-|   Unused CLOT-allocated fields   |  84  |       |           |
-|    Unused CLOT-allocated bits    | 1432 |       |           |
+|          Unused fields           |  66  |       |           |
+|           Unused bits            | 1280 |       |           |
+|   Unused CLOT-allocated fields   |  66  |       |           |
+|    Unused CLOT-allocated bits    | 1280 |       |           |
 +----------------------------------+------+-------+-----------+
 

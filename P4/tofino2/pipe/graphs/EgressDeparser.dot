@@ -5,7 +5,7 @@ label="", labeljust=r, style=bold];
 0[label=__START__, margin="", shape=rectangle, style=solid];
 1[label=__EXIT__, margin="", shape=rectangle, style=solid];
 2[label="hdr.ipv4.isValid();", margin="", shape=rectangle, style=solid];
-3[label="hdr.ipv4.hdr_checksum = ipv4_csum_0/ipv4_csum.update<tuple_4>({
+3[label="hdr.ipv4.hdr_checksum = ipv4_csum_0/ipv4_csum.update<tuple_5>({
   f0:hdr.ipv4.version;
   f1:hdr.ipv4.ihl;
   f2:hdr.ipv4.diffserv;
@@ -18,14 +18,14 @@ label="", labeljust=r, style=bold];
   f9:hdr.ipv4.protocol;
   f10:hdr.ipv4.src_addr;
   f11:hdr.ipv4.dst_addr; });", margin="", shape=rectangle, style=solid];
-4[label="hdr.udp.isValid();", margin="", shape=rectangle, style=solid];
-5[label="hdr.udp.checksum = udp_csum_1/udp_csum.update<tuple_5>({
+4[label="hdr.udp.isValid() && !hdr.icrc.isValid();", margin="", shape=rectangle, style=solid];
+5[label="hdr.udp.checksum = udp_csum_1/udp_csum.update<tuple_6>({
   f0:hdr.udp.src_port;
   f1:hdr.udp.dst_port;
   f2:meta.udp_tmp_checksum; }, 1);", margin="", shape=rectangle, style=solid];
 6[label="pkt.emit<ethernet_h>(hdr.ethernet);
 ...
-pkt.emit<bth_h>(hdr.bth);", margin="", shape=rectangle, style=solid];
+pkt.emit<icrc_h>(hdr.icrc);", margin="", shape=rectangle, style=solid];
 0 -> 2[label=""];
 2 -> 3[label=TRUE];
 2 -> 4[label=FALSE];

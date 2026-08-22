@@ -125,13 +125,13 @@ success
 <<<<<<<<<<<<<<<<
 top down allocation successful!
 created 4 coalesced groups:
-group 0: {  [ egress::start : inbuf bit[224..231] tmp[39:32]; ] }
+group 0: {  [ egress::start : inbuf bit[224..231] tmp ] }
 group 1: {  [ egress::parse_ethernet : inbuf bit[96..111] hdr.ethernet/ethernet.ether_type; ] }
 group 2: {  [ egress::parse_ipv4 : inbuf bit[72..79] hdr.ipv4/ipv4.protocol; ] }
 group 3: {  [ egress::parse_udp : inbuf bit[16..31] hdr.udp/udp.dst_port; ] }
 try allocating top down:
 >>>>>>>>>>>>>>>>
-allocating {  [ egress::start : inbuf bit[224..231] tmp[39:32]; ] }
+allocating {  [ egress::start : inbuf bit[224..231] tmp ] }
 try def set 0
 available regs are:
 byte0
@@ -142,7 +142,7 @@ save_byte0
 save_byte1
 save_byte2
 save_byte3
-allocated { $byte0 } to {  [ egress::start : inbuf bit[224..231] tmp[39:32]; ] }
+allocated { $byte0 } to {  [ egress::start : inbuf bit[224..231] tmp ] }
 success
 <<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>
@@ -192,50 +192,30 @@ success
 <<<<<<<<<<<<<<<<
 top down allocation successful!
 elim empty state ingress::TofinoIngressParser_parse_resubmit
-added add inbuf bit[0..3] to checksum $clot_2_csum to egress::parse_ipv4
-added add inbuf bit[4..7] to checksum $clot_2_csum to egress::parse_ipv4
-added add inbuf bit[16..31] to checksum $clot_2_csum to egress::parse_ipv4
-added add inbuf bit[32..47] to checksum $clot_2_csum to egress::parse_ipv4
-added add inbuf bit[48..50] to checksum $clot_2_csum to egress::parse_ipv4
-added add inbuf bit[51..63] to checksum $clot_2_csum to egress::parse_ipv4
-added add inbuf bit[64..71] to checksum $clot_2_csum to egress::parse_ipv4
-added add inbuf bit[72..79] to checksum $clot_2_csum to egress::parse_ipv4
-added deposit checksum $clot_2_csum to clot 2 to egress::parse_ipv4
 added add inbuf bit[0..15] to checksum $clot_4_csum to egress::parse_udp
-added add inbuf bit[16..31] to checksum $clot_4_csum to egress::parse_udp
 added deposit checksum $clot_4_csum to clot 4 to egress::parse_udp
-need to allocate 3 logical checksum calculations to egress parser
-$clot_2_csum: (CLOT)
-  egress::parse_ipv4
-
+need to allocate 2 logical checksum calculations to egress parser
 udp_csum_0: (RESIDUAL)
   egress::parse_udp
 
 $clot_4_csum: (CLOT)
   egress::parse_udp
 
-$clot_2_csum can share with udp_csum_0
 $clot_4_csum cannot share with udp_csum_0
 disjoint parser checksum sets: 2
-allocated parser checksum unit 2 to udp_csum_0
-allocated parser checksum unit 2 to $clot_2_csum
-allocated parser checksum unit 3 to $clot_4_csum
-need to allocate 3 logical checksum calculations to egress parser
-$clot_2_csum: (CLOT)
-  egress::parse_ipv4
-
+allocated parser checksum unit 2 to $clot_4_csum
+allocated parser checksum unit 0 to udp_csum_0
+need to allocate 2 logical checksum calculations to egress parser
 udp_csum_0: (RESIDUAL)
   egress::parse_udp
 
 $clot_4_csum: (CLOT)
   egress::parse_udp
 
-$clot_2_csum can share with udp_csum_0
 $clot_4_csum cannot share with udp_csum_0
 disjoint parser checksum sets: 2
-allocated parser checksum unit 2 to udp_csum_0
-allocated parser checksum unit 2 to $clot_2_csum
-allocated parser checksum unit 3 to $clot_4_csum
+allocated parser checksum unit 2 to $clot_4_csum
+allocated parser checksum unit 0 to udp_csum_0
 ComputeLoweredParserIR preorder on Header : header ingress_intrinsic_metadata_t @__intrinsic_metadata {
   @__intrinsic_metadata bit<1> resubmit_flag;
   @padding @__intrinsic_metadata bit<1> _pad1;
@@ -331,6 +311,6 @@ ComputeLoweredParserIR preorder on Header : header egress_intrinsic_metadata_t @
   @padding @__intrinsic_metadata bit<8> _pad_eg_int_md; }
 meta_opt: 8191
 meta_size: 28
-	emit fieldlist 1 :[ ingress::meta.ing_mir_ses, ingress::meta.pkt_type, ingress::mirror_md_0.is_last_recir_pkt, ingress::mirror_md_0.pnp_udp_src_port, ingress::mirror_md_0.pnp_dip_hash ]
+	emit fieldlist 1 :[ ingress::meta.ing_mir_ses, ingress::meta.pkt_type ]
 Assigning deparser partial checksum unit 4 to checksummed egress::hdr.ipv4.hdr_checksum;
 Assigning deparser partial checksum unit 5 to checksummed egress::hdr.udp.checksum;

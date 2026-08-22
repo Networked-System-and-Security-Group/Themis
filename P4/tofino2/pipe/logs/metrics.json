@@ -1,43 +1,43 @@
 {
     "program_name": "themis.p4", 
-    "build_date": "Fri Jun 26 14:20:30 2026", 
-    "run_id": "ab35a17c8bb560ea", 
+    "build_date": "Fri Aug 21 21:51:49 2026", 
+    "run_id": "d667120bda015760", 
     "compiler_version": "9.7.1", 
     "schema_version": "1.1.0", 
     "target": "tofino2", 
-    "compilation_time": "11.43479299545288", 
+    "compilation_time": "13.884781122207642", 
     "phv": {
         "normal": [
             {
                 "bit_width": 8, 
-                "containers_occupied": 8, 
-                "bits_occupied": 54, 
-                "bits_overlaid": 0
+                "containers_occupied": 7, 
+                "bits_occupied": 40, 
+                "bits_overlaid": 8
             }, 
             {
                 "bit_width": 16, 
-                "containers_occupied": 6, 
-                "bits_occupied": 69, 
+                "containers_occupied": 9, 
+                "bits_occupied": 111, 
                 "bits_overlaid": 0
             }, 
             {
                 "bit_width": 32, 
-                "containers_occupied": 1, 
-                "bits_occupied": 32, 
-                "bits_overlaid": 0
+                "containers_occupied": 9, 
+                "bits_occupied": 288, 
+                "bits_overlaid": 32
             }
         ], 
         "mocha": [
             {
                 "bit_width": 8, 
-                "containers_occupied": 4, 
-                "bits_occupied": 32, 
+                "containers_occupied": 2, 
+                "bits_occupied": 16, 
                 "bits_overlaid": 0
             }, 
             {
                 "bit_width": 16, 
-                "containers_occupied": 13, 
-                "bits_occupied": 187, 
+                "containers_occupied": 10, 
+                "bits_occupied": 139, 
                 "bits_overlaid": 0
             }, 
             {
@@ -62,8 +62,8 @@
             }, 
             {
                 "bit_width": 32, 
-                "containers_occupied": 2, 
-                "bits_occupied": 64, 
+                "containers_occupied": 0, 
+                "bits_occupied": 0, 
                 "bits_overlaid": 0
             }
         ]
@@ -77,12 +77,12 @@
         }
     }, 
     "mau": {
-        "srams": 29, 
+        "srams": 32, 
         "tcams": 0, 
-        "map_rams": 20, 
-        "logical_tables": 21, 
-        "action_bus_bytes": 10, 
-        "exact_crossbar_bytes": 52, 
+        "map_rams": 22, 
+        "logical_tables": 27, 
+        "action_bus_bytes": 31, 
+        "exact_crossbar_bytes": 72, 
         "ternary_crossbar_bytes": 0, 
         "latency": [
             {
@@ -91,7 +91,7 @@
             }, 
             {
                 "gress": "egress", 
-                "cycles": 96
+                "cycles": 98
             }, 
             {
                 "gress": "ghost", 
@@ -105,7 +105,7 @@
             }, 
             {
                 "gress": "egress", 
-                "estimate": "1.3168"
+                "estimate": "1.8192"
             }, 
             {
                 "gress": "ghost", 
@@ -120,7 +120,7 @@
         }, 
         "egress": {
             "pov_bits": 8, 
-            "fde_entries": 20
+            "fde_entries": 23
         }
     }, 
     "clots": {
@@ -131,10 +131,10 @@
             "redundant_phv_bits": 0
         }, 
         "egress": {
-            "all_allocated_bits": 712, 
-            "allocated_bits": 648, 
+            "all_allocated_bits": 512, 
+            "allocated_bits": 496, 
             "unallocated_bits": 0, 
-            "redundant_phv_bits": 8
+            "redundant_phv_bits": 0
         }
     }
 }

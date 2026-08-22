@@ -474,10 +474,10 @@
       ]
     },
     {
-      "name" : "tbl_themis536",
+      "name" : "tbl_themis538",
       "actions" : [
         {
-          "name" : "themis536",
+          "name" : "themis538",
           "primitives" : [
             {
               "name" : "SetFieldToHashIndexPrimitive",
@@ -529,10 +529,10 @@
       ]
     },
     {
-      "name" : "tbl_themis543",
+      "name" : "tbl_themis546",
       "actions" : [
         {
-          "name" : "themis543",
+          "name" : "themis546",
           "primitives" : [
             {
               "name" : "CountPrimitive",
@@ -610,6 +610,38 @@
               "operation" : "set",
               "dst" : {
                 "type" : "phv",
+                "name" : "hdr.ipv4.version"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "15"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "4w4"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.ipv4.ihl"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "15"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "4w5"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
                 "name" : "hdr.ipv4.ecn"
               },
               "dst_mask" : {
@@ -619,6 +651,134 @@
               "src1" : {
                 "type" : "immediate",
                 "name" : "2w0"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.ipv4.total_len"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "65535"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "16w60"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.ipv4.flags"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "7"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "3w0"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.ipv4.frag_offset"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "8191"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "13w0"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.ipv4.ttl"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "255"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "8w64"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.ipv4.protocol"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "255"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "8w17"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.udp.dst_port"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "65535"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "16w4791"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.udp.hdr_length"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "65535"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "16w40"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.udp.checksum"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "65535"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "16w0"
               }
             },
             {
@@ -642,10 +802,10 @@
       ]
     },
     {
-      "name" : "tbl_themis555",
+      "name" : "tbl_themis568",
       "actions" : [
         {
-          "name" : "themis555",
+          "name" : "themis568",
           "primitives" : [
             {
               "name" : "ModifyFieldPrimitive",
@@ -668,10 +828,10 @@
       ]
     },
     {
-      "name" : "tbl_themis556",
+      "name" : "tbl_themis569",
       "actions" : [
         {
-          "name" : "themis556",
+          "name" : "themis569",
           "primitives" : [
             {
               "name" : "ModifyFieldPrimitive",
@@ -704,16 +864,271 @@
                 "type" : "immediate",
                 "name" : "8w129"
               }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.bth.solicited_event"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "1"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "1w0"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.bth.mig_req"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "1"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "1w0"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.bth.pad_count"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "3"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "2w0"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.bth.header_v"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "15"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "4w0"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.bth.reserved1"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "255"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "8w0x40"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.bth.ack_req"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "1"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "1w0"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.bth.reserved2"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "127"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "7w0"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.bth.psn"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "16777215"
+              },
+              "src1" : {
+                "type" : "immediate",
+                "name" : "24w0"
+              }
+            },
+            {
+              "name" : "AddHeaderPrimitive",
+              "dst" : {
+                "type" : "header",
+                "name" : "hdr.cnp_padding.$valid"
+              }
+            },
+            {
+              "name" : "AddHeaderPrimitive",
+              "dst" : {
+                "type" : "header",
+                "name" : "hdr.icrc.$valid"
+              }
             }
           ]
         }
       ]
     },
     {
-      "name" : "tbl_themis559",
+      "name" : "tbl_themis583",
       "actions" : [
         {
-          "name" : "themis559",
+          "name" : "themis583",
+          "primitives" : [
+            {
+              "name" : "SetFieldToHashIndexPrimitive",
+              "dst" : {
+                "type" : "phv",
+                "name" : "icrc_raw_0"
+              },
+              "idx" : {
+                "type" : "hash",
+                "name" : "hash_icrc_raw_0",
+                "algorithm" : "crc_32"
+              },
+              "hash_inputs" : ["64w0xffffffffffffffff", "4w4", "4w5", "8w0xff", "16w60", "hdr.ipv4.identification", "3w0", "13w0", "8w0xff", "8w17", "16w0xffff", "tmp2_0", "hdr.ipv4.dst_addr", "hdr.udp.src_port", "16w4791", "16w40", "16w0xffff", "8w129", "1w0", "1w0", "2w0", "4w0", "hdr.bth.parti_key", "8w0xff", "hdr.bth.dst_qpn", "1w0", "7w0", "24w0", "64w0", "64w0"]
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.icrc.value"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "255"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "tbl_themis616",
+      "actions" : [
+        {
+          "name" : "themis616",
+          "primitives" : [
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.icrc.value"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "255"
+              },
+              "src1" : {
+                "type" : "phv",
+                "name" : "icrc_raw_0"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "tbl_themis617",
+      "actions" : [
+        {
+          "name" : "themis617",
+          "primitives" : [
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.icrc.value"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "255"
+              },
+              "src1" : {
+                "type" : "phv",
+                "name" : "icrc_raw_0"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "tbl_themis618",
+      "actions" : [
+        {
+          "name" : "themis618",
+          "primitives" : [
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.icrc.value"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "255"
+              },
+              "src1" : {
+                "type" : "phv",
+                "name" : "icrc_raw_0"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "tbl_themis620",
+      "actions" : [
+        {
+          "name" : "themis620",
           "primitives" : [
             {
               "name" : "CountPrimitive",
@@ -727,10 +1142,10 @@
       ]
     },
     {
-      "name" : "tbl_themis560",
+      "name" : "tbl_themis621",
       "actions" : [
         {
-          "name" : "themis560",
+          "name" : "themis621",
           "primitives" : [
             {
               "name" : "CountPrimitive",
@@ -744,10 +1159,27 @@
       ]
     },
     {
-      "name" : "tbl_themis566",
+      "name" : "tbl_themis622",
       "actions" : [
         {
-          "name" : "themis566",
+          "name" : "themis622",
+          "primitives" : [
+            {
+              "name" : "CountPrimitive",
+              "dst" : {
+                "type" : "counter",
+                "name" : "Egress.egress_mirror_icrc_counter"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "tbl_themis628",
+      "actions" : [
+        {
+          "name" : "themis628",
           "primitives" : [
             {
               "name" : "CountPrimitive",
@@ -777,6 +1209,52 @@
         },
         {
           "name" : "NoAction",
+          "primitives" : []
+        }
+      ]
+    },
+    {
+      "name" : "egresshdr.udp.checksum_encode_update_condition_1_egress",
+      "actions" : [
+        {
+          "name" : "_set_checksum_update_",
+          "primitives" : [
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.udp.checksum.$deparse_original_csum"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "1"
+              },
+              "src1" : {
+                "type" : "action_param",
+                "name" : "x0"
+              }
+            },
+            {
+              "name" : "ModifyFieldPrimitive",
+              "operation" : "set",
+              "dst" : {
+                "type" : "phv",
+                "name" : "hdr.udp.checksum.$deparse_updated_csum_0"
+              },
+              "dst_mask" : {
+                "type" : "immediate",
+                "name" : "1"
+              },
+              "src1" : {
+                "type" : "action_param",
+                "name" : "x1"
+              }
+            }
+          ]
+        },
+        {
+          "name" : "__nop_",
           "primitives" : []
         }
       ]

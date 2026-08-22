@@ -1,14 +1,1223 @@
 {
   "dynamic_hash_calculations" : [
     {
-      "name" : "Egress.egress_pnp_dip_hash_calc.configure",
+      "name" : "Egress.cnp_icrc_hash_calc.configure",
       "handle" : 570425344,
+      "any_hash_algorithm_allowed" : true,
+      "algorithms" : [
+        {
+          "name" : "crc_32",
+          "type" : "crc",
+          "handle" : 587202560,
+          "is_default" : true,
+          "msb" : false,
+          "extend" : false,
+          "reverse" : true,
+          "poly" : "0x104c11db7",
+          "init" : "0xffffffff",
+          "final_xor" : "0xffffffff"
+        }
+      ],
+      "field_lists" : [
+        {
+          "name" : "$field_list_1",
+          "handle" : 553648128,
+          "is_default" : true,
+          "can_permute" : true,
+          "can_rotate" : true,
+          "fields" : [
+            {
+              "name" : "constant0_64_64w0xffffffffffffffff",
+              "start_bit" : 0,
+              "bit_width" : 64,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "constant1_4_4w4",
+              "start_bit" : 0,
+              "bit_width" : 4,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "constant2_4_4w5",
+              "start_bit" : 0,
+              "bit_width" : 4,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "constant3_8_8w0xff",
+              "start_bit" : 0,
+              "bit_width" : 8,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "constant4_16_16w60",
+              "start_bit" : 0,
+              "bit_width" : 16,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "hdr.ipv4.identification",
+              "start_bit" : 0,
+              "bit_width" : 16,
+              "optional" : true,
+              "is_constant" : false
+            },
+            {
+              "name" : "constant5_3_3w0",
+              "start_bit" : 0,
+              "bit_width" : 3,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "constant6_13_13w0",
+              "start_bit" : 0,
+              "bit_width" : 13,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "constant7_8_8w0xff",
+              "start_bit" : 0,
+              "bit_width" : 8,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "constant8_8_8w17",
+              "start_bit" : 0,
+              "bit_width" : 8,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "constant9_16_16w0xffff",
+              "start_bit" : 0,
+              "bit_width" : 16,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "tmp2_0",
+              "start_bit" : 0,
+              "bit_width" : 32,
+              "optional" : true,
+              "is_constant" : false
+            },
+            {
+              "name" : "hdr.ipv4.dst_addr",
+              "start_bit" : 0,
+              "bit_width" : 32,
+              "optional" : true,
+              "is_constant" : false
+            },
+            {
+              "name" : "hdr.udp.src_port",
+              "start_bit" : 0,
+              "bit_width" : 16,
+              "optional" : true,
+              "is_constant" : false
+            },
+            {
+              "name" : "constant10_16_16w4791",
+              "start_bit" : 0,
+              "bit_width" : 16,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "constant11_16_16w40",
+              "start_bit" : 0,
+              "bit_width" : 16,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "constant12_16_16w0xffff",
+              "start_bit" : 0,
+              "bit_width" : 16,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "constant13_8_8w129",
+              "start_bit" : 0,
+              "bit_width" : 8,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "constant14_1_1w0",
+              "start_bit" : 0,
+              "bit_width" : 1,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "constant15_1_1w0",
+              "start_bit" : 0,
+              "bit_width" : 1,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "constant16_2_2w0",
+              "start_bit" : 0,
+              "bit_width" : 2,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "constant17_4_4w0",
+              "start_bit" : 0,
+              "bit_width" : 4,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "hdr.bth.parti_key",
+              "start_bit" : 0,
+              "bit_width" : 16,
+              "optional" : true,
+              "is_constant" : false
+            },
+            {
+              "name" : "constant18_8_8w0xff",
+              "start_bit" : 0,
+              "bit_width" : 8,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "hdr.bth.dst_qpn",
+              "start_bit" : 0,
+              "bit_width" : 24,
+              "optional" : true,
+              "is_constant" : false
+            },
+            {
+              "name" : "constant19_1_1w0",
+              "start_bit" : 0,
+              "bit_width" : 1,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "constant20_7_7w0",
+              "start_bit" : 0,
+              "bit_width" : 7,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "constant21_24_24w0",
+              "start_bit" : 0,
+              "bit_width" : 24,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "constant22_64_64w0",
+              "start_bit" : 0,
+              "bit_width" : 64,
+              "optional" : true,
+              "is_constant" : true
+            },
+            {
+              "name" : "constant23_64_64w0",
+              "start_bit" : 0,
+              "bit_width" : 64,
+              "optional" : true,
+              "is_constant" : true
+            }
+          ],
+          "crossbar_configuration" : [
+            {
+              "stage_number" : 4,
+              "crossbar" : [
+                {
+                  "byte_number" : 10,
+                  "bit_in_byte" : 0,
+                  "name" : "hdr.udp.src_port",
+                  "field_bit" : 0
+                },
+                {
+                  "byte_number" : 10,
+                  "bit_in_byte" : 1,
+                  "name" : "hdr.udp.src_port",
+                  "field_bit" : 1
+                },
+                {
+                  "byte_number" : 10,
+                  "bit_in_byte" : 2,
+                  "name" : "hdr.udp.src_port",
+                  "field_bit" : 2
+                },
+                {
+                  "byte_number" : 10,
+                  "bit_in_byte" : 3,
+                  "name" : "hdr.udp.src_port",
+                  "field_bit" : 3
+                },
+                {
+                  "byte_number" : 10,
+                  "bit_in_byte" : 4,
+                  "name" : "hdr.udp.src_port",
+                  "field_bit" : 4
+                },
+                {
+                  "byte_number" : 10,
+                  "bit_in_byte" : 5,
+                  "name" : "hdr.udp.src_port",
+                  "field_bit" : 5
+                },
+                {
+                  "byte_number" : 10,
+                  "bit_in_byte" : 6,
+                  "name" : "hdr.udp.src_port",
+                  "field_bit" : 6
+                },
+                {
+                  "byte_number" : 10,
+                  "bit_in_byte" : 7,
+                  "name" : "hdr.udp.src_port",
+                  "field_bit" : 7
+                },
+                {
+                  "byte_number" : 11,
+                  "bit_in_byte" : 0,
+                  "name" : "hdr.udp.src_port",
+                  "field_bit" : 8
+                },
+                {
+                  "byte_number" : 11,
+                  "bit_in_byte" : 1,
+                  "name" : "hdr.udp.src_port",
+                  "field_bit" : 9
+                },
+                {
+                  "byte_number" : 11,
+                  "bit_in_byte" : 2,
+                  "name" : "hdr.udp.src_port",
+                  "field_bit" : 10
+                },
+                {
+                  "byte_number" : 11,
+                  "bit_in_byte" : 3,
+                  "name" : "hdr.udp.src_port",
+                  "field_bit" : 11
+                },
+                {
+                  "byte_number" : 11,
+                  "bit_in_byte" : 4,
+                  "name" : "hdr.udp.src_port",
+                  "field_bit" : 12
+                },
+                {
+                  "byte_number" : 11,
+                  "bit_in_byte" : 5,
+                  "name" : "hdr.udp.src_port",
+                  "field_bit" : 13
+                },
+                {
+                  "byte_number" : 11,
+                  "bit_in_byte" : 6,
+                  "name" : "hdr.udp.src_port",
+                  "field_bit" : 14
+                },
+                {
+                  "byte_number" : 11,
+                  "bit_in_byte" : 7,
+                  "name" : "hdr.udp.src_port",
+                  "field_bit" : 15
+                },
+                {
+                  "byte_number" : 0,
+                  "bit_in_byte" : 0,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 0
+                },
+                {
+                  "byte_number" : 0,
+                  "bit_in_byte" : 1,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 1
+                },
+                {
+                  "byte_number" : 0,
+                  "bit_in_byte" : 2,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 2
+                },
+                {
+                  "byte_number" : 0,
+                  "bit_in_byte" : 3,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 3
+                },
+                {
+                  "byte_number" : 0,
+                  "bit_in_byte" : 4,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 4
+                },
+                {
+                  "byte_number" : 0,
+                  "bit_in_byte" : 5,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 5
+                },
+                {
+                  "byte_number" : 0,
+                  "bit_in_byte" : 6,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 6
+                },
+                {
+                  "byte_number" : 0,
+                  "bit_in_byte" : 7,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 7
+                },
+                {
+                  "byte_number" : 1,
+                  "bit_in_byte" : 0,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 8
+                },
+                {
+                  "byte_number" : 1,
+                  "bit_in_byte" : 1,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 9
+                },
+                {
+                  "byte_number" : 1,
+                  "bit_in_byte" : 2,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 10
+                },
+                {
+                  "byte_number" : 1,
+                  "bit_in_byte" : 3,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 11
+                },
+                {
+                  "byte_number" : 1,
+                  "bit_in_byte" : 4,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 12
+                },
+                {
+                  "byte_number" : 1,
+                  "bit_in_byte" : 5,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 13
+                },
+                {
+                  "byte_number" : 1,
+                  "bit_in_byte" : 6,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 14
+                },
+                {
+                  "byte_number" : 1,
+                  "bit_in_byte" : 7,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 15
+                },
+                {
+                  "byte_number" : 2,
+                  "bit_in_byte" : 0,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 16
+                },
+                {
+                  "byte_number" : 2,
+                  "bit_in_byte" : 1,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 17
+                },
+                {
+                  "byte_number" : 2,
+                  "bit_in_byte" : 2,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 18
+                },
+                {
+                  "byte_number" : 2,
+                  "bit_in_byte" : 3,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 19
+                },
+                {
+                  "byte_number" : 2,
+                  "bit_in_byte" : 4,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 20
+                },
+                {
+                  "byte_number" : 2,
+                  "bit_in_byte" : 5,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 21
+                },
+                {
+                  "byte_number" : 2,
+                  "bit_in_byte" : 6,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 22
+                },
+                {
+                  "byte_number" : 2,
+                  "bit_in_byte" : 7,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 23
+                },
+                {
+                  "byte_number" : 3,
+                  "bit_in_byte" : 0,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 24
+                },
+                {
+                  "byte_number" : 3,
+                  "bit_in_byte" : 1,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 25
+                },
+                {
+                  "byte_number" : 3,
+                  "bit_in_byte" : 2,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 26
+                },
+                {
+                  "byte_number" : 3,
+                  "bit_in_byte" : 3,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 27
+                },
+                {
+                  "byte_number" : 3,
+                  "bit_in_byte" : 4,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 28
+                },
+                {
+                  "byte_number" : 3,
+                  "bit_in_byte" : 5,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 29
+                },
+                {
+                  "byte_number" : 3,
+                  "bit_in_byte" : 6,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 30
+                },
+                {
+                  "byte_number" : 3,
+                  "bit_in_byte" : 7,
+                  "name" : "hdr.ipv4.dst_addr",
+                  "field_bit" : 31
+                },
+                {
+                  "byte_number" : 4,
+                  "bit_in_byte" : 0,
+                  "name" : "tmp2_0",
+                  "field_bit" : 0
+                },
+                {
+                  "byte_number" : 4,
+                  "bit_in_byte" : 1,
+                  "name" : "tmp2_0",
+                  "field_bit" : 1
+                },
+                {
+                  "byte_number" : 4,
+                  "bit_in_byte" : 2,
+                  "name" : "tmp2_0",
+                  "field_bit" : 2
+                },
+                {
+                  "byte_number" : 4,
+                  "bit_in_byte" : 3,
+                  "name" : "tmp2_0",
+                  "field_bit" : 3
+                },
+                {
+                  "byte_number" : 4,
+                  "bit_in_byte" : 4,
+                  "name" : "tmp2_0",
+                  "field_bit" : 4
+                },
+                {
+                  "byte_number" : 4,
+                  "bit_in_byte" : 5,
+                  "name" : "tmp2_0",
+                  "field_bit" : 5
+                },
+                {
+                  "byte_number" : 4,
+                  "bit_in_byte" : 6,
+                  "name" : "tmp2_0",
+                  "field_bit" : 6
+                },
+                {
+                  "byte_number" : 4,
+                  "bit_in_byte" : 7,
+                  "name" : "tmp2_0",
+                  "field_bit" : 7
+                },
+                {
+                  "byte_number" : 5,
+                  "bit_in_byte" : 0,
+                  "name" : "tmp2_0",
+                  "field_bit" : 8
+                },
+                {
+                  "byte_number" : 5,
+                  "bit_in_byte" : 1,
+                  "name" : "tmp2_0",
+                  "field_bit" : 9
+                },
+                {
+                  "byte_number" : 5,
+                  "bit_in_byte" : 2,
+                  "name" : "tmp2_0",
+                  "field_bit" : 10
+                },
+                {
+                  "byte_number" : 5,
+                  "bit_in_byte" : 3,
+                  "name" : "tmp2_0",
+                  "field_bit" : 11
+                },
+                {
+                  "byte_number" : 5,
+                  "bit_in_byte" : 4,
+                  "name" : "tmp2_0",
+                  "field_bit" : 12
+                },
+                {
+                  "byte_number" : 5,
+                  "bit_in_byte" : 5,
+                  "name" : "tmp2_0",
+                  "field_bit" : 13
+                },
+                {
+                  "byte_number" : 5,
+                  "bit_in_byte" : 6,
+                  "name" : "tmp2_0",
+                  "field_bit" : 14
+                },
+                {
+                  "byte_number" : 5,
+                  "bit_in_byte" : 7,
+                  "name" : "tmp2_0",
+                  "field_bit" : 15
+                },
+                {
+                  "byte_number" : 6,
+                  "bit_in_byte" : 0,
+                  "name" : "tmp2_0",
+                  "field_bit" : 16
+                },
+                {
+                  "byte_number" : 6,
+                  "bit_in_byte" : 1,
+                  "name" : "tmp2_0",
+                  "field_bit" : 17
+                },
+                {
+                  "byte_number" : 6,
+                  "bit_in_byte" : 2,
+                  "name" : "tmp2_0",
+                  "field_bit" : 18
+                },
+                {
+                  "byte_number" : 6,
+                  "bit_in_byte" : 3,
+                  "name" : "tmp2_0",
+                  "field_bit" : 19
+                },
+                {
+                  "byte_number" : 6,
+                  "bit_in_byte" : 4,
+                  "name" : "tmp2_0",
+                  "field_bit" : 20
+                },
+                {
+                  "byte_number" : 6,
+                  "bit_in_byte" : 5,
+                  "name" : "tmp2_0",
+                  "field_bit" : 21
+                },
+                {
+                  "byte_number" : 6,
+                  "bit_in_byte" : 6,
+                  "name" : "tmp2_0",
+                  "field_bit" : 22
+                },
+                {
+                  "byte_number" : 6,
+                  "bit_in_byte" : 7,
+                  "name" : "tmp2_0",
+                  "field_bit" : 23
+                },
+                {
+                  "byte_number" : 7,
+                  "bit_in_byte" : 0,
+                  "name" : "tmp2_0",
+                  "field_bit" : 24
+                },
+                {
+                  "byte_number" : 7,
+                  "bit_in_byte" : 1,
+                  "name" : "tmp2_0",
+                  "field_bit" : 25
+                },
+                {
+                  "byte_number" : 7,
+                  "bit_in_byte" : 2,
+                  "name" : "tmp2_0",
+                  "field_bit" : 26
+                },
+                {
+                  "byte_number" : 7,
+                  "bit_in_byte" : 3,
+                  "name" : "tmp2_0",
+                  "field_bit" : 27
+                },
+                {
+                  "byte_number" : 7,
+                  "bit_in_byte" : 4,
+                  "name" : "tmp2_0",
+                  "field_bit" : 28
+                },
+                {
+                  "byte_number" : 7,
+                  "bit_in_byte" : 5,
+                  "name" : "tmp2_0",
+                  "field_bit" : 29
+                },
+                {
+                  "byte_number" : 7,
+                  "bit_in_byte" : 6,
+                  "name" : "tmp2_0",
+                  "field_bit" : 30
+                },
+                {
+                  "byte_number" : 7,
+                  "bit_in_byte" : 7,
+                  "name" : "tmp2_0",
+                  "field_bit" : 31
+                },
+                {
+                  "byte_number" : 14,
+                  "bit_in_byte" : 0,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 16
+                },
+                {
+                  "byte_number" : 14,
+                  "bit_in_byte" : 1,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 17
+                },
+                {
+                  "byte_number" : 14,
+                  "bit_in_byte" : 2,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 18
+                },
+                {
+                  "byte_number" : 14,
+                  "bit_in_byte" : 3,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 19
+                },
+                {
+                  "byte_number" : 14,
+                  "bit_in_byte" : 4,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 20
+                },
+                {
+                  "byte_number" : 14,
+                  "bit_in_byte" : 5,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 21
+                },
+                {
+                  "byte_number" : 14,
+                  "bit_in_byte" : 6,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 22
+                },
+                {
+                  "byte_number" : 14,
+                  "bit_in_byte" : 7,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 23
+                },
+                {
+                  "byte_number" : 16,
+                  "bit_in_byte" : 0,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 0
+                },
+                {
+                  "byte_number" : 16,
+                  "bit_in_byte" : 1,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 1
+                },
+                {
+                  "byte_number" : 16,
+                  "bit_in_byte" : 2,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 2
+                },
+                {
+                  "byte_number" : 16,
+                  "bit_in_byte" : 3,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 3
+                },
+                {
+                  "byte_number" : 16,
+                  "bit_in_byte" : 4,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 4
+                },
+                {
+                  "byte_number" : 16,
+                  "bit_in_byte" : 5,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 5
+                },
+                {
+                  "byte_number" : 16,
+                  "bit_in_byte" : 6,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 6
+                },
+                {
+                  "byte_number" : 16,
+                  "bit_in_byte" : 7,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 7
+                },
+                {
+                  "byte_number" : 15,
+                  "bit_in_byte" : 0,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 8
+                },
+                {
+                  "byte_number" : 15,
+                  "bit_in_byte" : 1,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 9
+                },
+                {
+                  "byte_number" : 15,
+                  "bit_in_byte" : 2,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 10
+                },
+                {
+                  "byte_number" : 15,
+                  "bit_in_byte" : 3,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 11
+                },
+                {
+                  "byte_number" : 15,
+                  "bit_in_byte" : 4,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 12
+                },
+                {
+                  "byte_number" : 15,
+                  "bit_in_byte" : 5,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 13
+                },
+                {
+                  "byte_number" : 15,
+                  "bit_in_byte" : 6,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 14
+                },
+                {
+                  "byte_number" : 15,
+                  "bit_in_byte" : 7,
+                  "name" : "hdr.bth.dst_qpn",
+                  "field_bit" : 15
+                },
+                {
+                  "byte_number" : 8,
+                  "bit_in_byte" : 0,
+                  "name" : "hdr.bth.parti_key",
+                  "field_bit" : 0
+                },
+                {
+                  "byte_number" : 8,
+                  "bit_in_byte" : 1,
+                  "name" : "hdr.bth.parti_key",
+                  "field_bit" : 1
+                },
+                {
+                  "byte_number" : 8,
+                  "bit_in_byte" : 2,
+                  "name" : "hdr.bth.parti_key",
+                  "field_bit" : 2
+                },
+                {
+                  "byte_number" : 8,
+                  "bit_in_byte" : 3,
+                  "name" : "hdr.bth.parti_key",
+                  "field_bit" : 3
+                },
+                {
+                  "byte_number" : 8,
+                  "bit_in_byte" : 4,
+                  "name" : "hdr.bth.parti_key",
+                  "field_bit" : 4
+                },
+                {
+                  "byte_number" : 8,
+                  "bit_in_byte" : 5,
+                  "name" : "hdr.bth.parti_key",
+                  "field_bit" : 5
+                },
+                {
+                  "byte_number" : 8,
+                  "bit_in_byte" : 6,
+                  "name" : "hdr.bth.parti_key",
+                  "field_bit" : 6
+                },
+                {
+                  "byte_number" : 8,
+                  "bit_in_byte" : 7,
+                  "name" : "hdr.bth.parti_key",
+                  "field_bit" : 7
+                },
+                {
+                  "byte_number" : 9,
+                  "bit_in_byte" : 0,
+                  "name" : "hdr.bth.parti_key",
+                  "field_bit" : 8
+                },
+                {
+                  "byte_number" : 9,
+                  "bit_in_byte" : 1,
+                  "name" : "hdr.bth.parti_key",
+                  "field_bit" : 9
+                },
+                {
+                  "byte_number" : 9,
+                  "bit_in_byte" : 2,
+                  "name" : "hdr.bth.parti_key",
+                  "field_bit" : 10
+                },
+                {
+                  "byte_number" : 9,
+                  "bit_in_byte" : 3,
+                  "name" : "hdr.bth.parti_key",
+                  "field_bit" : 11
+                },
+                {
+                  "byte_number" : 9,
+                  "bit_in_byte" : 4,
+                  "name" : "hdr.bth.parti_key",
+                  "field_bit" : 12
+                },
+                {
+                  "byte_number" : 9,
+                  "bit_in_byte" : 5,
+                  "name" : "hdr.bth.parti_key",
+                  "field_bit" : 13
+                },
+                {
+                  "byte_number" : 9,
+                  "bit_in_byte" : 6,
+                  "name" : "hdr.bth.parti_key",
+                  "field_bit" : 14
+                },
+                {
+                  "byte_number" : 9,
+                  "bit_in_byte" : 7,
+                  "name" : "hdr.bth.parti_key",
+                  "field_bit" : 15
+                },
+                {
+                  "byte_number" : 12,
+                  "bit_in_byte" : 0,
+                  "name" : "hdr.ipv4.identification",
+                  "field_bit" : 0
+                },
+                {
+                  "byte_number" : 12,
+                  "bit_in_byte" : 1,
+                  "name" : "hdr.ipv4.identification",
+                  "field_bit" : 1
+                },
+                {
+                  "byte_number" : 12,
+                  "bit_in_byte" : 2,
+                  "name" : "hdr.ipv4.identification",
+                  "field_bit" : 2
+                },
+                {
+                  "byte_number" : 12,
+                  "bit_in_byte" : 3,
+                  "name" : "hdr.ipv4.identification",
+                  "field_bit" : 3
+                },
+                {
+                  "byte_number" : 12,
+                  "bit_in_byte" : 4,
+                  "name" : "hdr.ipv4.identification",
+                  "field_bit" : 4
+                },
+                {
+                  "byte_number" : 12,
+                  "bit_in_byte" : 5,
+                  "name" : "hdr.ipv4.identification",
+                  "field_bit" : 5
+                },
+                {
+                  "byte_number" : 12,
+                  "bit_in_byte" : 6,
+                  "name" : "hdr.ipv4.identification",
+                  "field_bit" : 6
+                },
+                {
+                  "byte_number" : 12,
+                  "bit_in_byte" : 7,
+                  "name" : "hdr.ipv4.identification",
+                  "field_bit" : 7
+                },
+                {
+                  "byte_number" : 13,
+                  "bit_in_byte" : 0,
+                  "name" : "hdr.ipv4.identification",
+                  "field_bit" : 8
+                },
+                {
+                  "byte_number" : 13,
+                  "bit_in_byte" : 1,
+                  "name" : "hdr.ipv4.identification",
+                  "field_bit" : 9
+                },
+                {
+                  "byte_number" : 13,
+                  "bit_in_byte" : 2,
+                  "name" : "hdr.ipv4.identification",
+                  "field_bit" : 10
+                },
+                {
+                  "byte_number" : 13,
+                  "bit_in_byte" : 3,
+                  "name" : "hdr.ipv4.identification",
+                  "field_bit" : 11
+                },
+                {
+                  "byte_number" : 13,
+                  "bit_in_byte" : 4,
+                  "name" : "hdr.ipv4.identification",
+                  "field_bit" : 12
+                },
+                {
+                  "byte_number" : 13,
+                  "bit_in_byte" : 5,
+                  "name" : "hdr.ipv4.identification",
+                  "field_bit" : 13
+                },
+                {
+                  "byte_number" : 13,
+                  "bit_in_byte" : 6,
+                  "name" : "hdr.ipv4.identification",
+                  "field_bit" : 14
+                },
+                {
+                  "byte_number" : 13,
+                  "bit_in_byte" : 7,
+                  "name" : "hdr.ipv4.identification",
+                  "field_bit" : 15
+                }
+              ],
+              "crossbar_mod" : []
+            }
+          ]
+        }
+      ],
+      "hash_configuration" : [
+        {
+          "stage_number" : 4,
+          "hash" : {
+            "hash_id" : 0,
+            "num_hash_bits" : 16,
+            "hash_bits" : [
+              {
+                "gfm_hash_bit" : 0,
+                "p4_hash_bit" : 0
+              },
+              {
+                "gfm_hash_bit" : 1,
+                "p4_hash_bit" : 1
+              },
+              {
+                "gfm_hash_bit" : 2,
+                "p4_hash_bit" : 2
+              },
+              {
+                "gfm_hash_bit" : 3,
+                "p4_hash_bit" : 3
+              },
+              {
+                "gfm_hash_bit" : 4,
+                "p4_hash_bit" : 4
+              },
+              {
+                "gfm_hash_bit" : 5,
+                "p4_hash_bit" : 5
+              },
+              {
+                "gfm_hash_bit" : 6,
+                "p4_hash_bit" : 6
+              },
+              {
+                "gfm_hash_bit" : 7,
+                "p4_hash_bit" : 7
+              },
+              {
+                "gfm_hash_bit" : 8,
+                "p4_hash_bit" : 8
+              },
+              {
+                "gfm_hash_bit" : 9,
+                "p4_hash_bit" : 9
+              },
+              {
+                "gfm_hash_bit" : 10,
+                "p4_hash_bit" : 10
+              },
+              {
+                "gfm_hash_bit" : 11,
+                "p4_hash_bit" : 11
+              },
+              {
+                "gfm_hash_bit" : 12,
+                "p4_hash_bit" : 12
+              },
+              {
+                "gfm_hash_bit" : 13,
+                "p4_hash_bit" : 13
+              },
+              {
+                "gfm_hash_bit" : 14,
+                "p4_hash_bit" : 14
+              },
+              {
+                "gfm_hash_bit" : 15,
+                "p4_hash_bit" : 15
+              },
+              {
+                "gfm_hash_bit" : 16,
+                "p4_hash_bit" : 16
+              },
+              {
+                "gfm_hash_bit" : 17,
+                "p4_hash_bit" : 17
+              },
+              {
+                "gfm_hash_bit" : 18,
+                "p4_hash_bit" : 18
+              },
+              {
+                "gfm_hash_bit" : 19,
+                "p4_hash_bit" : 19
+              },
+              {
+                "gfm_hash_bit" : 20,
+                "p4_hash_bit" : 20
+              },
+              {
+                "gfm_hash_bit" : 21,
+                "p4_hash_bit" : 21
+              },
+              {
+                "gfm_hash_bit" : 22,
+                "p4_hash_bit" : 22
+              },
+              {
+                "gfm_hash_bit" : 23,
+                "p4_hash_bit" : 23
+              },
+              {
+                "gfm_hash_bit" : 24,
+                "p4_hash_bit" : 24
+              },
+              {
+                "gfm_hash_bit" : 25,
+                "p4_hash_bit" : 25
+              },
+              {
+                "gfm_hash_bit" : 26,
+                "p4_hash_bit" : 26
+              },
+              {
+                "gfm_hash_bit" : 27,
+                "p4_hash_bit" : 27
+              },
+              {
+                "gfm_hash_bit" : 28,
+                "p4_hash_bit" : 28
+              },
+              {
+                "gfm_hash_bit" : 29,
+                "p4_hash_bit" : 29
+              },
+              {
+                "gfm_hash_bit" : 30,
+                "p4_hash_bit" : 30
+              },
+              {
+                "gfm_hash_bit" : 31,
+                "p4_hash_bit" : 31
+              }
+            ]
+          },
+          "hash_mod" : {
+            "hash_id" : 0,
+            "num_hash_bits" : 0,
+            "hash_bits" : []
+          }
+        }
+      ],
+      "hash_bit_width" : 32
+    },
+    {
+      "name" : "Egress.egress_pnp_dip_hash_calc.configure",
+      "handle" : 570425345,
       "any_hash_algorithm_allowed" : true,
       "algorithms" : [
         {
           "name" : "crc_8",
           "type" : "crc",
-          "handle" : 587202560,
+          "handle" : 587202561,
           "is_default" : true,
           "msb" : false,
           "extend" : false,
@@ -21,7 +1230,7 @@
       "field_lists" : [
         {
           "name" : "$field_list_1",
-          "handle" : 553648128,
+          "handle" : 553648129,
           "is_default" : true,
           "can_permute" : true,
           "can_rotate" : true,

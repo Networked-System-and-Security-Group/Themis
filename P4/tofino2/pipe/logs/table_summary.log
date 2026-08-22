@@ -1,45 +1,51 @@
 Table allocation done 1 time(s), state = INITIAL
-Number of stages in table allocation: 6
+Number of stages in table allocation: 8
   Number of stages for ingress table allocation: 6
-  Number of stages for egress table allocation: 5
-Critical path length through the table dependency graph: 5
-Number of tables allocated: 21
-+-------+---------------------+
-|Stage  |Table Name           |
-+-------+---------------------+
-|0      |tbl_themis536        |
-|0      |Ingress.arp_table    |
-|0      |tbl_themis262        |
-|0      |tbl_themis300        |
-|0      |tbl_themis266        |
-|0      |tbl_themis250        |
-|1      |tbl_themis269        |
-|1      |tbl_themis276        |
-|1      |tbl_themis543        |
-|1      |tbl_themis566        |
-|1      |tbl_themis560        |
-|1      |tbl_themis559        |
-|2      |tbl_themis555        |
-|2      |cond-19              |
-|2      |tbl_start_one_recir  |
-|3      |tbl_themis556        |
-|3      |Ingress.l3_table     |
-|4      |Egress.count_cnp     |
-|4      |tbl_themis340        |
-|4      |cond-21              |
-|5      |tbl_set_mirror_md    |
-|0      |cond-14              |
-|0      |cond-15              |
-|0      |cond-18              |
-|0      |cond-16              |
-|1      |cond-17              |
-|2      |cond-19$split        |
-|3      |cond-20              |
-|4      |cond-22              |
-|5      |cond-21$split        |
-|1      |cond-23              |
-|1      |cond-25              |
-|1      |cond-24              |
-|4      |cond-26              |
-+-------+---------------------+
+  Number of stages for egress table allocation: 8
+Critical path length through the table dependency graph: 8
+Number of tables allocated: 27
++-------+---------------------------------------------------------+
+|Stage  |Table Name                                               |
++-------+---------------------------------------------------------+
+|0      |tbl_themis538                                            |
+|0      |Ingress.arp_table                                        |
+|0      |tbl_themis262                                            |
+|0      |tbl_themis300                                            |
+|0      |tbl_themis266                                            |
+|0      |tbl_themis250                                            |
+|1      |tbl_themis546                                            |
+|1      |tbl_themis269                                            |
+|1      |tbl_themis276                                            |
+|1      |tbl_themis628                                            |
+|1      |tbl_themis622                                            |
+|1      |tbl_themis621                                            |
+|2      |tbl_themis568                                            |
+|2      |tbl_themis620                                            |
+|2      |cond-19                                                  |
+|2      |tbl_start_one_recir                                      |
+|3      |tbl_themis569                                            |
+|3      |Ingress.l3_table                                         |
+|4      |tbl_themis583                                            |
+|4      |egresshdr.udp.checksum_encode_update_condition_1_egress  |
+|4      |Egress.count_cnp                                         |
+|4      |tbl_themis340                                            |
+|4      |cond-21                                                  |
+|5      |tbl_themis616                                            |
+|5      |tbl_set_mirror_md                                        |
+|6      |tbl_themis617                                            |
+|7      |tbl_themis618                                            |
+|0      |cond-14                                                  |
+|0      |cond-15                                                  |
+|0      |cond-18                                                  |
+|0      |cond-16                                                  |
+|1      |cond-17                                                  |
+|2      |cond-19$split                                            |
+|3      |cond-20                                                  |
+|4      |cond-22                                                  |
+|5      |cond-21$split                                            |
+|1      |cond-23                                                  |
+|1      |cond-25                                                  |
+|1      |cond-24                                                  |
+|4      |cond-26                                                  |
++-------+---------------------------------------------------------+
 

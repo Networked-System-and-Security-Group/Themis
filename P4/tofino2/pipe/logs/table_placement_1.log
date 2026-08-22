@@ -1,83 +1,90 @@
 Table Placement ignores container conflicts? 0
 table placement starting pipe
-ingress: [2594165] 0 01 011 0111 01111 011110
+ingress: [2762299] 0 01 011 0111 01111 011110
   tbl_themis250
     stats Ingress.ingress_port_debug_counter  512
   cond-14(ingress::hdr.ethernet.ether_type == 2048; => $true, 1 => $false)
-    $false: [2594336]
+    $false: [2762470]
       arp_table_0{ E 22+0, 2 0K }
-    $true: [2780351]
+    $true: [2979852]
   cond-15(ingress::hdr.recir.$valid == 1; => $true, 1 => $false)
-    $true: [2594342] 0 00
+    $true: [2762476] 0 00
       tbl_themis262
         stats Ingress.recir_return_counter    1
       cond-16(ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
-        $true: [2594478]
+        $true: [2762612]
           tbl_themis266
             stats Ingress.recir_return_roce_counter    1
-        $false: [2780498]
+        $false: [2979999]
       cond-17(ingress::hdr.recir.cnt == 0; => $true, 1 => $false)
-        $true: [2594484]
+        $true: [2762618]
           tbl_themis269
-        $false: [2594564]
+        $false: [2762698]
           tbl_themis276
-    $false: [2594784]
+    $false: [2762918]
       cond-18(ingress::hdr.ethernet.ether_type == 2048; => $true, 1 => $false)
-        $true: [2594780]
+        $true: [2762914]
           tbl_themis300
-        $false: [2594782]
+        $false: [2762916]
   cond-19(ingress::hdr.recir.$valid == 1; => $false, ingress::ig_intr_md.ingress_port == 384; => $false, ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, 1 => $gwcont)
-    $false: [2780685]
-    $gwcont: [2788495]
+    $false: [2980186]
+    $gwcont: [2988892]
       cond-19$split(ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.bth.psn[0:0] != 0; => $false, ingress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
-        $true: [2594899]
+        $true: [2763033]
           tbl_start_one_recir
             stats Ingress.recir_debug_counter    1
-        $false: [2780685]...
+        $false: [2980186]...
   cond-20(ingress::apply_l3_0 => $true, 1 => $false)
-    $true: [2595001]
+    $true: [2763135]
       l3_table_0{ E 22+0, 2 0K }
-    $false: [2780775]
+    $false: [2980276]
   cond-21(ingress::ig_intr_md_for_tm.ucast_egress_port == 384; => $false, ingress::ig_intr_md.ingress_port == 384; => $false, ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, 1 => $gwcont)
-    $false: [2780902]
-    $gwcont: [2788638]
+    $false: [2980403]
+    $gwcont: [2989035]
       cond-21$split(ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.bth.psn[0:0] != 1; => $false, ingress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
-        $true: [2595007]
+        $true: [2763141]
           tbl_set_mirror_md
             stats Ingress.cnp_debug_counter    1
-        $false: [2780902]...
+        $false: [2980403]...
   cond-22(ingress::ig_intr_md_for_tm.ucast_egress_port == 384; => $false, 1 => $true)
-    $true: [2595197]
+    $true: [2763331]
       tbl_themis340
-    $false: [2780944]
-egress: [2607844] 1 11
-  tbl_themis536
+    $false: [2980445]
+egress: [2778448] 1 11 110
+  tbl_themis538
   cond-23(egress::meta.is_mirrored == 1; => $true, 1 => $false)
-    $true: [2607949] 1 11 000
-      tbl_themis543
+    $true: [2778553] 1 11 111 1111 11111 111111 0000000
+      tbl_themis546
         stats Egress.egress_mirror_seen_counter    1
-      tbl_themis555
-      tbl_themis556
+      tbl_themis568
+      tbl_themis569
+      tbl_themis583
+      tbl_themis616
+      tbl_themis617
+      tbl_themis618
       cond-24(egress::hdr.bth.$valid == 1; => $true, 1 => $false)
-        $true: [2608245] 0
-          tbl_themis559
+        $true: [2779454] 0 00
+          tbl_themis620
             stats Egress.egress_mirror_bth_counter    1
-          tbl_themis560
+          tbl_themis621
             stats Egress.egress_mirror_cnp_set_counter    1
-        $false: [2781179]
-    $false: [2608448]
+          tbl_themis622
+            stats Egress.egress_mirror_icrc_counter    1
+        $false: [2980935]
+    $false: [2779722]
       cond-25(egress::hdr.udp.$valid != 1; => $false, egress::hdr.bth.$valid != 1; => $false, egress::hdr.bth.opcode == 129; => $false, egress::hdr.udp.dst_port == 4791; => $true, 1 => $false)
-        $true: [2608446]
-          tbl_themis566
+        $true: [2779720]
+          tbl_themis628
             stats Egress.egress_roce_data_counter    1
-        $false: [2781227]
+        $false: [2980983]
   cond-26(egress::hdr.bth.$valid == 1; => $true, 1 => $false)
-    $true: [2608546]
+    $true: [2779820]
       count_cnp_0{ E -2+0, 0 0K }
         stats Egress.indirect_counter  512
-    $false: [2781277]
+    $false: [2981033]
+  egresshdr.udp.checksum_encode_update_condition_1{ E -8+1, 1 0K }
 
-stage 0, work: [ 2594165, 2607844 ], partly placed 0, placed 0
+stage 0, work: [ 2762299, 2778448 ], partly placed 0, placed 0
     { id=0 ram=0 tcam=0 mram=0 eixb=0 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
@@ -114,31 +121,33 @@ Trying to allocate imem for tbl_themis262
   - skipping cond-20 due to in-sequence control dependence on cond-14
   - skipping cond-21 due to in-sequence control dependence on cond-14
   - skipping cond-22 due to in-sequence control dependence on cond-14
-  Group table: tbl_themis536
+  Group table: tbl_themis538
   Group table: cond-23
   Group table: cond-26
-tbl_themis536 is not a gateway! Aborting search for merge choices
-try_place_table(tbl_themis536, stage=0)
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+tbl_themis538 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis538, stage=0)
   Initial stage is 0, initial entries is 1
-Trying to allocate imem for tbl_themis536
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
+Trying to allocate imem for tbl_themis538
   Selected stage: 0    Furthest stage: 0
-  try_place_table returning 1 of tbl_themis536 in stage 0
-    Pl vector: [ tbl_themis536 ]
-    - removing tbl_themis543 from merge list because it depends on tbl_themis536
+  try_place_table returning 1 of tbl_themis538 in stage 0
+    Pl vector: [ tbl_themis538 ]
+    - removing tbl_themis546 from merge list because it depends on tbl_themis538
     - skipping gateway cond-23 until mergeable tables are available
-    - removing count_cnp_0 from merge list because it depends on tbl_themis556
+    - removing count_cnp_0 from merge list because it depends on tbl_themis569
     - skipping gateway cond-26 until mergeable tables are available
-found 4 tables that could be placed: [ tbl_themis250, arp_table_0, tbl_themis262, tbl_themis536 ]
+  - skipping egresshdr.udp.checksum_encode_update_condition_1 due to in-sequence control dependence on tbl_themis538
+found 4 tables that could be placed: [ tbl_themis250, arp_table_0, tbl_themis262, tbl_themis538 ]
 Initial best is first table seen: tbl_themis250
 For trial t : arp_table_0 with best: tbl_themis250
     Updating best to arp_table_0 from tbl_themis250 for reason: longer downward prop control-included dependence tail chain
 For trial t : tbl_themis262 with best: arp_table_0
     Keeping best arp_table_0 for reason: longer downward prop control-included dependence tail chain
-For trial t : tbl_themis536 with best: arp_table_0
-    Updating best to tbl_themis536 from arp_table_0 for reason: longer control-excluded dependence tail chain
-placing 1 entries of tbl_themis536 in stage 0(0) FormatType(02)
-stage 0, work: [ 2594165, 2607844 ], partly placed 0, placed 1
+For trial t : tbl_themis538 with best: arp_table_0
+    Updating best to tbl_themis538 from arp_table_0 for reason: longer downward prop control-included dependence tail chain
+placing 1 entries of tbl_themis538 in stage 0(0) FormatType(02)
+stage 0, work: [ 2762299, 2778448 ], partly placed 0, placed 1
     { id=0 ram=0 tcam=0 mram=0 eixb=0 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
@@ -150,9 +159,9 @@ stage 0, work: [ 2594165, 2607844 ], partly placed 0, placed 1
 tbl_themis250 is not a gateway! Aborting search for merge choices
 try_place_table(tbl_themis250, stage=0)
   Initial stage is 0, initial entries is 1
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for tbl_themis250
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for tbl_themis250
   Selected stage: 0    Furthest stage: 1
   try_place_table returning 1 of tbl_themis250 in stage 0
@@ -160,9 +169,9 @@ Trying to allocate imem for tbl_themis250
 try_place_table(cond-14, stage=0)
   Merging with match table arp_table_0
   Initial stage is 0, initial entries is 32
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for arp_table_0
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for arp_table_0
   Selected stage: 0    Furthest stage: 1
   try_place_table returning 4096 of arp_table_0 in stage 0
@@ -170,9 +179,9 @@ Trying to allocate imem for arp_table_0
 try_place_table(cond-15, stage=0)
   Merging with match table tbl_themis262
   Initial stage is 0, initial entries is 1
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for tbl_themis262
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for tbl_themis262
   Selected stage: 0    Furthest stage: 1
   try_place_table returning 1 of tbl_themis262 in stage 0
@@ -181,31 +190,33 @@ Trying to allocate imem for tbl_themis262
   - skipping cond-20 due to in-sequence control dependence on cond-14
   - skipping cond-21 due to in-sequence control dependence on cond-14
   - skipping cond-22 due to in-sequence control dependence on cond-14
-  Group table: tbl_themis536
+  Group table: tbl_themis538
   Group table: cond-23
   Group table: cond-26
-    - skipping tbl_themis536 as its already done
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
 try_place_table(cond-23, stage=0)
-  Merging with match table tbl_themis543
-  - dependency between tbl_themis536 and table advances stage
+  Merging with match table tbl_themis546
+  - dependency between tbl_themis538 and table advances stage
   Initial stage is 1, initial entries is 1
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis543
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis546
   Selected stage: 1    Furthest stage: 1
-  try_place_table returning 1 of tbl_themis543 in stage 1
-    Pl vector: [ tbl_themis543 ]
-    - removing count_cnp_0 from merge list because it depends on tbl_themis556
+  try_place_table returning 1 of tbl_themis546 in stage 1
+    Pl vector: [ tbl_themis546 ]
+    - removing count_cnp_0 from merge list because it depends on tbl_themis569
     - skipping gateway cond-26 until mergeable tables are available
-found 4 tables that could be placed: [ tbl_themis250, arp_table_0, tbl_themis262, tbl_themis543 ]
+  - skipping egresshdr.udp.checksum_encode_update_condition_1 due to in-sequence control dependence on cond-23
+found 4 tables that could be placed: [ tbl_themis250, arp_table_0, tbl_themis262, tbl_themis546 ]
 Initial best is first table seen: tbl_themis250
 For trial t : arp_table_0 with best: tbl_themis250
     Updating best to arp_table_0 from tbl_themis250 for reason: longer downward prop control-included dependence tail chain
 For trial t : tbl_themis262 with best: arp_table_0
     Keeping best arp_table_0 for reason: longer downward prop control-included dependence tail chain
-For trial t : tbl_themis543 with best: arp_table_0
+For trial t : tbl_themis546 with best: arp_table_0
     Keeping best arp_table_0 for reason: earlier stage calculated
 placing 4096 entries of arp_table_0 (with gw cond-14) in stage 0(1) FormatType(02)
-stage 0, work: [ 2594165, 2607844 ], partly placed 0, placed 2
+stage 0, work: [ 2762299, 2778448 ], partly placed 0, placed 2
     { id=1 ram=4 tcam=0 mram=0 eixb=4 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
@@ -217,10 +228,10 @@ stage 0, work: [ 2594165, 2607844 ], partly placed 0, placed 2
 tbl_themis250 is not a gateway! Aborting search for merge choices
 try_place_table(tbl_themis250, stage=0)
   Initial stage is 0, initial entries is 1
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for arp_table_0
 Trying to allocate imem for tbl_themis250
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for arp_table_0
 Trying to allocate imem for tbl_themis250
   Selected stage: 0    Furthest stage: 1
@@ -230,10 +241,10 @@ Trying to allocate imem for tbl_themis250
 try_place_table(cond-15, stage=0)
   Merging with match table tbl_themis262
   Initial stage is 0, initial entries is 1
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for arp_table_0
 Trying to allocate imem for tbl_themis262
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for arp_table_0
 Trying to allocate imem for tbl_themis262
   Selected stage: 0    Furthest stage: 1
@@ -243,29 +254,31 @@ Trying to allocate imem for tbl_themis262
   - skipping cond-20 due to in-sequence control dependence on cond-15
   - skipping cond-21 due to in-sequence control dependence on cond-15
   - skipping cond-22 due to in-sequence control dependence on cond-15
-  Group table: tbl_themis536
+  Group table: tbl_themis538
   Group table: cond-23
   Group table: cond-26
-    - skipping tbl_themis536 as its already done
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
 try_place_table(cond-23, stage=0)
-  Merging with match table tbl_themis543
-  - dependency between tbl_themis536 and table advances stage
+  Merging with match table tbl_themis546
+  - dependency between tbl_themis538 and table advances stage
   Initial stage is 1, initial entries is 1
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis543
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis546
   Selected stage: 1    Furthest stage: 1
-  try_place_table returning 1 of tbl_themis543 in stage 1
-    Pl vector: [ tbl_themis543 ]
-    - removing count_cnp_0 from merge list because it depends on tbl_themis556
+  try_place_table returning 1 of tbl_themis546 in stage 1
+    Pl vector: [ tbl_themis546 ]
+    - removing count_cnp_0 from merge list because it depends on tbl_themis569
     - skipping gateway cond-26 until mergeable tables are available
-found 3 tables that could be placed: [ tbl_themis250, tbl_themis262, tbl_themis543 ]
+  - skipping egresshdr.udp.checksum_encode_update_condition_1 due to in-sequence control dependence on cond-23
+found 3 tables that could be placed: [ tbl_themis250, tbl_themis262, tbl_themis546 ]
 Initial best is first table seen: tbl_themis250
 For trial t : tbl_themis262 with best: tbl_themis250
     Updating best to tbl_themis262 from tbl_themis250 for reason: longer downward prop control-included dependence tail chain
-For trial t : tbl_themis543 with best: tbl_themis262
+For trial t : tbl_themis546 with best: tbl_themis262
     Keeping best tbl_themis262 for reason: earlier stage calculated
 placing 1 entries of tbl_themis262 (with gw cond-15) in stage 0(2) FormatType(022)
-stage 0, work: [ 2594165, 2607844, 2594342, 2594784 ], partly placed 0, placed 3
+stage 0, work: [ 2762299, 2778448, 2762476, 2762918 ], partly placed 0, placed 3
     { id=1 ram=4 tcam=0 mram=0 eixb=4 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
@@ -277,11 +290,11 @@ stage 0, work: [ 2594165, 2607844, 2594342, 2594784 ], partly placed 0, placed 3
 tbl_themis250 is not a gateway! Aborting search for merge choices
 try_place_table(tbl_themis250, stage=0)
   Initial stage is 0, initial entries is 1
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for arp_table_0
 Trying to allocate imem for tbl_themis262
 Trying to allocate imem for tbl_themis250
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for arp_table_0
 Trying to allocate imem for tbl_themis262
 Trying to allocate imem for tbl_themis250
@@ -295,21 +308,23 @@ Trying to allocate imem for tbl_themis250
   - skipping cond-20 due to in-sequence control dependence on cond-19
   - skipping cond-21 due to in-sequence control dependence on cond-19
   - skipping cond-22 due to in-sequence control dependence on cond-19
-  Group table: tbl_themis536
+  Group table: tbl_themis538
   Group table: cond-23
   Group table: cond-26
-    - skipping tbl_themis536 as its already done
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
 try_place_table(cond-23, stage=0)
-  Merging with match table tbl_themis543
-  - dependency between tbl_themis536 and table advances stage
+  Merging with match table tbl_themis546
+  - dependency between tbl_themis538 and table advances stage
   Initial stage is 1, initial entries is 1
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis543
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis546
   Selected stage: 1    Furthest stage: 1
-  try_place_table returning 1 of tbl_themis543 in stage 1
-    Pl vector: [ tbl_themis543 ]
-    - removing count_cnp_0 from merge list because it depends on tbl_themis556
+  try_place_table returning 1 of tbl_themis546 in stage 1
+    Pl vector: [ tbl_themis546 ]
+    - removing count_cnp_0 from merge list because it depends on tbl_themis569
     - skipping gateway cond-26 until mergeable tables are available
+  - skipping egresshdr.udp.checksum_encode_update_condition_1 due to in-sequence control dependence on cond-23
   Group table: tbl_themis262
   Group table: cond-16
   Group table: cond-17
@@ -317,11 +332,11 @@ Trying to allocate imem for tbl_themis543
 try_place_table(cond-16, stage=0)
   Merging with match table tbl_themis266
   Initial stage is 0, initial entries is 1
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for arp_table_0
 Trying to allocate imem for tbl_themis262
 Trying to allocate imem for tbl_themis266
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for arp_table_0
 Trying to allocate imem for tbl_themis262
 Trying to allocate imem for tbl_themis266
@@ -348,20 +363,20 @@ Trying to allocate imem for tbl_themis269
 try_place_table(cond-18, stage=0)
   Merging with match table tbl_themis300
   Initial stage is 0, initial entries is 1
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for arp_table_0
 Trying to allocate imem for tbl_themis262
 Trying to allocate imem for tbl_themis300
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for arp_table_0
 Trying to allocate imem for tbl_themis262
 Trying to allocate imem for tbl_themis300
   Selected stage: 0    Furthest stage: 1
   try_place_table returning 1 of tbl_themis300 in stage 0
     Pl vector: [ tbl_themis300 ]
-found 6 tables that could be placed: [ tbl_themis250, tbl_themis543, tbl_themis266, tbl_themis276, tbl_themis269, tbl_themis300 ]
+found 6 tables that could be placed: [ tbl_themis250, tbl_themis546, tbl_themis266, tbl_themis276, tbl_themis269, tbl_themis300 ]
 Initial best is first table seen: tbl_themis250
-For trial t : tbl_themis543 with best: tbl_themis250
+For trial t : tbl_themis546 with best: tbl_themis250
     Keeping best tbl_themis250 for reason: earlier stage calculated
 For trial t : tbl_themis266 with best: tbl_themis250
     Updating best to tbl_themis266 from tbl_themis250 for reason: default choice
@@ -372,7 +387,7 @@ For trial t : tbl_themis269 with best: tbl_themis266
 For trial t : tbl_themis300 with best: tbl_themis266
     Updating best to tbl_themis300 from tbl_themis266 for reason: longer downward prop control-included dependence tail chain
 placing 1 entries of tbl_themis300 (with gw cond-18) in stage 0(3) FormatType(02)
-stage 0, work: [ 2594165, 2607844, 2594342 ], partly placed 0, placed 4
+stage 0, work: [ 2762299, 2778448, 2762476 ], partly placed 0, placed 4
     { id=1 ram=4 tcam=0 mram=0 eixb=4 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
@@ -384,12 +399,12 @@ stage 0, work: [ 2594165, 2607844, 2594342 ], partly placed 0, placed 4
 tbl_themis250 is not a gateway! Aborting search for merge choices
 try_place_table(tbl_themis250, stage=0)
   Initial stage is 0, initial entries is 1
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for arp_table_0
 Trying to allocate imem for tbl_themis262
 Trying to allocate imem for tbl_themis300
 Trying to allocate imem for tbl_themis250
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for arp_table_0
 Trying to allocate imem for tbl_themis262
 Trying to allocate imem for tbl_themis300
@@ -404,21 +419,23 @@ Trying to allocate imem for tbl_themis250
   - skipping cond-20 due to in-sequence control dependence on cond-19
   - skipping cond-21 due to in-sequence control dependence on cond-19
   - skipping cond-22 due to in-sequence control dependence on cond-19
-  Group table: tbl_themis536
+  Group table: tbl_themis538
   Group table: cond-23
   Group table: cond-26
-    - skipping tbl_themis536 as its already done
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
 try_place_table(cond-23, stage=0)
-  Merging with match table tbl_themis543
-  - dependency between tbl_themis536 and table advances stage
+  Merging with match table tbl_themis546
+  - dependency between tbl_themis538 and table advances stage
   Initial stage is 1, initial entries is 1
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis543
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis546
   Selected stage: 1    Furthest stage: 1
-  try_place_table returning 1 of tbl_themis543 in stage 1
-    Pl vector: [ tbl_themis543 ]
-    - removing count_cnp_0 from merge list because it depends on tbl_themis556
+  try_place_table returning 1 of tbl_themis546 in stage 1
+    Pl vector: [ tbl_themis546 ]
+    - removing count_cnp_0 from merge list because it depends on tbl_themis569
     - skipping gateway cond-26 until mergeable tables are available
+  - skipping egresshdr.udp.checksum_encode_update_condition_1 due to in-sequence control dependence on cond-23
   Group table: tbl_themis262
   Group table: cond-16
   Group table: cond-17
@@ -426,12 +443,12 @@ Trying to allocate imem for tbl_themis543
 try_place_table(cond-16, stage=0)
   Merging with match table tbl_themis266
   Initial stage is 0, initial entries is 1
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for arp_table_0
 Trying to allocate imem for tbl_themis262
 Trying to allocate imem for tbl_themis300
 Trying to allocate imem for tbl_themis266
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for arp_table_0
 Trying to allocate imem for tbl_themis262
 Trying to allocate imem for tbl_themis300
@@ -455,9 +472,9 @@ Trying to allocate imem for tbl_themis269
   Selected stage: 1    Furthest stage: 1
   try_place_table returning 1 of tbl_themis269 in stage 1
     Pl vector: [ tbl_themis276, tbl_themis269 ]
-found 5 tables that could be placed: [ tbl_themis250, tbl_themis543, tbl_themis266, tbl_themis276, tbl_themis269 ]
+found 5 tables that could be placed: [ tbl_themis250, tbl_themis546, tbl_themis266, tbl_themis276, tbl_themis269 ]
 Initial best is first table seen: tbl_themis250
-For trial t : tbl_themis543 with best: tbl_themis250
+For trial t : tbl_themis546 with best: tbl_themis250
     Keeping best tbl_themis250 for reason: earlier stage calculated
 For trial t : tbl_themis266 with best: tbl_themis250
     Updating best to tbl_themis266 from tbl_themis250 for reason: default choice
@@ -466,7 +483,7 @@ For trial t : tbl_themis276 with best: tbl_themis266
 For trial t : tbl_themis269 with best: tbl_themis266
     Keeping best tbl_themis266 for reason: earlier stage calculated
 placing 1 entries of tbl_themis266 (with gw cond-16) in stage 0(4) FormatType(022)
-stage 0, work: [ 2594165, 2607844, 2594342 ], partly placed 0, placed 5
+stage 0, work: [ 2762299, 2778448, 2762476 ], partly placed 0, placed 5
     { id=1 ram=4 tcam=0 mram=0 eixb=4 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
@@ -478,13 +495,13 @@ stage 0, work: [ 2594165, 2607844, 2594342 ], partly placed 0, placed 5
 tbl_themis250 is not a gateway! Aborting search for merge choices
 try_place_table(tbl_themis250, stage=0)
   Initial stage is 0, initial entries is 1
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for arp_table_0
 Trying to allocate imem for tbl_themis262
 Trying to allocate imem for tbl_themis300
 Trying to allocate imem for tbl_themis266
 Trying to allocate imem for tbl_themis250
-Trying to allocate imem for tbl_themis536
+Trying to allocate imem for tbl_themis538
 Trying to allocate imem for arp_table_0
 Trying to allocate imem for tbl_themis262
 Trying to allocate imem for tbl_themis300
@@ -500,21 +517,23 @@ Trying to allocate imem for tbl_themis250
   - skipping cond-20 due to in-sequence control dependence on cond-19
   - skipping cond-21 due to in-sequence control dependence on cond-19
   - skipping cond-22 due to in-sequence control dependence on cond-19
-  Group table: tbl_themis536
+  Group table: tbl_themis538
   Group table: cond-23
   Group table: cond-26
-    - skipping tbl_themis536 as its already done
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
 try_place_table(cond-23, stage=0)
-  Merging with match table tbl_themis543
-  - dependency between tbl_themis536 and table advances stage
+  Merging with match table tbl_themis546
+  - dependency between tbl_themis538 and table advances stage
   Initial stage is 1, initial entries is 1
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis543
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis546
   Selected stage: 1    Furthest stage: 1
-  try_place_table returning 1 of tbl_themis543 in stage 1
-    Pl vector: [ tbl_themis543 ]
-    - removing count_cnp_0 from merge list because it depends on tbl_themis556
+  try_place_table returning 1 of tbl_themis546 in stage 1
+    Pl vector: [ tbl_themis546 ]
+    - removing count_cnp_0 from merge list because it depends on tbl_themis569
     - skipping gateway cond-26 until mergeable tables are available
+  - skipping egresshdr.udp.checksum_encode_update_condition_1 due to in-sequence control dependence on cond-23
   Group table: tbl_themis262
   Group table: cond-16
   Group table: cond-17
@@ -536,16 +555,16 @@ Trying to allocate imem for tbl_themis269
   Selected stage: 1    Furthest stage: 1
   try_place_table returning 1 of tbl_themis269 in stage 1
     Pl vector: [ tbl_themis276, tbl_themis269 ]
-found 4 tables that could be placed: [ tbl_themis250, tbl_themis543, tbl_themis276, tbl_themis269 ]
+found 4 tables that could be placed: [ tbl_themis250, tbl_themis546, tbl_themis276, tbl_themis269 ]
 Initial best is first table seen: tbl_themis250
-For trial t : tbl_themis543 with best: tbl_themis250
+For trial t : tbl_themis546 with best: tbl_themis250
     Keeping best tbl_themis250 for reason: earlier stage calculated
 For trial t : tbl_themis276 with best: tbl_themis250
     Keeping best tbl_themis250 for reason: earlier stage calculated
 For trial t : tbl_themis269 with best: tbl_themis250
     Keeping best tbl_themis250 for reason: earlier stage calculated
 placing 1 entries of tbl_themis250 in stage 0(5) FormatType(022)
-stage 0, work: [ 2594165, 2607844, 2594342 ], partly placed 0, placed 6
+stage 0, work: [ 2762299, 2778448, 2762476 ], partly placed 0, placed 6
     { id=1 ram=4 tcam=0 mram=0 eixb=4 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
@@ -562,21 +581,23 @@ stage 0, work: [ 2594165, 2607844, 2594342 ], partly placed 0, placed 6
   - skipping cond-20 due to in-sequence control dependence on cond-19
   - skipping cond-21 due to in-sequence control dependence on cond-19
   - skipping cond-22 due to in-sequence control dependence on cond-19
-  Group table: tbl_themis536
+  Group table: tbl_themis538
   Group table: cond-23
   Group table: cond-26
-    - skipping tbl_themis536 as its already done
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
 try_place_table(cond-23, stage=0)
-  Merging with match table tbl_themis543
-  - dependency between tbl_themis536 and table advances stage
+  Merging with match table tbl_themis546
+  - dependency between tbl_themis538 and table advances stage
   Initial stage is 1, initial entries is 1
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis543
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis546
   Selected stage: 1    Furthest stage: 1
-  try_place_table returning 1 of tbl_themis543 in stage 1
-    Pl vector: [ tbl_themis543 ]
-    - removing count_cnp_0 from merge list because it depends on tbl_themis556
+  try_place_table returning 1 of tbl_themis546 in stage 1
+    Pl vector: [ tbl_themis546 ]
+    - removing count_cnp_0 from merge list because it depends on tbl_themis569
     - skipping gateway cond-26 until mergeable tables are available
+  - skipping egresshdr.udp.checksum_encode_update_condition_1 due to in-sequence control dependence on cond-23
   Group table: tbl_themis262
   Group table: cond-16
   Group table: cond-17
@@ -598,14 +619,139 @@ Trying to allocate imem for tbl_themis269
   Selected stage: 1    Furthest stage: 1
   try_place_table returning 1 of tbl_themis269 in stage 1
     Pl vector: [ tbl_themis276, tbl_themis269 ]
-found 3 tables that could be placed: [ tbl_themis543, tbl_themis276, tbl_themis269 ]
-Initial best is first table seen: tbl_themis543
-For trial t : tbl_themis276 with best: tbl_themis543
-    Updating best to tbl_themis276 from tbl_themis543 for reason: longer downward dominance frontier dependence chain
+found 3 tables that could be placed: [ tbl_themis546, tbl_themis276, tbl_themis269 ]
+Initial best is first table seen: tbl_themis546
+For trial t : tbl_themis276 with best: tbl_themis546
+    Keeping best tbl_themis546 for reason: longer downward prop control-included dependence tail chain
+For trial t : tbl_themis269 with best: tbl_themis546
+    Keeping best tbl_themis546 for reason: longer downward prop control-included dependence tail chain
+placing 1 entries of tbl_themis546 (with gw cond-23) in stage 1(10) FormatType(022)
+stage 1, work: [ 2762299, 2778448, 2762476, 2778553, 2779722 ], partly placed 0, placed 7
+    { id=0 ram=0 tcam=0 mram=0 eixb=0 tixb=0 malu=0 salu=0 }
+  Group table: tbl_themis250
+  Group table: cond-14
+  Group table: cond-15
+  Group table: cond-19
+  Group table: cond-20
+  Group table: cond-21
+  Group table: cond-22
+    - skipping tbl_themis250 as its already done
+    - skipping cond-14 as its already done
+    - skipping cond-15 as its already done
+  - skipping cond-19 because it depends on tbl_themis269
+    - skipping gateway cond-19 until any of the control dominating tables can be placed
+  - skipping cond-20 due to in-sequence control dependence on cond-19
+  - skipping cond-21 due to in-sequence control dependence on cond-19
+  - skipping cond-22 due to in-sequence control dependence on cond-19
+  Group table: tbl_themis538
+  Group table: cond-23
+  Group table: cond-26
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
+    - skipping cond-23 as its already done
+    - removing count_cnp_0 from merge list because it depends on tbl_themis569
+    - skipping gateway cond-26 until mergeable tables are available
+  - skipping egresshdr.udp.checksum_encode_update_condition_1 because it depends on tbl_themis569
+egresshdr.udp.checksum_encode_update_condition_1 is not a gateway! Aborting search for merge choices
+  Group table: tbl_themis262
+  Group table: cond-16
+  Group table: cond-17
+    - skipping tbl_themis262 as its already done
+    - skipping cond-16 as its already done
+try_place_table(cond-17, stage=1)
+  Merging with match table tbl_themis276
+  Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis276
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis276
+  Selected stage: 1    Furthest stage: 2
+  try_place_table returning 1 of tbl_themis276 in stage 1
+  Merging with match table tbl_themis269
+  Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis269
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis269
+  Selected stage: 1    Furthest stage: 2
+  try_place_table returning 1 of tbl_themis269 in stage 1
+    Pl vector: [ tbl_themis276, tbl_themis269 ]
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
+  Group table: cond-24
+    - skipping tbl_themis546 as its already done
+tbl_themis568 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis568, stage=1)
+  - dependency between tbl_themis546 and table advances stage
+  Initial stage is 2, initial entries is 1
+Trying to allocate imem for tbl_themis568
+Trying to allocate imem for tbl_themis568
+  Selected stage: 2    Furthest stage: 2
+  try_place_table returning 1 of tbl_themis568 in stage 2
+    Pl vector: [ tbl_themis568 ]
+  - skipping tbl_themis569 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis583 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis616 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis617 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis618 due to in-sequence control dependence on tbl_themis568
+try_place_table(cond-24, stage=1)
+  Merging with match table tbl_themis620
+  Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis620
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis620
+  Selected stage: 1    Furthest stage: 2
+  try_place_table returning 1 of tbl_themis620 in stage 1
+  Merging with match table tbl_themis621
+  Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis621
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis621
+  Selected stage: 1    Furthest stage: 2
+  try_place_table returning 1 of tbl_themis621 in stage 1
+  Merging with match table tbl_themis622
+  Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis622
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis622
+  Selected stage: 1    Furthest stage: 2
+  try_place_table returning 1 of tbl_themis622 in stage 1
+    Pl vector: [ tbl_themis620, tbl_themis621, tbl_themis622 ]
+  Group table: cond-25
+try_place_table(cond-25, stage=1)
+  Merging with match table tbl_themis628
+  Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis628
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis628
+  Selected stage: 1    Furthest stage: 2
+  try_place_table returning 1 of tbl_themis628 in stage 1
+    Pl vector: [ tbl_themis628 ]
+found 7 tables that could be placed: [ tbl_themis276, tbl_themis269, tbl_themis568, tbl_themis620, tbl_themis621, tbl_themis622, tbl_themis628 ]
+Initial best is first table seen: tbl_themis276
 For trial t : tbl_themis269 with best: tbl_themis276
     Updating best to tbl_themis269 from tbl_themis276 for reason: fewer total dependencies in dominance frontier
-placing 1 entries of tbl_themis269 (with gw cond-17) in stage 1(10) FormatType(02)
-stage 1, work: [ 2594165, 2607844, 2594342, 2594564 ], partly placed 0, placed 7
+For trial t : tbl_themis568 with best: tbl_themis269
+    Keeping best tbl_themis269 for reason: earlier stage calculated
+For trial t : tbl_themis620 with best: tbl_themis269
+    Keeping best tbl_themis269 for reason: longer downward prop control-included dependence tail chain
+For trial t : tbl_themis621 with best: tbl_themis269
+    Keeping best tbl_themis269 for reason: longer downward prop control-included dependence tail chain
+For trial t : tbl_themis622 with best: tbl_themis269
+    Keeping best tbl_themis269 for reason: longer downward prop control-included dependence tail chain
+For trial t : tbl_themis628 with best: tbl_themis269
+    Keeping best tbl_themis269 for reason: longer downward prop control-included dependence tail chain
+placing 1 entries of tbl_themis269 (with gw cond-17) in stage 1(11) FormatType(02)
+stage 1, work: [ 2762299, 2778448, 2762476, 2778553, 2779722, 2762698 ], partly placed 0, placed 8
     { id=0 ram=0 tcam=0 mram=0 eixb=0 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
@@ -621,45 +767,117 @@ stage 1, work: [ 2594165, 2607844, 2594342, 2594564 ], partly placed 0, placed 7
   - skipping cond-20 due to in-sequence control dependence on cond-19
   - skipping cond-21 due to in-sequence control dependence on cond-19
   - skipping cond-22 due to in-sequence control dependence on cond-19
-  Group table: tbl_themis536
+  Group table: tbl_themis538
   Group table: cond-23
   Group table: cond-26
-    - skipping tbl_themis536 as its already done
-try_place_table(cond-23, stage=1)
-  Merging with match table tbl_themis543
-  Initial stage is 1, initial entries is 1
-Trying to allocate imem for tbl_themis269
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis269
-Trying to allocate imem for tbl_themis543
-  Selected stage: 1    Furthest stage: 2
-  try_place_table returning 1 of tbl_themis543 in stage 1
-    Pl vector: [ tbl_themis543 ]
-    - removing count_cnp_0 from merge list because it depends on tbl_themis556
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
+    - skipping cond-23 as its already done
+    - removing count_cnp_0 from merge list because it depends on tbl_themis569
     - skipping gateway cond-26 until mergeable tables are available
+  - skipping egresshdr.udp.checksum_encode_update_condition_1 because it depends on tbl_themis569
+egresshdr.udp.checksum_encode_update_condition_1 is not a gateway! Aborting search for merge choices
   Group table: tbl_themis262
   Group table: cond-16
   Group table: cond-17
     - skipping tbl_themis262 as its already done
     - skipping cond-16 as its already done
     - skipping cond-17 as its already done
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
+  Group table: cond-24
+    - skipping tbl_themis546 as its already done
+tbl_themis568 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis568, stage=1)
+  - dependency between tbl_themis546 and table advances stage
+  Initial stage is 2, initial entries is 1
+Trying to allocate imem for tbl_themis568
+Trying to allocate imem for tbl_themis568
+  Selected stage: 2    Furthest stage: 2
+  try_place_table returning 1 of tbl_themis568 in stage 2
+    Pl vector: [ tbl_themis568 ]
+  - skipping tbl_themis569 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis583 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis616 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis617 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis618 due to in-sequence control dependence on tbl_themis568
+try_place_table(cond-24, stage=1)
+  Merging with match table tbl_themis620
+  Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis269
+Trying to allocate imem for tbl_themis620
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis269
+Trying to allocate imem for tbl_themis620
+  Selected stage: 1    Furthest stage: 2
+  try_place_table returning 1 of tbl_themis620 in stage 1
+  Merging with match table tbl_themis621
+  Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis269
+Trying to allocate imem for tbl_themis621
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis269
+Trying to allocate imem for tbl_themis621
+  Selected stage: 1    Furthest stage: 2
+  try_place_table returning 1 of tbl_themis621 in stage 1
+  Merging with match table tbl_themis622
+  Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis269
+Trying to allocate imem for tbl_themis622
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis269
+Trying to allocate imem for tbl_themis622
+  Selected stage: 1    Furthest stage: 2
+  try_place_table returning 1 of tbl_themis622 in stage 1
+    Pl vector: [ tbl_themis620, tbl_themis621, tbl_themis622 ]
+  Group table: cond-25
+try_place_table(cond-25, stage=1)
+  Merging with match table tbl_themis628
+  Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis269
+Trying to allocate imem for tbl_themis628
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis269
+Trying to allocate imem for tbl_themis628
+  Selected stage: 1    Furthest stage: 2
+  try_place_table returning 1 of tbl_themis628 in stage 1
+    Pl vector: [ tbl_themis628 ]
   Group table: tbl_themis276
 tbl_themis276 is not a gateway! Aborting search for merge choices
 try_place_table(tbl_themis276, stage=1)
   Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
 Trying to allocate imem for tbl_themis269
 Trying to allocate imem for tbl_themis276
+Trying to allocate imem for tbl_themis546
 Trying to allocate imem for tbl_themis269
 Trying to allocate imem for tbl_themis276
   Selected stage: 1    Furthest stage: 2
   try_place_table returning 1 of tbl_themis276 in stage 1
     Pl vector: [ tbl_themis276 ]
-found 2 tables that could be placed: [ tbl_themis543, tbl_themis276 ]
-Initial best is first table seen: tbl_themis543
-For trial t : tbl_themis276 with best: tbl_themis543
-    Updating best to tbl_themis276 from tbl_themis543 for reason: longer downward dominance frontier dependence chain
-placing 1 entries of tbl_themis276 in stage 1(11) FormatType(02)
-stage 1, work: [ 2594165, 2607844 ], partly placed 0, placed 8
+found 6 tables that could be placed: [ tbl_themis568, tbl_themis620, tbl_themis621, tbl_themis622, tbl_themis628, tbl_themis276 ]
+Initial best is first table seen: tbl_themis568
+For trial t : tbl_themis620 with best: tbl_themis568
+    Updating best to tbl_themis620 from tbl_themis568 for reason: earlier stage calculated
+For trial t : tbl_themis621 with best: tbl_themis620
+    Updating best to tbl_themis621 from tbl_themis620 for reason: default choice
+For trial t : tbl_themis622 with best: tbl_themis621
+    Updating best to tbl_themis622 from tbl_themis621 for reason: default choice
+For trial t : tbl_themis628 with best: tbl_themis622
+    Updating best to tbl_themis628 from tbl_themis622 for reason: direct control dependency difference
+For trial t : tbl_themis276 with best: tbl_themis628
+    Updating best to tbl_themis276 from tbl_themis628 for reason: longer downward prop control-included dependence tail chain
+placing 1 entries of tbl_themis276 in stage 1(12) FormatType(02)
+stage 1, work: [ 2762299, 2778448, 2778553, 2779722 ], partly placed 0, placed 9
     { id=0 ram=0 tcam=0 mram=0 eixb=0 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
@@ -682,127 +900,106 @@ Trying to allocate imem for cond-19
   - skipping cond-20 due to in-sequence control dependence on cond-19
   - skipping cond-21 due to in-sequence control dependence on cond-19
   - skipping cond-22 due to in-sequence control dependence on cond-19
-  Group table: tbl_themis536
+  Group table: tbl_themis538
   Group table: cond-23
   Group table: cond-26
-    - skipping tbl_themis536 as its already done
-try_place_table(cond-23, stage=1)
-  Merging with match table tbl_themis543
-  Initial stage is 1, initial entries is 1
-Trying to allocate imem for tbl_themis269
-Trying to allocate imem for tbl_themis276
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis269
-Trying to allocate imem for tbl_themis276
-Trying to allocate imem for tbl_themis543
-  Selected stage: 1    Furthest stage: 2
-  try_place_table returning 1 of tbl_themis543 in stage 1
-    Pl vector: [ tbl_themis543 ]
-    - removing count_cnp_0 from merge list because it depends on tbl_themis556
-    - skipping gateway cond-26 until mergeable tables are available
-found 2 tables that could be placed: [ cond-19, tbl_themis543 ]
-Initial best is first table seen: cond-19
-For trial t : tbl_themis543 with best: cond-19
-    Updating best to tbl_themis543 from cond-19 for reason: earlier stage calculated
-placing 1 entries of tbl_themis543 (with gw cond-23) in stage 1(12) FormatType(022)
-stage 1, work: [ 2594165, 2607844, 2607949, 2608448 ], partly placed 0, placed 9
-    { id=0 ram=0 tcam=0 mram=0 eixb=0 tixb=0 malu=0 salu=0 }
-  Group table: tbl_themis250
-  Group table: cond-14
-  Group table: cond-15
-  Group table: cond-19
-  Group table: cond-20
-  Group table: cond-21
-  Group table: cond-22
-    - skipping tbl_themis250 as its already done
-    - skipping cond-14 as its already done
-    - skipping cond-15 as its already done
-try_place_table(cond-19, stage=1)
-  - dependency between tbl_themis269 and table advances stage
-  Initial stage is 2, initial entries is 0
-Trying to allocate imem for cond-19
-Trying to allocate imem for cond-19
-  Selected stage: 2    Furthest stage: 2
-  try_place_table returning 0 of cond-19 in stage 2
-    Pl vector: [ cond-19 ]
-  - skipping cond-20 due to in-sequence control dependence on cond-19
-  - skipping cond-21 due to in-sequence control dependence on cond-19
-  - skipping cond-22 due to in-sequence control dependence on cond-19
-  Group table: tbl_themis536
-  Group table: cond-23
-  Group table: cond-26
-    - skipping tbl_themis536 as its already done
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
     - skipping cond-23 as its already done
-    - removing count_cnp_0 from merge list because it depends on tbl_themis556
+    - removing count_cnp_0 from merge list because it depends on tbl_themis569
     - skipping gateway cond-26 until mergeable tables are available
-  Group table: tbl_themis543
-  Group table: tbl_themis555
-  Group table: tbl_themis556
+  - skipping egresshdr.udp.checksum_encode_update_condition_1 because it depends on tbl_themis569
+egresshdr.udp.checksum_encode_update_condition_1 is not a gateway! Aborting search for merge choices
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
   Group table: cond-24
-    - skipping tbl_themis543 as its already done
-tbl_themis555 is not a gateway! Aborting search for merge choices
-try_place_table(tbl_themis555, stage=1)
-  - dependency between tbl_themis543 and table advances stage
+    - skipping tbl_themis546 as its already done
+tbl_themis568 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis568, stage=1)
+  - dependency between tbl_themis546 and table advances stage
   Initial stage is 2, initial entries is 1
-Trying to allocate imem for tbl_themis555
-Trying to allocate imem for tbl_themis555
+Trying to allocate imem for tbl_themis568
+Trying to allocate imem for tbl_themis568
   Selected stage: 2    Furthest stage: 2
-  try_place_table returning 1 of tbl_themis555 in stage 2
-    Pl vector: [ tbl_themis555 ]
-  - skipping tbl_themis556 due to in-sequence control dependence on tbl_themis555
+  try_place_table returning 1 of tbl_themis568 in stage 2
+    Pl vector: [ tbl_themis568 ]
+  - skipping tbl_themis569 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis583 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis616 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis617 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis618 due to in-sequence control dependence on tbl_themis568
 try_place_table(cond-24, stage=1)
-  Merging with match table tbl_themis559
+  Merging with match table tbl_themis620
   Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
 Trying to allocate imem for tbl_themis269
 Trying to allocate imem for tbl_themis276
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis559
+Trying to allocate imem for tbl_themis620
+Trying to allocate imem for tbl_themis546
 Trying to allocate imem for tbl_themis269
 Trying to allocate imem for tbl_themis276
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis559
+Trying to allocate imem for tbl_themis620
   Selected stage: 1    Furthest stage: 2
-  try_place_table returning 1 of tbl_themis559 in stage 1
-  Merging with match table tbl_themis560
+  try_place_table returning 1 of tbl_themis620 in stage 1
+  Merging with match table tbl_themis621
   Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
 Trying to allocate imem for tbl_themis269
 Trying to allocate imem for tbl_themis276
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis560
+Trying to allocate imem for tbl_themis621
+Trying to allocate imem for tbl_themis546
 Trying to allocate imem for tbl_themis269
 Trying to allocate imem for tbl_themis276
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis560
+Trying to allocate imem for tbl_themis621
   Selected stage: 1    Furthest stage: 2
-  try_place_table returning 1 of tbl_themis560 in stage 1
-    Pl vector: [ tbl_themis559, tbl_themis560 ]
+  try_place_table returning 1 of tbl_themis621 in stage 1
+  Merging with match table tbl_themis622
+  Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis269
+Trying to allocate imem for tbl_themis276
+Trying to allocate imem for tbl_themis622
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis269
+Trying to allocate imem for tbl_themis276
+Trying to allocate imem for tbl_themis622
+  Selected stage: 1    Furthest stage: 2
+  try_place_table returning 1 of tbl_themis622 in stage 1
+    Pl vector: [ tbl_themis620, tbl_themis621, tbl_themis622 ]
   Group table: cond-25
 try_place_table(cond-25, stage=1)
-  Merging with match table tbl_themis566
+  Merging with match table tbl_themis628
   Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
 Trying to allocate imem for tbl_themis269
 Trying to allocate imem for tbl_themis276
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis566
+Trying to allocate imem for tbl_themis628
+Trying to allocate imem for tbl_themis546
 Trying to allocate imem for tbl_themis269
 Trying to allocate imem for tbl_themis276
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis566
+Trying to allocate imem for tbl_themis628
   Selected stage: 1    Furthest stage: 2
-  try_place_table returning 1 of tbl_themis566 in stage 1
-    Pl vector: [ tbl_themis566 ]
-found 5 tables that could be placed: [ cond-19, tbl_themis555, tbl_themis559, tbl_themis560, tbl_themis566 ]
+  try_place_table returning 1 of tbl_themis628 in stage 1
+    Pl vector: [ tbl_themis628 ]
+found 6 tables that could be placed: [ cond-19, tbl_themis568, tbl_themis620, tbl_themis621, tbl_themis622, tbl_themis628 ]
 Initial best is first table seen: cond-19
-For trial t : tbl_themis555 with best: cond-19
-    Updating best to tbl_themis555 from cond-19 for reason: longer control-excluded dependence tail chain
-For trial t : tbl_themis559 with best: tbl_themis555
-    Updating best to tbl_themis559 from tbl_themis555 for reason: earlier stage calculated
-For trial t : tbl_themis560 with best: tbl_themis559
-    Updating best to tbl_themis560 from tbl_themis559 for reason: default choice
-For trial t : tbl_themis566 with best: tbl_themis560
-    Updating best to tbl_themis566 from tbl_themis560 for reason: direct control dependency difference
-placing 1 entries of tbl_themis566 (with gw cond-25) in stage 1(13) FormatType(022)
-stage 1, work: [ 2594165, 2607844, 2607949 ], partly placed 0, placed 10
+For trial t : tbl_themis568 with best: cond-19
+    Updating best to tbl_themis568 from cond-19 for reason: longer downward prop control-included dependence tail chain
+For trial t : tbl_themis620 with best: tbl_themis568
+    Updating best to tbl_themis620 from tbl_themis568 for reason: earlier stage calculated
+For trial t : tbl_themis621 with best: tbl_themis620
+    Updating best to tbl_themis621 from tbl_themis620 for reason: default choice
+For trial t : tbl_themis622 with best: tbl_themis621
+    Updating best to tbl_themis622 from tbl_themis621 for reason: default choice
+For trial t : tbl_themis628 with best: tbl_themis622
+    Updating best to tbl_themis628 from tbl_themis622 for reason: direct control dependency difference
+placing 1 entries of tbl_themis628 (with gw cond-25) in stage 1(13) FormatType(022)
+stage 1, work: [ 2762299, 2778448, 2778553 ], partly placed 0, placed 10
     { id=0 ram=0 tcam=0 mram=0 eixb=0 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
@@ -825,68 +1022,95 @@ Trying to allocate imem for cond-19
   - skipping cond-20 due to in-sequence control dependence on cond-19
   - skipping cond-21 due to in-sequence control dependence on cond-19
   - skipping cond-22 due to in-sequence control dependence on cond-19
-  Group table: tbl_themis536
+  Group table: tbl_themis538
   Group table: cond-23
   Group table: cond-26
-    - skipping tbl_themis536 as its already done
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
     - skipping cond-23 as its already done
-    - removing count_cnp_0 from merge list because it depends on tbl_themis556
+    - removing count_cnp_0 from merge list because it depends on tbl_themis569
     - skipping gateway cond-26 until mergeable tables are available
-  Group table: tbl_themis543
-  Group table: tbl_themis555
-  Group table: tbl_themis556
+  - skipping egresshdr.udp.checksum_encode_update_condition_1 because it depends on tbl_themis569
+egresshdr.udp.checksum_encode_update_condition_1 is not a gateway! Aborting search for merge choices
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
   Group table: cond-24
-    - skipping tbl_themis543 as its already done
-tbl_themis555 is not a gateway! Aborting search for merge choices
-try_place_table(tbl_themis555, stage=1)
-  - dependency between tbl_themis543 and table advances stage
+    - skipping tbl_themis546 as its already done
+tbl_themis568 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis568, stage=1)
+  - dependency between tbl_themis546 and table advances stage
   Initial stage is 2, initial entries is 1
-Trying to allocate imem for tbl_themis555
-Trying to allocate imem for tbl_themis555
+Trying to allocate imem for tbl_themis568
+Trying to allocate imem for tbl_themis568
   Selected stage: 2    Furthest stage: 2
-  try_place_table returning 1 of tbl_themis555 in stage 2
-    Pl vector: [ tbl_themis555 ]
-  - skipping tbl_themis556 due to in-sequence control dependence on tbl_themis555
+  try_place_table returning 1 of tbl_themis568 in stage 2
+    Pl vector: [ tbl_themis568 ]
+  - skipping tbl_themis569 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis583 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis616 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis617 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis618 due to in-sequence control dependence on tbl_themis568
 try_place_table(cond-24, stage=1)
-  Merging with match table tbl_themis559
+  Merging with match table tbl_themis620
   Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
 Trying to allocate imem for tbl_themis269
 Trying to allocate imem for tbl_themis276
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis566
-Trying to allocate imem for tbl_themis559
+Trying to allocate imem for tbl_themis628
+Trying to allocate imem for tbl_themis620
+Trying to allocate imem for tbl_themis546
 Trying to allocate imem for tbl_themis269
 Trying to allocate imem for tbl_themis276
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis566
-Trying to allocate imem for tbl_themis559
+Trying to allocate imem for tbl_themis628
+Trying to allocate imem for tbl_themis620
   Selected stage: 1    Furthest stage: 2
-  try_place_table returning 1 of tbl_themis559 in stage 1
-  Merging with match table tbl_themis560
+  try_place_table returning 1 of tbl_themis620 in stage 1
+  Merging with match table tbl_themis621
   Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
 Trying to allocate imem for tbl_themis269
 Trying to allocate imem for tbl_themis276
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis566
-Trying to allocate imem for tbl_themis560
+Trying to allocate imem for tbl_themis628
+Trying to allocate imem for tbl_themis621
+Trying to allocate imem for tbl_themis546
 Trying to allocate imem for tbl_themis269
 Trying to allocate imem for tbl_themis276
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis566
-Trying to allocate imem for tbl_themis560
+Trying to allocate imem for tbl_themis628
+Trying to allocate imem for tbl_themis621
   Selected stage: 1    Furthest stage: 2
-  try_place_table returning 1 of tbl_themis560 in stage 1
-    Pl vector: [ tbl_themis559, tbl_themis560 ]
-found 4 tables that could be placed: [ cond-19, tbl_themis555, tbl_themis559, tbl_themis560 ]
+  try_place_table returning 1 of tbl_themis621 in stage 1
+  Merging with match table tbl_themis622
+  Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis269
+Trying to allocate imem for tbl_themis276
+Trying to allocate imem for tbl_themis628
+Trying to allocate imem for tbl_themis622
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis269
+Trying to allocate imem for tbl_themis276
+Trying to allocate imem for tbl_themis628
+Trying to allocate imem for tbl_themis622
+  Selected stage: 1    Furthest stage: 2
+  try_place_table returning 1 of tbl_themis622 in stage 1
+    Pl vector: [ tbl_themis620, tbl_themis621, tbl_themis622 ]
+found 5 tables that could be placed: [ cond-19, tbl_themis568, tbl_themis620, tbl_themis621, tbl_themis622 ]
 Initial best is first table seen: cond-19
-For trial t : tbl_themis555 with best: cond-19
-    Updating best to tbl_themis555 from cond-19 for reason: longer control-excluded dependence tail chain
-For trial t : tbl_themis559 with best: tbl_themis555
-    Updating best to tbl_themis559 from tbl_themis555 for reason: earlier stage calculated
-For trial t : tbl_themis560 with best: tbl_themis559
-    Updating best to tbl_themis560 from tbl_themis559 for reason: default choice
-placing 1 entries of tbl_themis560 (with gw cond-24) in stage 1(14) FormatType(022)
-stage 1, work: [ 2594165, 2607844, 2607949, 2608245 ], partly placed 0, placed 11
+For trial t : tbl_themis568 with best: cond-19
+    Updating best to tbl_themis568 from cond-19 for reason: longer downward prop control-included dependence tail chain
+For trial t : tbl_themis620 with best: tbl_themis568
+    Updating best to tbl_themis620 from tbl_themis568 for reason: earlier stage calculated
+For trial t : tbl_themis621 with best: tbl_themis620
+    Updating best to tbl_themis621 from tbl_themis620 for reason: default choice
+For trial t : tbl_themis622 with best: tbl_themis621
+    Updating best to tbl_themis622 from tbl_themis621 for reason: default choice
+placing 1 entries of tbl_themis622 (with gw cond-24) in stage 1(14) FormatType(022)
+stage 1, work: [ 2762299, 2778448, 2778553, 2779454 ], partly placed 0, placed 11
     { id=0 ram=0 tcam=0 mram=0 eixb=0 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
@@ -909,58 +1133,90 @@ Trying to allocate imem for cond-19
   - skipping cond-20 due to in-sequence control dependence on cond-19
   - skipping cond-21 due to in-sequence control dependence on cond-19
   - skipping cond-22 due to in-sequence control dependence on cond-19
-  Group table: tbl_themis536
+  Group table: tbl_themis538
   Group table: cond-23
   Group table: cond-26
-    - skipping tbl_themis536 as its already done
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
     - skipping cond-23 as its already done
-    - removing count_cnp_0 from merge list because it depends on tbl_themis556
+    - removing count_cnp_0 from merge list because it depends on tbl_themis569
     - skipping gateway cond-26 until mergeable tables are available
-  Group table: tbl_themis543
-  Group table: tbl_themis555
-  Group table: tbl_themis556
+  - skipping egresshdr.udp.checksum_encode_update_condition_1 because it depends on tbl_themis569
+egresshdr.udp.checksum_encode_update_condition_1 is not a gateway! Aborting search for merge choices
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
   Group table: cond-24
-    - skipping tbl_themis543 as its already done
-tbl_themis555 is not a gateway! Aborting search for merge choices
-try_place_table(tbl_themis555, stage=1)
-  - dependency between tbl_themis543 and table advances stage
+    - skipping tbl_themis546 as its already done
+tbl_themis568 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis568, stage=1)
+  - dependency between tbl_themis546 and table advances stage
   Initial stage is 2, initial entries is 1
-Trying to allocate imem for tbl_themis555
-Trying to allocate imem for tbl_themis555
+Trying to allocate imem for tbl_themis568
+Trying to allocate imem for tbl_themis568
   Selected stage: 2    Furthest stage: 2
-  try_place_table returning 1 of tbl_themis555 in stage 2
-    Pl vector: [ tbl_themis555 ]
-  - skipping tbl_themis556 due to in-sequence control dependence on tbl_themis555
+  try_place_table returning 1 of tbl_themis568 in stage 2
+    Pl vector: [ tbl_themis568 ]
+  - skipping tbl_themis569 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis583 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis616 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis617 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis618 due to in-sequence control dependence on tbl_themis568
     - skipping cond-24 as its already done
-  Group table: tbl_themis559
-  Group table: tbl_themis560
-tbl_themis559 is not a gateway! Aborting search for merge choices
-try_place_table(tbl_themis559, stage=1)
+  Group table: tbl_themis620
+  Group table: tbl_themis621
+  Group table: tbl_themis622
+tbl_themis620 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis620, stage=1)
   Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
 Trying to allocate imem for tbl_themis269
 Trying to allocate imem for tbl_themis276
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis566
-Trying to allocate imem for tbl_themis560
-Trying to allocate imem for tbl_themis559
+Trying to allocate imem for tbl_themis628
+Trying to allocate imem for tbl_themis622
+Trying to allocate imem for tbl_themis620
+Trying to allocate imem for tbl_themis546
 Trying to allocate imem for tbl_themis269
 Trying to allocate imem for tbl_themis276
-Trying to allocate imem for tbl_themis543
-Trying to allocate imem for tbl_themis566
-Trying to allocate imem for tbl_themis560
-Trying to allocate imem for tbl_themis559
+Trying to allocate imem for tbl_themis628
+Trying to allocate imem for tbl_themis622
+Trying to allocate imem for tbl_themis620
   Selected stage: 1    Furthest stage: 2
-  try_place_table returning 1 of tbl_themis559 in stage 1
-    Pl vector: [ tbl_themis559 ]
-    - skipping tbl_themis560 as its already done
-found 3 tables that could be placed: [ cond-19, tbl_themis555, tbl_themis559 ]
+  try_place_table returning 1 of tbl_themis620 in stage 1
+    Pl vector: [ tbl_themis620 ]
+tbl_themis621 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis621, stage=1)
+  Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis269
+Trying to allocate imem for tbl_themis276
+Trying to allocate imem for tbl_themis628
+Trying to allocate imem for tbl_themis622
+Trying to allocate imem for tbl_themis621
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis269
+Trying to allocate imem for tbl_themis276
+Trying to allocate imem for tbl_themis628
+Trying to allocate imem for tbl_themis622
+Trying to allocate imem for tbl_themis621
+  Selected stage: 1    Furthest stage: 2
+  try_place_table returning 1 of tbl_themis621 in stage 1
+    Pl vector: [ tbl_themis621 ]
+    - skipping tbl_themis622 as its already done
+found 4 tables that could be placed: [ cond-19, tbl_themis568, tbl_themis620, tbl_themis621 ]
 Initial best is first table seen: cond-19
-For trial t : tbl_themis555 with best: cond-19
-    Updating best to tbl_themis555 from cond-19 for reason: longer control-excluded dependence tail chain
-For trial t : tbl_themis559 with best: tbl_themis555
-    Updating best to tbl_themis559 from tbl_themis555 for reason: earlier stage calculated
-placing 1 entries of tbl_themis559 in stage 1(15) FormatType(022)
-stage 1, work: [ 2594165, 2607844, 2607949 ], partly placed 0, placed 12
+For trial t : tbl_themis568 with best: cond-19
+    Updating best to tbl_themis568 from cond-19 for reason: longer downward prop control-included dependence tail chain
+For trial t : tbl_themis620 with best: tbl_themis568
+    Updating best to tbl_themis620 from tbl_themis568 for reason: earlier stage calculated
+For trial t : tbl_themis621 with best: tbl_themis620
+    Updating best to tbl_themis621 from tbl_themis620 for reason: default choice
+placing 1 entries of tbl_themis621 in stage 1(15) FormatType(022)
+stage 1, work: [ 2762299, 2778448, 2778553, 2779454 ], partly placed 0, placed 12
     { id=0 ram=0 tcam=0 mram=0 eixb=0 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
@@ -983,35 +1239,71 @@ Trying to allocate imem for cond-19
   - skipping cond-20 due to in-sequence control dependence on cond-19
   - skipping cond-21 due to in-sequence control dependence on cond-19
   - skipping cond-22 due to in-sequence control dependence on cond-19
-  Group table: tbl_themis536
+  Group table: tbl_themis538
   Group table: cond-23
   Group table: cond-26
-    - skipping tbl_themis536 as its already done
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
     - skipping cond-23 as its already done
-    - removing count_cnp_0 from merge list because it depends on tbl_themis556
+    - removing count_cnp_0 from merge list because it depends on tbl_themis569
     - skipping gateway cond-26 until mergeable tables are available
-  Group table: tbl_themis543
-  Group table: tbl_themis555
-  Group table: tbl_themis556
+  - skipping egresshdr.udp.checksum_encode_update_condition_1 because it depends on tbl_themis569
+egresshdr.udp.checksum_encode_update_condition_1 is not a gateway! Aborting search for merge choices
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
   Group table: cond-24
-    - skipping tbl_themis543 as its already done
-tbl_themis555 is not a gateway! Aborting search for merge choices
-try_place_table(tbl_themis555, stage=1)
-  - dependency between tbl_themis543 and table advances stage
+    - skipping tbl_themis546 as its already done
+tbl_themis568 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis568, stage=1)
+  - dependency between tbl_themis546 and table advances stage
   Initial stage is 2, initial entries is 1
-Trying to allocate imem for tbl_themis555
-Trying to allocate imem for tbl_themis555
+Trying to allocate imem for tbl_themis568
+Trying to allocate imem for tbl_themis568
   Selected stage: 2    Furthest stage: 2
-  try_place_table returning 1 of tbl_themis555 in stage 2
-    Pl vector: [ tbl_themis555 ]
-  - skipping tbl_themis556 due to in-sequence control dependence on tbl_themis555
+  try_place_table returning 1 of tbl_themis568 in stage 2
+    Pl vector: [ tbl_themis568 ]
+  - skipping tbl_themis569 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis583 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis616 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis617 due to in-sequence control dependence on tbl_themis568
+  - skipping tbl_themis618 due to in-sequence control dependence on tbl_themis568
     - skipping cond-24 as its already done
-found 2 tables that could be placed: [ cond-19, tbl_themis555 ]
+  Group table: tbl_themis620
+  Group table: tbl_themis621
+  Group table: tbl_themis622
+tbl_themis620 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis620, stage=1)
+  Initial stage is 1, initial entries is 1
+Trying to allocate imem for tbl_themis546
+Trying to allocate imem for tbl_themis269
+Trying to allocate imem for tbl_themis276
+Trying to allocate imem for tbl_themis628
+Trying to allocate imem for tbl_themis622
+Trying to allocate imem for tbl_themis621
+Trying to allocate imem for tbl_themis620
+    table tbl_themis620 could not fit in stage 1 with 1 entries along with 1 entries of Counter Egress.egress_mirror_bth_counter
+    too many stats tables
+    Min use of memory allocation did not fit
+Trying to allocate imem for tbl_themis620
+Trying to allocate imem for tbl_themis620
+  Selected stage: 2    Furthest stage: 2
+  try_place_table returning 1 of tbl_themis620 in stage 2
+    Pl vector: [ tbl_themis620 ]
+    - skipping tbl_themis621 as its already done
+    - skipping tbl_themis622 as its already done
+found 3 tables that could be placed: [ cond-19, tbl_themis568, tbl_themis620 ]
 Initial best is first table seen: cond-19
-For trial t : tbl_themis555 with best: cond-19
-    Updating best to tbl_themis555 from cond-19 for reason: longer control-excluded dependence tail chain
-placing 1 entries of tbl_themis555 in stage 2(20) FormatType(02)
-stage 2, work: [ 2594165, 2607844, 2607949 ], partly placed 0, placed 13
+For trial t : tbl_themis568 with best: cond-19
+    Updating best to tbl_themis568 from cond-19 for reason: longer downward prop control-included dependence tail chain
+For trial t : tbl_themis620 with best: tbl_themis568
+    Keeping best tbl_themis568 for reason: longer downward prop control-included dependence tail chain
+placing 1 entries of tbl_themis568 in stage 2(20) FormatType(02)
+stage 2, work: [ 2762299, 2778448, 2778553, 2779454 ], partly placed 0, placed 13
     { id=0 ram=0 tcam=0 mram=0 eixb=0 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
@@ -1025,9 +1317,9 @@ stage 2, work: [ 2594165, 2607844, 2607949 ], partly placed 0, placed 13
     - skipping cond-15 as its already done
 try_place_table(cond-19, stage=2)
   Initial stage is 2, initial entries is 0
-Trying to allocate imem for tbl_themis555
+Trying to allocate imem for tbl_themis568
 Trying to allocate imem for cond-19
-Trying to allocate imem for tbl_themis555
+Trying to allocate imem for tbl_themis568
 Trying to allocate imem for cond-19
   Selected stage: 2    Furthest stage: 3
   try_place_table returning 0 of cond-19 in stage 2
@@ -1035,35 +1327,128 @@ Trying to allocate imem for cond-19
   - skipping cond-20 due to in-sequence control dependence on cond-19
   - skipping cond-21 due to in-sequence control dependence on cond-19
   - skipping cond-22 due to in-sequence control dependence on cond-19
-  Group table: tbl_themis536
+  Group table: tbl_themis538
   Group table: cond-23
   Group table: cond-26
-    - skipping tbl_themis536 as its already done
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
     - skipping cond-23 as its already done
-    - removing count_cnp_0 from merge list because it depends on tbl_themis556
+    - removing count_cnp_0 from merge list because it depends on tbl_themis569
     - skipping gateway cond-26 until mergeable tables are available
-  Group table: tbl_themis543
-  Group table: tbl_themis555
-  Group table: tbl_themis556
+  - skipping egresshdr.udp.checksum_encode_update_condition_1 because it depends on tbl_themis569
+egresshdr.udp.checksum_encode_update_condition_1 is not a gateway! Aborting search for merge choices
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
   Group table: cond-24
-    - skipping tbl_themis543 as its already done
-    - skipping tbl_themis555 as its already done
-tbl_themis556 is not a gateway! Aborting search for merge choices
-try_place_table(tbl_themis556, stage=2)
-  - dependency between tbl_themis555 and table advances stage
+    - skipping tbl_themis546 as its already done
+    - skipping tbl_themis568 as its already done
+tbl_themis569 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis569, stage=2)
+  - dependency between tbl_themis568 and table advances stage
   Initial stage is 3, initial entries is 1
-Trying to allocate imem for tbl_themis556
-Trying to allocate imem for tbl_themis556
+Trying to allocate imem for tbl_themis569
+Trying to allocate imem for tbl_themis569
   Selected stage: 3    Furthest stage: 3
-  try_place_table returning 1 of tbl_themis556 in stage 3
-    Pl vector: [ tbl_themis556 ]
+  try_place_table returning 1 of tbl_themis569 in stage 3
+    Pl vector: [ tbl_themis569 ]
+  - skipping tbl_themis583 due to in-sequence control dependence on tbl_themis569
+  - skipping tbl_themis616 due to in-sequence control dependence on tbl_themis569
+  - skipping tbl_themis617 due to in-sequence control dependence on tbl_themis569
+  - skipping tbl_themis618 due to in-sequence control dependence on tbl_themis569
     - skipping cond-24 as its already done
-found 2 tables that could be placed: [ cond-19, tbl_themis556 ]
+  Group table: tbl_themis620
+  Group table: tbl_themis621
+  Group table: tbl_themis622
+tbl_themis620 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis620, stage=2)
+  Initial stage is 2, initial entries is 1
+Trying to allocate imem for tbl_themis568
+Trying to allocate imem for tbl_themis620
+Trying to allocate imem for tbl_themis568
+Trying to allocate imem for tbl_themis620
+  Selected stage: 2    Furthest stage: 3
+  try_place_table returning 1 of tbl_themis620 in stage 2
+    Pl vector: [ tbl_themis620 ]
+    - skipping tbl_themis621 as its already done
+    - skipping tbl_themis622 as its already done
+found 3 tables that could be placed: [ cond-19, tbl_themis569, tbl_themis620 ]
 Initial best is first table seen: cond-19
-For trial t : tbl_themis556 with best: cond-19
+For trial t : tbl_themis569 with best: cond-19
     Keeping best cond-19 for reason: earlier stage calculated
-placing 0 entries of cond-19 in stage 2(21) FormatType(02)
-stage 2, work: [ 2594165, 2607844, 2607949, 2788495 ], partly placed 0, placed 14
+For trial t : tbl_themis620 with best: cond-19
+    Updating best to tbl_themis620 from cond-19 for reason: longer downward prop control-included dependence tail chain
+placing 1 entries of tbl_themis620 in stage 2(21) FormatType(022)
+stage 2, work: [ 2762299, 2778448, 2778553 ], partly placed 0, placed 14
+    { id=0 ram=0 tcam=0 mram=0 eixb=0 tixb=0 malu=0 salu=0 }
+  Group table: tbl_themis250
+  Group table: cond-14
+  Group table: cond-15
+  Group table: cond-19
+  Group table: cond-20
+  Group table: cond-21
+  Group table: cond-22
+    - skipping tbl_themis250 as its already done
+    - skipping cond-14 as its already done
+    - skipping cond-15 as its already done
+try_place_table(cond-19, stage=2)
+  Initial stage is 2, initial entries is 0
+Trying to allocate imem for tbl_themis568
+Trying to allocate imem for tbl_themis620
+Trying to allocate imem for cond-19
+Trying to allocate imem for tbl_themis568
+Trying to allocate imem for tbl_themis620
+Trying to allocate imem for cond-19
+  Selected stage: 2    Furthest stage: 3
+  try_place_table returning 0 of cond-19 in stage 2
+    Pl vector: [ cond-19 ]
+  - skipping cond-20 due to in-sequence control dependence on cond-19
+  - skipping cond-21 due to in-sequence control dependence on cond-19
+  - skipping cond-22 due to in-sequence control dependence on cond-19
+  Group table: tbl_themis538
+  Group table: cond-23
+  Group table: cond-26
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
+    - skipping cond-23 as its already done
+    - removing count_cnp_0 from merge list because it depends on tbl_themis569
+    - skipping gateway cond-26 until mergeable tables are available
+  - skipping egresshdr.udp.checksum_encode_update_condition_1 because it depends on tbl_themis569
+egresshdr.udp.checksum_encode_update_condition_1 is not a gateway! Aborting search for merge choices
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
+  Group table: cond-24
+    - skipping tbl_themis546 as its already done
+    - skipping tbl_themis568 as its already done
+tbl_themis569 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis569, stage=2)
+  - dependency between tbl_themis568 and table advances stage
+  Initial stage is 3, initial entries is 1
+Trying to allocate imem for tbl_themis569
+Trying to allocate imem for tbl_themis569
+  Selected stage: 3    Furthest stage: 3
+  try_place_table returning 1 of tbl_themis569 in stage 3
+    Pl vector: [ tbl_themis569 ]
+  - skipping tbl_themis583 due to in-sequence control dependence on tbl_themis569
+  - skipping tbl_themis616 due to in-sequence control dependence on tbl_themis569
+  - skipping tbl_themis617 due to in-sequence control dependence on tbl_themis569
+  - skipping tbl_themis618 due to in-sequence control dependence on tbl_themis569
+    - skipping cond-24 as its already done
+found 2 tables that could be placed: [ cond-19, tbl_themis569 ]
+Initial best is first table seen: cond-19
+For trial t : tbl_themis569 with best: cond-19
+    Keeping best cond-19 for reason: earlier stage calculated
+placing 0 entries of cond-19 in stage 2(22) FormatType(02)
+stage 2, work: [ 2762299, 2778448, 2778553, 2988892 ], partly placed 0, placed 15
     { id=0 ram=0 tcam=0 mram=0 eixb=5 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
@@ -1081,48 +1466,61 @@ stage 2, work: [ 2594165, 2607844, 2607949, 2788495 ], partly placed 0, placed 1
     - skipping gateway cond-20 until mergeable tables are available
   - skipping cond-21 due to in-sequence control dependence on cond-20
   - skipping cond-22 due to in-sequence control dependence on cond-20
-  Group table: tbl_themis536
+  Group table: tbl_themis538
   Group table: cond-23
   Group table: cond-26
-    - skipping tbl_themis536 as its already done
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
     - skipping cond-23 as its already done
-    - removing count_cnp_0 from merge list because it depends on tbl_themis556
+    - removing count_cnp_0 from merge list because it depends on tbl_themis569
     - skipping gateway cond-26 until mergeable tables are available
-  Group table: tbl_themis543
-  Group table: tbl_themis555
-  Group table: tbl_themis556
+  - skipping egresshdr.udp.checksum_encode_update_condition_1 because it depends on tbl_themis569
+egresshdr.udp.checksum_encode_update_condition_1 is not a gateway! Aborting search for merge choices
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
   Group table: cond-24
-    - skipping tbl_themis543 as its already done
-    - skipping tbl_themis555 as its already done
-tbl_themis556 is not a gateway! Aborting search for merge choices
-try_place_table(tbl_themis556, stage=2)
-  - dependency between tbl_themis555 and table advances stage
+    - skipping tbl_themis546 as its already done
+    - skipping tbl_themis568 as its already done
+tbl_themis569 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis569, stage=2)
+  - dependency between tbl_themis568 and table advances stage
   Initial stage is 3, initial entries is 1
-Trying to allocate imem for tbl_themis556
-Trying to allocate imem for tbl_themis556
+Trying to allocate imem for tbl_themis569
+Trying to allocate imem for tbl_themis569
   Selected stage: 3    Furthest stage: 3
-  try_place_table returning 1 of tbl_themis556 in stage 3
-    Pl vector: [ tbl_themis556 ]
+  try_place_table returning 1 of tbl_themis569 in stage 3
+    Pl vector: [ tbl_themis569 ]
+  - skipping tbl_themis583 due to in-sequence control dependence on tbl_themis569
+  - skipping tbl_themis616 due to in-sequence control dependence on tbl_themis569
+  - skipping tbl_themis617 due to in-sequence control dependence on tbl_themis569
+  - skipping tbl_themis618 due to in-sequence control dependence on tbl_themis569
     - skipping cond-24 as its already done
   Group table: cond-19$split
 try_place_table(cond-19$split, stage=2)
   Merging with match table tbl_start_one_recir
   Initial stage is 2, initial entries is 1
-Trying to allocate imem for tbl_themis555
+Trying to allocate imem for tbl_themis568
+Trying to allocate imem for tbl_themis620
 Trying to allocate imem for cond-19
 Trying to allocate imem for tbl_start_one_recir
-Trying to allocate imem for tbl_themis555
+Trying to allocate imem for tbl_themis568
+Trying to allocate imem for tbl_themis620
 Trying to allocate imem for cond-19
 Trying to allocate imem for tbl_start_one_recir
   Selected stage: 2    Furthest stage: 3
   try_place_table returning 1 of tbl_start_one_recir in stage 2
     Pl vector: [ tbl_start_one_recir ]
-found 2 tables that could be placed: [ tbl_themis556, tbl_start_one_recir ]
-Initial best is first table seen: tbl_themis556
-For trial t : tbl_start_one_recir with best: tbl_themis556
-    Updating best to tbl_start_one_recir from tbl_themis556 for reason: earlier stage calculated
-placing 1 entries of tbl_start_one_recir (with gw cond-19$split) in stage 2(22) FormatType(022)
-stage 2, work: [ 2594165, 2607844, 2607949 ], partly placed 0, placed 15
+found 2 tables that could be placed: [ tbl_themis569, tbl_start_one_recir ]
+Initial best is first table seen: tbl_themis569
+For trial t : tbl_start_one_recir with best: tbl_themis569
+    Updating best to tbl_start_one_recir from tbl_themis569 for reason: earlier stage calculated
+placing 1 entries of tbl_start_one_recir (with gw cond-19$split) in stage 2(23) FormatType(022)
+stage 2, work: [ 2762299, 2778448, 2778553 ], partly placed 0, placed 16
     { id=0 ram=0 tcam=0 mram=0 eixb=5 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
@@ -1146,35 +1544,46 @@ Trying to allocate imem for l3_table_0
     Pl vector: [ l3_table_0 ]
   - skipping cond-21 due to in-sequence control dependence on cond-20
   - skipping cond-22 due to in-sequence control dependence on cond-20
-  Group table: tbl_themis536
+  Group table: tbl_themis538
   Group table: cond-23
   Group table: cond-26
-    - skipping tbl_themis536 as its already done
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
     - skipping cond-23 as its already done
-    - removing count_cnp_0 from merge list because it depends on tbl_themis556
+    - removing count_cnp_0 from merge list because it depends on tbl_themis569
     - skipping gateway cond-26 until mergeable tables are available
-  Group table: tbl_themis543
-  Group table: tbl_themis555
-  Group table: tbl_themis556
+  - skipping egresshdr.udp.checksum_encode_update_condition_1 because it depends on tbl_themis569
+egresshdr.udp.checksum_encode_update_condition_1 is not a gateway! Aborting search for merge choices
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
   Group table: cond-24
-    - skipping tbl_themis543 as its already done
-    - skipping tbl_themis555 as its already done
-tbl_themis556 is not a gateway! Aborting search for merge choices
-try_place_table(tbl_themis556, stage=2)
-  - dependency between tbl_themis555 and table advances stage
+    - skipping tbl_themis546 as its already done
+    - skipping tbl_themis568 as its already done
+tbl_themis569 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis569, stage=2)
+  - dependency between tbl_themis568 and table advances stage
   Initial stage is 3, initial entries is 1
-Trying to allocate imem for tbl_themis556
-Trying to allocate imem for tbl_themis556
+Trying to allocate imem for tbl_themis569
+Trying to allocate imem for tbl_themis569
   Selected stage: 3    Furthest stage: 3
-  try_place_table returning 1 of tbl_themis556 in stage 3
-    Pl vector: [ tbl_themis556 ]
+  try_place_table returning 1 of tbl_themis569 in stage 3
+    Pl vector: [ tbl_themis569 ]
+  - skipping tbl_themis583 due to in-sequence control dependence on tbl_themis569
+  - skipping tbl_themis616 due to in-sequence control dependence on tbl_themis569
+  - skipping tbl_themis617 due to in-sequence control dependence on tbl_themis569
+  - skipping tbl_themis618 due to in-sequence control dependence on tbl_themis569
     - skipping cond-24 as its already done
-found 2 tables that could be placed: [ l3_table_0, tbl_themis556 ]
+found 2 tables that could be placed: [ l3_table_0, tbl_themis569 ]
 Initial best is first table seen: l3_table_0
-For trial t : tbl_themis556 with best: l3_table_0
-    Updating best to tbl_themis556 from l3_table_0 for reason: longer control-excluded dependence tail chain
-placing 1 entries of tbl_themis556 in stage 3(30) FormatType(02)
-stage 3, work: [ 2594165, 2607844 ], partly placed 0, placed 16
+For trial t : tbl_themis569 with best: l3_table_0
+    Updating best to tbl_themis569 from l3_table_0 for reason: longer downward prop control-included dependence tail chain
+placing 1 entries of tbl_themis569 in stage 3(30) FormatType(02)
+stage 3, work: [ 2762299, 2778448, 2778553 ], partly placed 0, placed 17
     { id=0 ram=0 tcam=0 mram=0 eixb=0 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
@@ -1190,35 +1599,73 @@ stage 3, work: [ 2594165, 2607844 ], partly placed 0, placed 16
 try_place_table(cond-20, stage=3)
   Merging with match table l3_table_0
   Initial stage is 3, initial entries is 32
-Trying to allocate imem for tbl_themis556
+Trying to allocate imem for tbl_themis569
 Trying to allocate imem for l3_table_0
-Trying to allocate imem for tbl_themis556
+Trying to allocate imem for tbl_themis569
 Trying to allocate imem for l3_table_0
   Selected stage: 3    Furthest stage: 4
   try_place_table returning 4096 of l3_table_0 in stage 3
     Pl vector: [ l3_table_0 ]
   - skipping cond-21 due to in-sequence control dependence on cond-20
   - skipping cond-22 due to in-sequence control dependence on cond-20
-  Group table: tbl_themis536
+  Group table: tbl_themis538
   Group table: cond-23
   Group table: cond-26
-    - skipping tbl_themis536 as its already done
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
     - skipping cond-23 as its already done
 try_place_table(cond-26, stage=3)
   Merging with match table count_cnp_0
-  - dependency between tbl_themis556 and table advances stage
+  - dependency between tbl_themis569 and table advances stage
   Initial stage is 4, initial entries is 1
 Trying to allocate imem for count_cnp_0
 Trying to allocate imem for count_cnp_0
   Selected stage: 4    Furthest stage: 4
   try_place_table returning 1024 of count_cnp_0 in stage 4
     Pl vector: [ count_cnp_0 ]
-found 2 tables that could be placed: [ l3_table_0, count_cnp_0 ]
+egresshdr.udp.checksum_encode_update_condition_1 is not a gateway! Aborting search for merge choices
+try_place_table(egresshdr.udp.checksum_encode_update_condition_1, stage=3)
+  - dependency between tbl_themis569 and table advances stage
+  Initial stage is 4, initial entries is 4
+Trying to allocate imem for egresshdr.udp.checksum_encode_update_condition_1
+Trying to allocate imem for egresshdr.udp.checksum_encode_update_condition_1
+  Selected stage: 4    Furthest stage: 4
+  try_place_table returning 4 of egresshdr.udp.checksum_encode_update_condition_1 in stage 4
+    Pl vector: [ egresshdr.udp.checksum_encode_update_condition_1 ]
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
+  Group table: cond-24
+    - skipping tbl_themis546 as its already done
+    - skipping tbl_themis568 as its already done
+    - skipping tbl_themis569 as its already done
+tbl_themis583 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis583, stage=3)
+  - dependency between tbl_themis569 and table advances stage
+  Initial stage is 4, initial entries is 1
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for tbl_themis583
+  Selected stage: 4    Furthest stage: 4
+  try_place_table returning 1 of tbl_themis583 in stage 4
+    Pl vector: [ tbl_themis583 ]
+  - skipping tbl_themis616 due to in-sequence control dependence on tbl_themis583
+  - skipping tbl_themis617 due to in-sequence control dependence on tbl_themis583
+  - skipping tbl_themis618 due to in-sequence control dependence on tbl_themis583
+    - skipping cond-24 as its already done
+found 4 tables that could be placed: [ l3_table_0, count_cnp_0, egresshdr.udp.checksum_encode_update_condition_1, tbl_themis583 ]
 Initial best is first table seen: l3_table_0
 For trial t : count_cnp_0 with best: l3_table_0
     Keeping best l3_table_0 for reason: earlier stage calculated
+For trial t : egresshdr.udp.checksum_encode_update_condition_1 with best: l3_table_0
+    Keeping best l3_table_0 for reason: earlier stage calculated
+For trial t : tbl_themis583 with best: l3_table_0
+    Keeping best l3_table_0 for reason: earlier stage calculated
 placing 4096 entries of l3_table_0 (with gw cond-20) in stage 3(31) FormatType(02)
-stage 3, work: [ 2594165, 2607844 ], partly placed 0, placed 17
+stage 3, work: [ 2762299, 2778448, 2778553 ], partly placed 0, placed 18
     { id=1 ram=4 tcam=0 mram=0 eixb=4 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
@@ -1249,29 +1696,67 @@ Trying to allocate imem for tbl_themis340
   Selected stage: 4    Furthest stage: 4
   try_place_table returning 1 of tbl_themis340 in stage 4
     Pl vector: [ tbl_themis340 ]
-  Group table: tbl_themis536
+  Group table: tbl_themis538
   Group table: cond-23
   Group table: cond-26
-    - skipping tbl_themis536 as its already done
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
     - skipping cond-23 as its already done
 try_place_table(cond-26, stage=3)
   Merging with match table count_cnp_0
-  - dependency between tbl_themis556 and table advances stage
+  - dependency between tbl_themis569 and table advances stage
   Initial stage is 4, initial entries is 1
 Trying to allocate imem for count_cnp_0
 Trying to allocate imem for count_cnp_0
   Selected stage: 4    Furthest stage: 4
   try_place_table returning 1024 of count_cnp_0 in stage 4
     Pl vector: [ count_cnp_0 ]
-found 3 tables that could be placed: [ cond-21, tbl_themis340, count_cnp_0 ]
+egresshdr.udp.checksum_encode_update_condition_1 is not a gateway! Aborting search for merge choices
+try_place_table(egresshdr.udp.checksum_encode_update_condition_1, stage=3)
+  - dependency between tbl_themis569 and table advances stage
+  Initial stage is 4, initial entries is 4
+Trying to allocate imem for egresshdr.udp.checksum_encode_update_condition_1
+Trying to allocate imem for egresshdr.udp.checksum_encode_update_condition_1
+  Selected stage: 4    Furthest stage: 4
+  try_place_table returning 4 of egresshdr.udp.checksum_encode_update_condition_1 in stage 4
+    Pl vector: [ egresshdr.udp.checksum_encode_update_condition_1 ]
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
+  Group table: cond-24
+    - skipping tbl_themis546 as its already done
+    - skipping tbl_themis568 as its already done
+    - skipping tbl_themis569 as its already done
+tbl_themis583 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis583, stage=3)
+  - dependency between tbl_themis569 and table advances stage
+  Initial stage is 4, initial entries is 1
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for tbl_themis583
+  Selected stage: 4    Furthest stage: 4
+  try_place_table returning 1 of tbl_themis583 in stage 4
+    Pl vector: [ tbl_themis583 ]
+  - skipping tbl_themis616 due to in-sequence control dependence on tbl_themis583
+  - skipping tbl_themis617 due to in-sequence control dependence on tbl_themis583
+  - skipping tbl_themis618 due to in-sequence control dependence on tbl_themis583
+    - skipping cond-24 as its already done
+found 5 tables that could be placed: [ cond-21, tbl_themis340, count_cnp_0, egresshdr.udp.checksum_encode_update_condition_1, tbl_themis583 ]
 Initial best is first table seen: cond-21
 For trial t : tbl_themis340 with best: cond-21
     Updating best to tbl_themis340 from cond-21 for reason: direct control dependency difference
 For trial t : count_cnp_0 with best: tbl_themis340
     Updating best to count_cnp_0 from tbl_themis340 for reason: default choice
-placing 1024 entries of count_cnp_0 (with gw cond-26) in stage 4(40) FormatType(022)
-stage 4, work: [ 2594165 ], partly placed 0, placed 18
-    { id=1 ram=2 tcam=0 mram=1 eixb=1 tixb=0 malu=0 salu=0 }
+For trial t : egresshdr.udp.checksum_encode_update_condition_1 with best: count_cnp_0
+    Updating best to egresshdr.udp.checksum_encode_update_condition_1 from count_cnp_0 for reason: default choice
+For trial t : tbl_themis583 with best: egresshdr.udp.checksum_encode_update_condition_1
+    Updating best to tbl_themis583 from egresshdr.udp.checksum_encode_update_condition_1 for reason: longer downward prop control-included dependence tail chain
+placing 1 entries of tbl_themis583 in stage 4(40) FormatType(02)
+stage 4, work: [ 2762299, 2778448, 2778553 ], partly placed 0, placed 19
+    { id=0 ram=0 tcam=0 mram=0 eixb=0 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
   Group table: cond-15
@@ -1286,8 +1771,195 @@ stage 4, work: [ 2594165 ], partly placed 0, placed 18
     - skipping cond-20 as its already done
 try_place_table(cond-21, stage=4)
   Initial stage is 4, initial entries is 0
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for cond-21
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for cond-21
+  Selected stage: 4    Furthest stage: 5
+  try_place_table returning 0 of cond-21 in stage 4
+    Pl vector: [ cond-21 ]
+try_place_table(cond-22, stage=4)
+  Merging with match table tbl_themis340
+  Initial stage is 4, initial entries is 1
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for tbl_themis340
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for tbl_themis340
+  Selected stage: 4    Furthest stage: 5
+  try_place_table returning 1 of tbl_themis340 in stage 4
+    Pl vector: [ tbl_themis340 ]
+  Group table: tbl_themis538
+  Group table: cond-23
+  Group table: cond-26
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
+    - skipping cond-23 as its already done
+try_place_table(cond-26, stage=4)
+  Merging with match table count_cnp_0
+  Initial stage is 4, initial entries is 1
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for count_cnp_0
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for count_cnp_0
+  Selected stage: 4    Furthest stage: 5
+  try_place_table returning 1024 of count_cnp_0 in stage 4
+    Pl vector: [ count_cnp_0 ]
+egresshdr.udp.checksum_encode_update_condition_1 is not a gateway! Aborting search for merge choices
+try_place_table(egresshdr.udp.checksum_encode_update_condition_1, stage=4)
+  Initial stage is 4, initial entries is 4
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for egresshdr.udp.checksum_encode_update_condition_1
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for egresshdr.udp.checksum_encode_update_condition_1
+  Selected stage: 4    Furthest stage: 5
+  try_place_table returning 4 of egresshdr.udp.checksum_encode_update_condition_1 in stage 4
+    Pl vector: [ egresshdr.udp.checksum_encode_update_condition_1 ]
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
+  Group table: cond-24
+    - skipping tbl_themis546 as its already done
+    - skipping tbl_themis568 as its already done
+    - skipping tbl_themis569 as its already done
+    - skipping tbl_themis583 as its already done
+tbl_themis616 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis616, stage=4)
+  - dependency between tbl_themis583 and table advances stage
+  Initial stage is 5, initial entries is 1
+Trying to allocate imem for tbl_themis616
+Trying to allocate imem for tbl_themis616
+  Selected stage: 5    Furthest stage: 5
+  try_place_table returning 1 of tbl_themis616 in stage 5
+    Pl vector: [ tbl_themis616 ]
+  - skipping tbl_themis617 due to in-sequence control dependence on tbl_themis616
+  - skipping tbl_themis618 due to in-sequence control dependence on tbl_themis616
+    - skipping cond-24 as its already done
+found 5 tables that could be placed: [ cond-21, tbl_themis340, count_cnp_0, egresshdr.udp.checksum_encode_update_condition_1, tbl_themis616 ]
+Initial best is first table seen: cond-21
+For trial t : tbl_themis340 with best: cond-21
+    Updating best to tbl_themis340 from cond-21 for reason: direct control dependency difference
+For trial t : count_cnp_0 with best: tbl_themis340
+    Updating best to count_cnp_0 from tbl_themis340 for reason: default choice
+For trial t : egresshdr.udp.checksum_encode_update_condition_1 with best: count_cnp_0
+    Updating best to egresshdr.udp.checksum_encode_update_condition_1 from count_cnp_0 for reason: default choice
+For trial t : tbl_themis616 with best: egresshdr.udp.checksum_encode_update_condition_1
+    Keeping best egresshdr.udp.checksum_encode_update_condition_1 for reason: earlier stage calculated
+placing 4 entries of egresshdr.udp.checksum_encode_update_condition_1 in stage 4(41) FormatType(02)
+stage 4, work: [ 2762299, 2778448, 2778553 ], partly placed 0, placed 20
+    { id=1 ram=0 tcam=0 mram=0 eixb=2 tixb=0 malu=0 salu=0 }
+  Group table: tbl_themis250
+  Group table: cond-14
+  Group table: cond-15
+  Group table: cond-19
+  Group table: cond-20
+  Group table: cond-21
+  Group table: cond-22
+    - skipping tbl_themis250 as its already done
+    - skipping cond-14 as its already done
+    - skipping cond-15 as its already done
+    - skipping cond-19 as its already done
+    - skipping cond-20 as its already done
+try_place_table(cond-21, stage=4)
+  Initial stage is 4, initial entries is 0
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for egresshdr.udp.checksum_encode_update_condition_1
+Trying to allocate imem for cond-21
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for egresshdr.udp.checksum_encode_update_condition_1
+Trying to allocate imem for cond-21
+  Selected stage: 4    Furthest stage: 5
+  try_place_table returning 0 of cond-21 in stage 4
+    Pl vector: [ cond-21 ]
+try_place_table(cond-22, stage=4)
+  Merging with match table tbl_themis340
+  Initial stage is 4, initial entries is 1
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for egresshdr.udp.checksum_encode_update_condition_1
+Trying to allocate imem for tbl_themis340
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for egresshdr.udp.checksum_encode_update_condition_1
+Trying to allocate imem for tbl_themis340
+  Selected stage: 4    Furthest stage: 5
+  try_place_table returning 1 of tbl_themis340 in stage 4
+    Pl vector: [ tbl_themis340 ]
+  Group table: tbl_themis538
+  Group table: cond-23
+  Group table: cond-26
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
+    - skipping cond-23 as its already done
+try_place_table(cond-26, stage=4)
+  Merging with match table count_cnp_0
+  Initial stage is 4, initial entries is 1
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for egresshdr.udp.checksum_encode_update_condition_1
+Trying to allocate imem for count_cnp_0
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for egresshdr.udp.checksum_encode_update_condition_1
+Trying to allocate imem for count_cnp_0
+  Selected stage: 4    Furthest stage: 5
+  try_place_table returning 1024 of count_cnp_0 in stage 4
+    Pl vector: [ count_cnp_0 ]
+    - skipping egresshdr.udp.checksum_encode_update_condition_1 as its already done
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
+  Group table: cond-24
+    - skipping tbl_themis546 as its already done
+    - skipping tbl_themis568 as its already done
+    - skipping tbl_themis569 as its already done
+    - skipping tbl_themis583 as its already done
+tbl_themis616 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis616, stage=4)
+  - dependency between tbl_themis583 and table advances stage
+  Initial stage is 5, initial entries is 1
+Trying to allocate imem for tbl_themis616
+Trying to allocate imem for tbl_themis616
+  Selected stage: 5    Furthest stage: 5
+  try_place_table returning 1 of tbl_themis616 in stage 5
+    Pl vector: [ tbl_themis616 ]
+  - skipping tbl_themis617 due to in-sequence control dependence on tbl_themis616
+  - skipping tbl_themis618 due to in-sequence control dependence on tbl_themis616
+    - skipping cond-24 as its already done
+found 4 tables that could be placed: [ cond-21, tbl_themis340, count_cnp_0, tbl_themis616 ]
+Initial best is first table seen: cond-21
+For trial t : tbl_themis340 with best: cond-21
+    Updating best to tbl_themis340 from cond-21 for reason: direct control dependency difference
+For trial t : count_cnp_0 with best: tbl_themis340
+    Updating best to count_cnp_0 from tbl_themis340 for reason: default choice
+For trial t : tbl_themis616 with best: count_cnp_0
+    Keeping best count_cnp_0 for reason: earlier stage calculated
+placing 1024 entries of count_cnp_0 (with gw cond-26) in stage 4(42) FormatType(022)
+stage 4, work: [ 2762299, 2778448, 2778553 ], partly placed 0, placed 21
+    { id=2 ram=2 tcam=0 mram=1 eixb=3 tixb=0 malu=0 salu=0 }
+  Group table: tbl_themis250
+  Group table: cond-14
+  Group table: cond-15
+  Group table: cond-19
+  Group table: cond-20
+  Group table: cond-21
+  Group table: cond-22
+    - skipping tbl_themis250 as its already done
+    - skipping cond-14 as its already done
+    - skipping cond-15 as its already done
+    - skipping cond-19 as its already done
+    - skipping cond-20 as its already done
+try_place_table(cond-21, stage=4)
+  Initial stage is 4, initial entries is 0
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for egresshdr.udp.checksum_encode_update_condition_1
 Trying to allocate imem for count_cnp_0
 Trying to allocate imem for cond-21
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for egresshdr.udp.checksum_encode_update_condition_1
 Trying to allocate imem for count_cnp_0
 Trying to allocate imem for cond-21
   Selected stage: 4    Furthest stage: 5
@@ -1296,20 +1968,58 @@ Trying to allocate imem for cond-21
 try_place_table(cond-22, stage=4)
   Merging with match table tbl_themis340
   Initial stage is 4, initial entries is 1
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for egresshdr.udp.checksum_encode_update_condition_1
 Trying to allocate imem for count_cnp_0
 Trying to allocate imem for tbl_themis340
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for egresshdr.udp.checksum_encode_update_condition_1
 Trying to allocate imem for count_cnp_0
 Trying to allocate imem for tbl_themis340
   Selected stage: 4    Furthest stage: 5
   try_place_table returning 1 of tbl_themis340 in stage 4
     Pl vector: [ tbl_themis340 ]
-found 2 tables that could be placed: [ cond-21, tbl_themis340 ]
+  Group table: tbl_themis538
+  Group table: cond-23
+  Group table: cond-26
+  Group table: egresshdr.udp.checksum_encode_update_condition_1
+    - skipping tbl_themis538 as its already done
+    - skipping cond-23 as its already done
+    - skipping cond-26 as its already done
+    - skipping egresshdr.udp.checksum_encode_update_condition_1 as its already done
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
+  Group table: cond-24
+    - skipping tbl_themis546 as its already done
+    - skipping tbl_themis568 as its already done
+    - skipping tbl_themis569 as its already done
+    - skipping tbl_themis583 as its already done
+tbl_themis616 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis616, stage=4)
+  - dependency between tbl_themis583 and table advances stage
+  Initial stage is 5, initial entries is 1
+Trying to allocate imem for tbl_themis616
+Trying to allocate imem for tbl_themis616
+  Selected stage: 5    Furthest stage: 5
+  try_place_table returning 1 of tbl_themis616 in stage 5
+    Pl vector: [ tbl_themis616 ]
+  - skipping tbl_themis617 due to in-sequence control dependence on tbl_themis616
+  - skipping tbl_themis618 due to in-sequence control dependence on tbl_themis616
+    - skipping cond-24 as its already done
+found 3 tables that could be placed: [ cond-21, tbl_themis340, tbl_themis616 ]
 Initial best is first table seen: cond-21
 For trial t : tbl_themis340 with best: cond-21
     Updating best to tbl_themis340 from cond-21 for reason: direct control dependency difference
-placing 1 entries of tbl_themis340 (with gw cond-22) in stage 4(41) FormatType(02)
-stage 4, work: [ 2594165 ], partly placed 0, placed 19
-    { id=1 ram=2 tcam=0 mram=1 eixb=1 tixb=0 malu=0 salu=0 }
+For trial t : tbl_themis616 with best: tbl_themis340
+    Keeping best tbl_themis340 for reason: earlier stage calculated
+placing 1 entries of tbl_themis340 (with gw cond-22) in stage 4(43) FormatType(02)
+stage 4, work: [ 2762299, 2778553 ], partly placed 0, placed 22
+    { id=2 ram=2 tcam=0 mram=1 eixb=3 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
   Group table: cond-15
@@ -1324,9 +2034,13 @@ stage 4, work: [ 2594165 ], partly placed 0, placed 19
     - skipping cond-20 as its already done
 try_place_table(cond-21, stage=4)
   Initial stage is 4, initial entries is 0
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for egresshdr.udp.checksum_encode_update_condition_1
 Trying to allocate imem for count_cnp_0
 Trying to allocate imem for tbl_themis340
 Trying to allocate imem for cond-21
+Trying to allocate imem for tbl_themis583
+Trying to allocate imem for egresshdr.udp.checksum_encode_update_condition_1
 Trying to allocate imem for count_cnp_0
 Trying to allocate imem for tbl_themis340
 Trying to allocate imem for cond-21
@@ -1334,11 +2048,37 @@ Trying to allocate imem for cond-21
   try_place_table returning 0 of cond-21 in stage 4
     Pl vector: [ cond-21 ]
     - skipping cond-22 as its already done
-found 1 tables that could be placed: [ cond-21 ]
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
+  Group table: cond-24
+    - skipping tbl_themis546 as its already done
+    - skipping tbl_themis568 as its already done
+    - skipping tbl_themis569 as its already done
+    - skipping tbl_themis583 as its already done
+tbl_themis616 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis616, stage=4)
+  - dependency between tbl_themis583 and table advances stage
+  Initial stage is 5, initial entries is 1
+Trying to allocate imem for tbl_themis616
+Trying to allocate imem for tbl_themis616
+  Selected stage: 5    Furthest stage: 5
+  try_place_table returning 1 of tbl_themis616 in stage 5
+    Pl vector: [ tbl_themis616 ]
+  - skipping tbl_themis617 due to in-sequence control dependence on tbl_themis616
+  - skipping tbl_themis618 due to in-sequence control dependence on tbl_themis616
+    - skipping cond-24 as its already done
+found 2 tables that could be placed: [ cond-21, tbl_themis616 ]
 Initial best is first table seen: cond-21
-placing 0 entries of cond-21 in stage 4(42) FormatType(02)
-stage 4, work: [ 2594165, 2788638 ], partly placed 0, placed 20
-    { id=1 ram=2 tcam=0 mram=1 eixb=7 tixb=0 malu=0 salu=0 }
+For trial t : tbl_themis616 with best: cond-21
+    Keeping best cond-21 for reason: earlier stage calculated
+placing 0 entries of cond-21 in stage 4(44) FormatType(02)
+stage 4, work: [ 2762299, 2778553, 2989035 ], partly placed 0, placed 23
+    { id=2 ram=2 tcam=0 mram=1 eixb=9 tixb=0 malu=0 salu=0 }
   Group table: tbl_themis250
   Group table: cond-14
   Group table: cond-15
@@ -1353,6 +2093,30 @@ stage 4, work: [ 2594165, 2788638 ], partly placed 0, placed 20
     - skipping cond-20 as its already done
     - skipping cond-21 as its already done
     - skipping cond-22 as its already done
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
+  Group table: cond-24
+    - skipping tbl_themis546 as its already done
+    - skipping tbl_themis568 as its already done
+    - skipping tbl_themis569 as its already done
+    - skipping tbl_themis583 as its already done
+tbl_themis616 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis616, stage=4)
+  - dependency between tbl_themis583 and table advances stage
+  Initial stage is 5, initial entries is 1
+Trying to allocate imem for tbl_themis616
+Trying to allocate imem for tbl_themis616
+  Selected stage: 5    Furthest stage: 5
+  try_place_table returning 1 of tbl_themis616 in stage 5
+    Pl vector: [ tbl_themis616 ]
+  - skipping tbl_themis617 due to in-sequence control dependence on tbl_themis616
+  - skipping tbl_themis618 due to in-sequence control dependence on tbl_themis616
+    - skipping cond-24 as its already done
   Group table: cond-21$split
 try_place_table(cond-21$split, stage=4)
   Merging with match table tbl_set_mirror_md
@@ -1363,46 +2127,155 @@ Trying to allocate imem for tbl_set_mirror_md
   Selected stage: 5    Furthest stage: 5
   try_place_table returning 1 of tbl_set_mirror_md in stage 5
     Pl vector: [ tbl_set_mirror_md ]
-found 1 tables that could be placed: [ tbl_set_mirror_md ]
-Initial best is first table seen: tbl_set_mirror_md
-placing 1 entries of tbl_set_mirror_md (with gw cond-21$split) in stage 5(50) FormatType(022)
+found 2 tables that could be placed: [ tbl_themis616, tbl_set_mirror_md ]
+Initial best is first table seen: tbl_themis616
+For trial t : tbl_set_mirror_md with best: tbl_themis616
+    Keeping best tbl_themis616 for reason: longer downward prop control-included dependence tail chain
+placing 1 entries of tbl_themis616 in stage 5(50) FormatType(02)
+stage 5, work: [ 2778553, 2989035 ], partly placed 0, placed 24
+    { id=0 ram=0 tcam=0 mram=0 eixb=0 tixb=0 malu=0 salu=0 }
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
+  Group table: cond-24
+    - skipping tbl_themis546 as its already done
+    - skipping tbl_themis568 as its already done
+    - skipping tbl_themis569 as its already done
+    - skipping tbl_themis583 as its already done
+    - skipping tbl_themis616 as its already done
+tbl_themis617 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis617, stage=5)
+  - dependency between tbl_themis616 and table advances stage
+  Initial stage is 6, initial entries is 1
+Trying to allocate imem for tbl_themis617
+Trying to allocate imem for tbl_themis617
+  Selected stage: 6    Furthest stage: 6
+  try_place_table returning 1 of tbl_themis617 in stage 6
+    Pl vector: [ tbl_themis617 ]
+  - skipping tbl_themis618 due to in-sequence control dependence on tbl_themis617
+    - skipping cond-24 as its already done
+  Group table: cond-21$split
+try_place_table(cond-21$split, stage=5)
+  Merging with match table tbl_set_mirror_md
+  Initial stage is 5, initial entries is 1
+Trying to allocate imem for tbl_themis616
+Trying to allocate imem for tbl_set_mirror_md
+Trying to allocate imem for tbl_themis616
+Trying to allocate imem for tbl_set_mirror_md
+  Selected stage: 5    Furthest stage: 6
+  try_place_table returning 1 of tbl_set_mirror_md in stage 5
+    Pl vector: [ tbl_set_mirror_md ]
+found 2 tables that could be placed: [ tbl_themis617, tbl_set_mirror_md ]
+Initial best is first table seen: tbl_themis617
+For trial t : tbl_set_mirror_md with best: tbl_themis617
+    Updating best to tbl_set_mirror_md from tbl_themis617 for reason: earlier stage calculated
+placing 1 entries of tbl_set_mirror_md (with gw cond-21$split) in stage 5(51) FormatType(022)
+stage 5, work: [ 2778553 ], partly placed 0, placed 25
+    { id=0 ram=0 tcam=0 mram=0 eixb=0 tixb=0 malu=0 salu=0 }
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
+  Group table: cond-24
+    - skipping tbl_themis546 as its already done
+    - skipping tbl_themis568 as its already done
+    - skipping tbl_themis569 as its already done
+    - skipping tbl_themis583 as its already done
+    - skipping tbl_themis616 as its already done
+tbl_themis617 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis617, stage=5)
+  - dependency between tbl_themis616 and table advances stage
+  Initial stage is 6, initial entries is 1
+Trying to allocate imem for tbl_themis617
+Trying to allocate imem for tbl_themis617
+  Selected stage: 6    Furthest stage: 6
+  try_place_table returning 1 of tbl_themis617 in stage 6
+    Pl vector: [ tbl_themis617 ]
+  - skipping tbl_themis618 due to in-sequence control dependence on tbl_themis617
+    - skipping cond-24 as its already done
+found 1 tables that could be placed: [ tbl_themis617 ]
+Initial best is first table seen: tbl_themis617
+placing 1 entries of tbl_themis617 in stage 6(60) FormatType(02)
+stage 6, work: [ 2778553 ], partly placed 0, placed 26
+    { id=0 ram=0 tcam=0 mram=0 eixb=0 tixb=0 malu=0 salu=0 }
+  Group table: tbl_themis546
+  Group table: tbl_themis568
+  Group table: tbl_themis569
+  Group table: tbl_themis583
+  Group table: tbl_themis616
+  Group table: tbl_themis617
+  Group table: tbl_themis618
+  Group table: cond-24
+    - skipping tbl_themis546 as its already done
+    - skipping tbl_themis568 as its already done
+    - skipping tbl_themis569 as its already done
+    - skipping tbl_themis583 as its already done
+    - skipping tbl_themis616 as its already done
+    - skipping tbl_themis617 as its already done
+tbl_themis618 is not a gateway! Aborting search for merge choices
+try_place_table(tbl_themis618, stage=6)
+  - dependency between tbl_themis617 and table advances stage
+  Initial stage is 7, initial entries is 1
+Trying to allocate imem for tbl_themis618
+Trying to allocate imem for tbl_themis618
+  Selected stage: 7    Furthest stage: 7
+  try_place_table returning 1 of tbl_themis618 in stage 7
+    Pl vector: [ tbl_themis618 ]
+    - skipping cond-24 as its already done
+found 1 tables that could be placed: [ tbl_themis618 ]
+Initial best is first table seen: tbl_themis618
+placing 1 entries of tbl_themis618 in stage 7(70) FormatType(02)
 Adding complete placement for resource mode:0
 Found a complete solution that fit the number of stages required
 Evaluating complete solution with resource:0
-Placement error(s):0 stages required:6
+Placement error(s):0 stages required:8
 Updating best final placement with this one
-Table placement placed 21 tables in 6 stages
-  Table tbl_set_mirror_md logical id 0x50 entries=1
+Table placement placed 27 tables in 8 stages
+  Table tbl_themis618 logical id 0x70 entries=1
+  Table tbl_themis617 logical id 0x60 entries=1
+  Table tbl_set_mirror_md logical id 0x51 entries=1
     attached table Ingress.cnp_debug_counter entries=1
-  Gateway cond-21$split is also logical id 0x50
-  Table cond-21 logical id 0x42 entries=0
-  Table tbl_themis340 logical id 0x41 entries=1
-  Gateway cond-22 is also logical id 0x41
-  Table count_cnp_0 logical id 0x40 entries=1024
+  Gateway cond-21$split is also logical id 0x51
+  Table tbl_themis616 logical id 0x50 entries=1
+  Table cond-21 logical id 0x44 entries=0
+  Table tbl_themis340 logical id 0x43 entries=1
+  Gateway cond-22 is also logical id 0x43
+  Table count_cnp_0 logical id 0x42 entries=1024
     attached table Egress.indirect_counter entries=512
-  Gateway cond-26 is also logical id 0x40
+  Gateway cond-26 is also logical id 0x42
+  Table egresshdr.udp.checksum_encode_update_condition_1 logical id 0x41 entries=4
+  Table tbl_themis583 logical id 0x40 entries=1
   Table l3_table_0 logical id 0x31 entries=4096
   Gateway cond-20 is also logical id 0x31
-  Table tbl_themis556 logical id 0x30 entries=1
-  Table tbl_start_one_recir logical id 0x22 entries=1
+  Table tbl_themis569 logical id 0x30 entries=1
+  Table tbl_start_one_recir logical id 0x23 entries=1
     attached table Ingress.recir_debug_counter entries=1
-  Gateway cond-19$split is also logical id 0x22
-  Table cond-19 logical id 0x21 entries=0
-  Table tbl_themis555 logical id 0x20 entries=1
-  Table tbl_themis559 logical id 0x15 entries=1
+  Gateway cond-19$split is also logical id 0x23
+  Table cond-19 logical id 0x22 entries=0
+  Table tbl_themis620 logical id 0x21 entries=1
     attached table Egress.egress_mirror_bth_counter entries=1
-  Table tbl_themis560 logical id 0x14 entries=1
+  Table tbl_themis568 logical id 0x20 entries=1
+  Table tbl_themis621 logical id 0x15 entries=1
     attached table Egress.egress_mirror_cnp_set_counter entries=1
+  Table tbl_themis622 logical id 0x14 entries=1
+    attached table Egress.egress_mirror_icrc_counter entries=1
   Gateway cond-24 is also logical id 0x14
-  Table tbl_themis566 logical id 0x13 entries=1
+  Table tbl_themis628 logical id 0x13 entries=1
     attached table Egress.egress_roce_data_counter entries=1
   Gateway cond-25 is also logical id 0x13
-  Table tbl_themis543 logical id 0x12 entries=1
+  Table tbl_themis276 logical id 0x12 entries=1
+  Table tbl_themis269 logical id 0x11 entries=1
+  Gateway cond-17 is also logical id 0x11
+  Table tbl_themis546 logical id 0x10 entries=1
     attached table Egress.egress_mirror_seen_counter entries=1
-  Gateway cond-23 is also logical id 0x12
-  Table tbl_themis276 logical id 0x11 entries=1
-  Table tbl_themis269 logical id 0x10 entries=1
-  Gateway cond-17 is also logical id 0x10
+  Gateway cond-23 is also logical id 0x10
   Table tbl_themis250 logical id 0x5 entries=1
     attached table Ingress.ingress_port_debug_counter entries=512
   Table tbl_themis266 logical id 0x4 entries=1
@@ -1415,7 +2288,7 @@ Table placement placed 21 tables in 6 stages
   Gateway cond-15 is also logical id 0x2
   Table arp_table_0 logical id 0x1 entries=4096
   Gateway cond-14 is also logical id 0x1
-  Table tbl_themis536 logical id 0x0 entries=1
+  Table tbl_themis538 logical id 0x0 entries=1
 Finished table placement decisions pipe
 folding gateway cond-14 onto arp_table_0
 folding gateway cond-15 onto tbl_themis262
@@ -1434,68 +2307,81 @@ folding gateway cond-21$split onto tbl_set_mirror_md
   Adding Ternary Indirect table to tbl_set_mirror_md
 folding gateway cond-22 onto tbl_themis340
   Adding Ternary Indirect table to tbl_themis340
-folding gateway cond-23 onto tbl_themis543
-  Adding Ternary Indirect table to tbl_themis543
-folding gateway cond-25 onto tbl_themis566
-  Adding Ternary Indirect table to tbl_themis566
-  Adding Ternary Indirect table to tbl_themis555
-  Adding Ternary Indirect table to tbl_themis556
-folding gateway cond-24 onto tbl_themis560
-  Adding Ternary Indirect table to tbl_themis560
-  Adding Ternary Indirect table to tbl_themis559
+folding gateway cond-23 onto tbl_themis546
+  Adding Ternary Indirect table to tbl_themis546
+  Adding Action Data Table to tbl_themis546
+folding gateway cond-25 onto tbl_themis628
+  Adding Ternary Indirect table to tbl_themis628
+  Adding Ternary Indirect table to tbl_themis568
+  Adding Ternary Indirect table to tbl_themis569
+  Adding Ternary Indirect table to tbl_themis616
+  Adding Ternary Indirect table to tbl_themis617
+  Adding Ternary Indirect table to tbl_themis618
+folding gateway cond-24 onto tbl_themis622
+  Adding Ternary Indirect table to tbl_themis622
+  Adding Ternary Indirect table to tbl_themis620
+  Adding Ternary Indirect table to tbl_themis621
 folding gateway cond-26 onto count_cnp_0
 table placement completed pipe
-ingress: [2594165] 0 00 000 0000 00000 000000
+ingress: [2762299] 0 00 000 0000 00000 000000
   1: arp_table_0(ingress::hdr.ethernet.ether_type == 2048; => $true, 1){ GE 22+9, 2 [1x1 1K 1K 1K 1K] }
-    $true: [2780351]
+    $true: [2979852]
   2: tbl_themis262(ingress::hdr.recir.$valid == 1;, 1 => $false){ GE 0+10, 0 0K }
     stats Ingress.recir_return_counter    1
-    $false: [2594784]
+    $false: [2762918]
       3: tbl_themis300(ingress::hdr.ethernet.ether_type == 2048;, 1 => $false)
-        $false: [2594782]
-    $default: [2594342] 0
+        $false: [2762916]
+    $default: [2762476] 0
       4: tbl_themis266(ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.udp.dst_port == 4791;, 1 => $false){ GE 0+10, 0 0K }
         stats Ingress.recir_return_roce_counter    1
-        $false: [2780498]
-      10: tbl_themis269(ingress::hdr.recir.cnt == 0;, 1 => $false)
-        $false: [2594564]
-          11: tbl_themis276
+        $false: [2979999]
+      11: tbl_themis269(ingress::hdr.recir.cnt == 0;, 1 => $false)
+        $false: [2762698]
+          12: tbl_themis276
   5: tbl_themis250
     stats Ingress.ingress_port_debug_counter  512
-  21: cond-19(ingress::hdr.recir.$valid == 1; => $false, ingress::ig_intr_md.ingress_port == 384; => $false, ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, 1 => $gwcont)
-    $false: [2780685]
-    $gwcont: [2788495]
-      22: tbl_start_one_recir(ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.bth.psn[0:0] != 0; => $false, ingress::hdr.udp.dst_port == 4791;, 1 => $false){ GE 0+30, 4 0K }
+  22: cond-19(ingress::hdr.recir.$valid == 1; => $false, ingress::ig_intr_md.ingress_port == 384; => $false, ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, 1 => $gwcont)
+    $false: [2980186]
+    $gwcont: [2988892]
+      23: tbl_start_one_recir(ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.bth.psn[0:0] != 0; => $false, ingress::hdr.udp.dst_port == 4791;, 1 => $false){ GE 0+30, 4 0K }
         stats Ingress.recir_debug_counter    1
-        $false: [2780685]...
+        $false: [2980186]...
   31: l3_table_0(ingress::apply_l3_0, 1 => $false){ GE 22+9, 2 [1x1 1K 1K 1K 1K] }
-    $false: [2780775]
-  41: tbl_themis340(ingress::ig_intr_md_for_tm.ucast_egress_port == 384; => $false, 1)
-    $false: [2780944]
-  42: cond-21(ingress::ig_intr_md_for_tm.ucast_egress_port == 384; => $false, ingress::ig_intr_md.ingress_port == 384; => $false, ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, 1 => $gwcont)
-    $false: [2780902]
-    $gwcont: [2788638]
-      50: tbl_set_mirror_md(ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.bth.psn[0:0] != 1; => $false, ingress::hdr.udp.dst_port == 4791;, 1 => $false){ GE 0+10, 0 0K }
+    $false: [2980276]
+  43: tbl_themis340(ingress::ig_intr_md_for_tm.ucast_egress_port == 384; => $false, 1)
+    $false: [2980445]
+  44: cond-21(ingress::ig_intr_md_for_tm.ucast_egress_port == 384; => $false, ingress::ig_intr_md.ingress_port == 384; => $false, ingress::hdr.udp.$valid != 1; => $false, ingress::hdr.bth.$valid != 1; => $false, 1 => $gwcont)
+    $false: [2980403]
+    $gwcont: [2989035]
+      51: tbl_set_mirror_md(ingress::hdr.bth.opcode == 129; => $false, ingress::hdr.bth.psn[0:0] != 1; => $false, ingress::hdr.udp.dst_port == 4791;, 1 => $false){ GE 0+10, 0 0K }
         stats Ingress.cnp_debug_counter    1
-        $false: [2780902]...
-egress: [2607844] 0 00
-  0: tbl_themis536
-  12: tbl_themis543(egress::meta.is_mirrored == 1;, 1 => $false){ GE 0+10, 0 0K }
+        $false: [2980403]...
+egress: [2778448] 0 00 000
+  0: tbl_themis538
+  10: tbl_themis546(egress::meta.is_mirrored == 1;, 1 => $false){ GE 0+26, 16 0K }
     stats Egress.egress_mirror_seen_counter    1
-    $false: [2608448]
-      13: tbl_themis566(egress::hdr.udp.$valid != 1; => $false, egress::hdr.bth.$valid != 1; => $false, egress::hdr.bth.opcode == 129; => $false, egress::hdr.udp.dst_port == 4791;, 1 => $false){ GE 0+10, 0 0K }
+    $false: [2779722]
+      13: tbl_themis628(egress::hdr.udp.$valid != 1; => $false, egress::hdr.bth.$valid != 1; => $false, egress::hdr.bth.opcode == 129; => $false, egress::hdr.udp.dst_port == 4791;, 1 => $false){ GE 0+10, 0 0K }
         stats Egress.egress_roce_data_counter    1
-        $false: [2781227]
-    $default: [2607949] 0 00
-      14: tbl_themis560(egress::hdr.bth.$valid == 1;, 1 => $false){ GE 0+10, 0 0K }
-        stats Egress.egress_mirror_cnp_set_counter    1
-        $false: [2781179]
-        $default: [2608245]
-          15: tbl_themis559{ E 0+10, 0 0K }
+        $false: [2980983]
+    $default: [2778553] 0 00 000 0000 00000 000000
+      14: tbl_themis622(egress::hdr.bth.$valid == 1;, 1 => $false){ GE 0+10, 0 0K }
+        stats Egress.egress_mirror_icrc_counter    1
+        $false: [2980935]
+        $default: [2779454] 0
+          15: tbl_themis621{ E 0+10, 0 0K }
+            stats Egress.egress_mirror_cnp_set_counter    1
+          21: tbl_themis620{ E 0+10, 0 0K }
             stats Egress.egress_mirror_bth_counter    1
-      20: tbl_themis555
-      30: tbl_themis556
-  40: count_cnp_0(egress::hdr.bth.$valid == 1;, 1 => $false){ GE -2+10, 0 [1x1 1K] }
+      20: tbl_themis568
+      30: tbl_themis569{ E 0+16, 4 0K }
+      40: tbl_themis583
+      50: tbl_themis616
+      60: tbl_themis617
+      70: tbl_themis618
+  41: egresshdr.udp.checksum_encode_update_condition_1(egress::hdr.icrc.$valid == 0 && egress::hdr.udp.$valid == 1; => $entry0, egress::hdr.icrc.$valid == 1 && egress::hdr.udp.$valid == 1; => $entry1, 1){ GE 0+6, 1 0K }
+    $entry0, $entry1, $miss: [3009417]
+  42: count_cnp_0(egress::hdr.bth.$valid == 1;, 1 => $false){ GE -2+10, 0 [1x1 1K] }
     stats Egress.indirect_counter  512
-    $false: [2781277]
+    $false: [2981033]
 

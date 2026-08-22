@@ -3,46 +3,50 @@ PHV Allocation
 +-----------+-------+-----------------+------------------------------------------------------+
 |Container  |Gress  |Container Slice  |Field Slice                                           |
 +-----------+-------+-----------------+------------------------------------------------------+
-|B0         |E      |[0]              |egress::eg_intr_md_for_dprsr.mirror_io_select.$valid  |
-|           |       |[1]              |egress::eg_intr_md.egress_port.$valid                 |
-|           |       |[2]              |egress::hdr.ethernet.$valid                           |
-|           |       |[3]              |egress::hdr.ipv4.$valid                               |
-|           |       |[4]              |egress::hdr.tcp.$valid                                |
-|           |       |[5]              |egress::hdr.udp.$valid                                |
-|           |       |[6]              |egress::hdr.bth.$valid                                |
-|           |       |[7]              |egress::hdr.arp.$valid                                |
+|B0         |I      |[3:0]            |ingress::ig_intr_md_for_dprsr.mirror_type             |
 |           |       |                 |                                                      |
-|MB0        |I      |                 |ingress::mirror_md_0.is_last_recir_pkt                |
+|MB0        |I      |                 |ingress::hdr.bth.opcode                               |
 |           |       |                 |                                                      |
 |...        |       |                 |                                                      |
 |           |       |                 |                                                      |
-|B1         |E      |                 |egress::hdr.bth.opcode                                |
+|B1         |I      |                 |ingress::meta.ing_mir_ses                             |
 |           |       |                 |                                                      |
-|MB1        |I      |                 |ingress::mirror_md_0.pnp_dip_hash                     |
-|           |       |                 |                                                      |
-|...        |       |                 |                                                      |
-|           |       |                 |                                                      |
-|B2         |E      |[1:0]            |egress::hdr.ipv4.ecn                                  |
-|           |       |[7:2]            |egress::hdr.ipv4.diffserv                             |
-|           |       |                 |                                                      |
-|MB2        |I      |                 |ingress::hdr.bth.opcode                               |
+|MB1        |I      |                 |ingress::hdr.bth.psn[23:16]                           |
 |           |       |                 |                                                      |
 |...        |       |                 |                                                      |
 |           |       |                 |                                                      |
-|MB3        |I      |                 |ingress::hdr.bth.psn[23:16]                           |
-|           |       |                 |                                                      |
-|...        |       |                 |                                                      |
-|           |       |                 |                                                      |
-|B4         |I      |[3:0]            |ingress::ig_intr_md_for_dprsr.mirror_type             |
-|           |       |                 |                                                      |
-|B5         |I      |                 |ingress::meta.ing_mir_ses                             |
-|           |       |                 |                                                      |
-|B6         |I      |[0]              |ingress::ig_intr_md_for_tm.bypass_egress              |
+|B2         |I      |[0]              |ingress::ig_intr_md_for_tm.bypass_egress              |
 |           |       |[1]              |ingress::apply_l3_0                                   |
 |           |       |                 |                                                      |
-|B7         |I      |                 |ingress::hdr.bridged_md.pkt_type                      |
+|...        |       |                 |                                                      |
 |           |       |                 |                                                      |
-|B8         |I      |                 |ingress::meta.pkt_type                                |
+|B3         |I      |                 |ingress::hdr.bridged_md.pkt_type                      |
+|           |       |                 |                                                      |
+|...        |       |                 |                                                      |
+|           |       |                 |                                                      |
+|B4         |I      |                 |ingress::meta.pkt_type                                |
+|           |       |                 |                                                      |
+|...        |       |                 |                                                      |
+|           |       |                 |                                                      |
+|B16        |E      |                 |egress::hdr.cnp_padding.reserved2[7:0]                |
+|           |       |                 |egress::hdr.cnp_padding.reserved2[15:8]               |
+|           |       |                 |egress::hdr.cnp_padding.reserved2[23:16]              |
+|           |       |                 |egress::hdr.cnp_padding.reserved2[31:24]              |
+|           |       |                 |egress::hdr.cnp_padding.reserved2[39:32]              |
+|           |       |                 |egress::hdr.cnp_padding.reserved2[47:40]              |
+|           |       |                 |egress::hdr.cnp_padding.reserved2[55:48]              |
+|           |       |                 |egress::hdr.cnp_padding.reserved2[63:56]              |
+|           |       |                 |egress::hdr.cnp_padding.reserved1[7:0]                |
+|           |       |                 |egress::hdr.cnp_padding.reserved1[15:8]               |
+|           |       |                 |egress::hdr.cnp_padding.reserved1[23:16]              |
+|           |       |                 |egress::hdr.cnp_padding.reserved1[31:24]              |
+|           |       |                 |egress::hdr.cnp_padding.reserved1[39:32]              |
+|           |       |                 |egress::hdr.cnp_padding.reserved1[47:40]              |
+|           |       |                 |egress::hdr.cnp_padding.reserved1[55:48]              |
+|           |       |                 |egress::hdr.cnp_padding.reserved1[63:56]              |
+|           |       |                 |                                                      |
+|B17        |E      |[0]              |egress::hdr.udp.checksum.$deparse_original_csum       |
+|           |       |[1]              |egress::hdr.udp.checksum.$deparse_updated_csum_0      |
 |           |       |                 |                                                      |
 |...        |       |                 |                                                      |
 |           |       |                 |                                                      |
@@ -68,16 +72,46 @@ PHV Allocation
 |           |       |                 |                                                      |
 |...        |       |                 |                                                      |
 |           |       |                 |                                                      |
+|H2         |E      |[2:0]            |egress::pnp_dip_hash_0[2:0]                           |
+|           |       |[7:3]            |egress::pnp_dip_hash_0[7:3]                           |
+|           |       |                 |                                                      |
 |MH2        |E      |[0]              |egress::eg_intr_md_for_dprsr.mirror_io_select         |
 |           |       |[1]              |egress::meta.is_mirrored                              |
 |           |       |                 |                                                      |
 |...        |       |                 |                                                      |
 |           |       |                 |                                                      |
-|MH3        |E      |                 |egress::hdr.udp.dst_port                              |
+|MH3        |E      |[12:0]           |egress::hdr.udp.src_port[12:0]                        |
+|           |       |[13]             |egress::hdr.udp.src_port[13]                          |
+|           |       |[15:14]          |egress::hdr.udp.src_port[15:14]                       |
 |           |       |                 |                                                      |
 |...        |       |                 |                                                      |
 |           |       |                 |                                                      |
-|H4         |I      |[8:0]            |ingress::ig_intr_md.ingress_port                      |
+|H4         |E      |[0]              |egress::eg_intr_md_for_dprsr.mirror_io_select.$valid  |
+|           |       |[1]              |egress::eg_intr_md.egress_port.$valid                 |
+|           |       |[2]              |egress::hdr.ethernet.$valid                           |
+|           |       |[3]              |egress::hdr.ipv4.$valid                               |
+|           |       |[4]              |egress::hdr.tcp.$valid                                |
+|           |       |[5]              |egress::hdr.udp.$valid                                |
+|           |       |[6]              |egress::hdr.bth.$valid                                |
+|           |       |[7]              |egress::hdr.arp.$valid                                |
+|           |       |[8]              |egress::hdr.cnp_padding.$valid                        |
+|           |       |[9]              |egress::hdr.icrc.$valid                               |
+|           |       |                 |                                                      |
+|H5         |E      |[0]              |egress::hdr.bth.dst_qpn[16]                           |
+|           |       |[7:1]            |egress::hdr.bth.dst_qpn[23:17]                        |
+|           |       |[15:8]           |egress::hdr.bth.reserved1                             |
+|           |       |                 |                                                      |
+|H6         |E      |[2:0]            |egress::hdr.bth.dst_qpn[2:0]                          |
+|           |       |[15:3]           |egress::hdr.bth.dst_qpn[15:3]                         |
+|           |       |                 |                                                      |
+|H7         |E      |[1:0]            |egress::hdr.ipv4.ecn                                  |
+|           |       |[7:2]            |egress::hdr.ipv4.diffserv                             |
+|           |       |[11:8]           |egress::hdr.ipv4.ihl                                  |
+|           |       |[15:12]          |egress::hdr.ipv4.version                              |
+|           |       |                 |                                                      |
+|H8         |E      |                 |egress::hdr.udp.checksum                              |
+|           |       |                 |                                                      |
+|H9         |I      |[8:0]            |ingress::ig_intr_md.ingress_port                      |
 |           |       |                 |                                                      |
 |...        |       |                 |                                                      |
 |           |       |                 |                                                      |
@@ -94,41 +128,15 @@ PHV Allocation
 |           |       |                 |                                                      |
 |...        |       |                 |                                                      |
 |           |       |                 |                                                      |
-|MH7        |I      |                 |ingress::mirror_md_0.pnp_udp_src_port                 |
-|           |       |                 |                                                      |
-|...        |       |                 |                                                      |
-|           |       |                 |                                                      |
-|MH8        |E      |[12:0]           |egress::hdr.udp.src_port[12:0]                        |
-|           |       |[13]             |egress::hdr.udp.src_port[13]                          |
-|           |       |[15:14]          |egress::hdr.udp.src_port[15:14]                       |
+|MH8        |E      |                 |egress::hdr.ethernet.src_addr[47:32]                  |
 |           |       |                 |                                                      |
 |DH8        |E      |                 |egress::tmp1_0[47:32]                                 |
 |           |       |                 |                                                      |
-|MH9        |E      |                 |egress::hdr.ethernet.src_addr[47:32]                  |
+|MH9        |E      |                 |egress::hdr.ethernet.dst_addr[47:32]                  |
 |           |       |                 |                                                      |
 |...        |       |                 |                                                      |
 |           |       |                 |                                                      |
-|MH10       |E      |                 |egress::hdr.ethernet.dst_addr[47:32]                  |
-|           |       |                 |                                                      |
-|...        |       |                 |                                                      |
-|           |       |                 |                                                      |
-|MH11       |E      |                 |egress::hdr.udp.checksum                              |
-|           |       |                 |                                                      |
-|...        |       |                 |                                                      |
-|           |       |                 |                                                      |
-|H24        |E      |[2:0]            |egress::pnp_dip_hash_0[2:0]                           |
-|           |       |[7:3]            |egress::pnp_dip_hash_0[7:3]                           |
-|           |       |                 |                                                      |
-|H25        |E      |[0]              |egress::hdr.bth.dst_qpn[16]                           |
-|           |       |[7:1]            |egress::hdr.bth.dst_qpn[23:17]                        |
-|           |       |[15:8]           |egress::hdr.bth.reserved1                             |
-|           |       |                 |                                                      |
-|H26        |E      |[2:0]            |egress::hdr.bth.dst_qpn[2:0]                          |
-|           |       |[15:3]           |egress::hdr.bth.dst_qpn[15:3]                         |
-|           |       |                 |                                                      |
-|...        |       |                 |                                                      |
-|           |       |                 |                                                      |
-|MH12       |E      |                 |egress::hdr.ipv4.hdr_checksum                         |
+|MH10       |E      |                 |egress::hdr.ipv4.hdr_checksum                         |
 |           |       |                 |                                                      |
 |...        |       |                 |                                                      |
 |           |       |                 |                                                      |
@@ -136,26 +144,63 @@ PHV Allocation
 |           |       |                 |                                                      |
 |MW0        |E      |                 |egress::hdr.ethernet.src_addr[31:0]                   |
 |           |       |                 |                                                      |
-|DW0        |E      |                 |egress::tmp1_0[31:0]                                  |
-|           |       |                 |                                                      |
 |...        |       |                 |                                                      |
+|           |       |                 |                                                      |
+|W1         |E      |[7:0]            |egress::icrc_raw_0[7:0]                               |
+|           |       |[15:8]           |egress::icrc_raw_0[15:8]                              |
+|           |       |[23:16]          |egress::icrc_raw_0[23:16]                             |
+|           |       |[31:24]          |egress::icrc_raw_0[31:24]                             |
+|           |       |                 |egress::tmp1_0[31:0]                                  |
 |           |       |                 |                                                      |
 |MW1        |E      |                 |egress::hdr.ethernet.dst_addr[31:0]                   |
 |           |       |                 |                                                      |
-|DW1        |E      |                 |egress::tmp2_0                                        |
-|           |       |                 |                                                      |
 |...        |       |                 |                                                      |
 |           |       |                 |                                                      |
-|MW2        |E      |                 |egress::hdr.ipv4.src_addr                             |
+|W2         |E      |[7:0]            |egress::hdr.icrc.value[7:0]                           |
+|           |       |[15:8]           |egress::hdr.icrc.value[15:8]                          |
+|           |       |[23:16]          |egress::hdr.icrc.value[23:16]                         |
+|           |       |[31:24]          |egress::hdr.icrc.value[31:24]                         |
 |           |       |                 |                                                      |
-|...        |       |                 |                                                      |
-|           |       |                 |                                                      |
-|MW3        |E      |                 |egress::hdr.ipv4.dst_addr                             |
-|           |       |                 |                                                      |
-|...        |       |                 |                                                      |
-|           |       |                 |                                                      |
-|MW4        |I      |                 |ingress::hdr.ipv4.dst_addr                            |
+|MW2        |I      |                 |ingress::hdr.ipv4.dst_addr                            |
 |           |       |                 |ingress::hdr.arp.dstIpv4Addr                          |
+|           |       |                 |                                                      |
+|...        |       |                 |                                                      |
+|           |       |                 |                                                      |
+|W3         |E      |[15:0]           |egress::hdr.bth.parti_key                             |
+|           |       |[19:16]          |egress::hdr.bth.header_v                              |
+|           |       |[21:20]          |egress::hdr.bth.pad_count                             |
+|           |       |[22]             |egress::hdr.bth.mig_req                               |
+|           |       |[23]             |egress::hdr.bth.solicited_event                       |
+|           |       |[31:24]          |egress::hdr.bth.opcode                                |
+|           |       |                 |                                                      |
+|...        |       |                 |                                                      |
+|           |       |                 |                                                      |
+|W4         |E      |[23:0]           |egress::hdr.bth.psn                                   |
+|           |       |[30:24]          |egress::hdr.bth.reserved2                             |
+|           |       |[31]             |egress::hdr.bth.ack_req                               |
+|           |       |                 |                                                      |
+|W5         |E      |[15:0]           |egress::hdr.udp.hdr_length                            |
+|           |       |[31:16]          |egress::hdr.udp.dst_port                              |
+|           |       |                 |                                                      |
+|W6         |E      |[15:0]           |egress::hdr.ipv4.identification                       |
+|           |       |[31:16]          |egress::hdr.ipv4.total_len                            |
+|           |       |                 |                                                      |
+|...        |       |                 |                                                      |
+|           |       |                 |                                                      |
+|MW4        |E      |                 |egress::hdr.ipv4.dst_addr                             |
+|           |       |                 |                                                      |
+|...        |       |                 |                                                      |
+|           |       |                 |                                                      |
+|MW6        |E      |                 |egress::tmp2_0                                        |
+|           |       |                 |                                                      |
+|...        |       |                 |                                                      |
+|           |       |                 |                                                      |
+|W12        |E      |                 |egress::hdr.ipv4.src_addr                             |
+|           |       |                 |                                                      |
+|W13        |E      |[7:0]            |egress::hdr.ipv4.protocol                             |
+|           |       |[15:8]           |egress::hdr.ipv4.ttl                                  |
+|           |       |[28:16]          |egress::hdr.ipv4.frag_offset                          |
+|           |       |[31:29]          |egress::hdr.ipv4.flags                                |
 |           |       |                 |                                                      |
 |...        |       |                 |                                                      |
 |           |       |                 |                                                      |
@@ -186,7 +231,10 @@ POV Allocation (egress):
 +-----------+-----------------+------------------------------------------------------+
 |Container  |Container Slice  |Field Slice                                           |
 +-----------+-----------------+------------------------------------------------------+
-|B0         |[0]              |egress::eg_intr_md_for_dprsr.mirror_io_select.$valid  |
+|B17        |[0]              |egress::hdr.udp.checksum.$deparse_original_csum       |
+|           |[1]              |egress::hdr.udp.checksum.$deparse_updated_csum_0      |
++-----------+-----------------+------------------------------------------------------+
+|H4         |[0]              |egress::eg_intr_md_for_dprsr.mirror_io_select.$valid  |
 |           |[1]              |egress::eg_intr_md.egress_port.$valid                 |
 |           |[2]              |egress::hdr.ethernet.$valid                           |
 |           |[3]              |egress::hdr.ipv4.$valid                               |
@@ -194,82 +242,126 @@ POV Allocation (egress):
 |           |[5]              |egress::hdr.udp.$valid                                |
 |           |[6]              |egress::hdr.bth.$valid                                |
 |           |[7]              |egress::hdr.arp.$valid                                |
+|           |[8]              |egress::hdr.cnp_padding.$valid                        |
+|           |[9]              |egress::hdr.icrc.$valid                               |
 +-----------+-----------------+------------------------------------------------------+
-|           |Total Bits Used  |8 / 128 ( 6.25 %)                                     |
-|           |Pack Density     |8 / 8 (  100 %)                                       |
+|           |Total Bits Used  |12 / 128 ( 9.38 %)                                    |
+|           |Pack Density     |12 / 24 (  50  %)                                     |
 +-----------+-----------------+------------------------------------------------------+
 
 +------------------------------------------------------+------------+-----------+----------------+-----------------+
 |Field Slice                                           |Live Range  |Container  |Container Type  |Container Slice  |
 +------------------------------------------------------+------------+-----------+----------------+-----------------+
-|ingress::meta.ing_mir_ses                             |[-1r, 5w]   |B5         |B               |                 |
-|ingress::meta.pkt_type                                |[-1r, 5w]   |B8         |B               |                 |
-|ingress::ig_intr_md.ingress_port                      |[-1r, 5w]   |H4         |H               |[8:0]            |
-|ingress::hdr.recir.cnt                                |[-1r, 5w]   |W0         |W               |                 |
-|ingress::hdr.ethernet.ether_type                      |[-1r, 5w]   |MH6        |MH              |                 |
-|ingress::hdr.ipv4.dst_addr                            |[-1r, 5w]   |MW4        |MW              |                 |
-|ingress::hdr.udp.dst_port                             |[-1r, 5w]   |MH5        |MH              |                 |
-|ingress::hdr.bth.opcode                               |[-1r, 5w]   |MB2        |MB              |                 |
-|ingress::hdr.bth.psn[23:16]                           |[-1r, 5w]   |MB3        |MB              |                 |
-|ingress::hdr.bth.psn[0]                               |[-1r, 5w]   |MH4        |MH              |[0]              |
-|ingress::hdr.bth.psn[15:1]                            |[-1r, 5w]   |MH4        |MH              |[15:1]           |
-|ingress::hdr.arp.dstIpv4Addr                          |[-1r, 5w]   |MW4        |MW              |                 |
-|ingress::ig_intr_md_for_tm.ucast_egress_port          |[-1r, 5w]   |H1         |H               |[8:0]            |
-|ingress::ig_intr_md_for_tm.bypass_egress              |[-1r, 5w]   |B6         |B               |[0]              |
-|ingress::ig_intr_md_for_tm.ucast_egress_port.$valid   |[-1r, 5w]   |H0         |H               |[0]              |
-|ingress::apply_l3_0                                   |[-1r, 5w]   |B6         |B               |[1]              |
-|ingress::ig_intr_md_for_tm.bypass_egress.$valid       |[-1r, 5w]   |H0         |H               |[1]              |
-|ingress::ig_intr_md_for_dprsr.mirror_type             |[-1r, 5w]   |B4         |B               |[3:0]            |
-|ingress::ig_intr_md_for_dprsr.mirror_type.$valid      |[-1r, 5w]   |H0         |H               |[2]              |
-|ingress::hdr.bridged_md.pkt_type                      |[-1r, 5w]   |B7         |B               |                 |
-|ingress::mirror_md_0.is_last_recir_pkt                |[-1r, 5w]   |MB0        |MB              |                 |
-|ingress::mirror_md_0.pnp_udp_src_port                 |[-1r, 5w]   |MH7        |MH              |                 |
-|ingress::mirror_md_0.pnp_dip_hash                     |[-1r, 5w]   |MB1        |MB              |                 |
-|egress::eg_intr_md_for_dprsr.mirror_io_select         |[-1r, 5w]   |MH2        |MH              |[0]              |
-|egress::eg_intr_md_for_dprsr.mirror_io_select.$valid  |[-1r, 5w]   |B0         |B               |[0]              |
-|egress::eg_intr_md.egress_port                        |[-1r, 5w]   |MH1        |MH              |[8:0]            |
-|egress::eg_intr_md.egress_port.$valid                 |[-1r, 5w]   |B0         |B               |[1]              |
-|egress::meta.is_mirrored                              |[-1r, 5w]   |MH2        |MH              |[1]              |
-|egress::meta.udp_tmp_checksum                         |[-1r, 5w]   |MH0        |MH              |                 |
-|egress::hdr.ethernet.dst_addr[47:32]                  |[-1r, 5w]   |MH10       |MH              |                 |
-|egress::hdr.ethernet.dst_addr[31:0]                   |[-1r, 5w]   |MW1        |MW              |                 |
-|egress::hdr.ethernet.src_addr[47:32]                  |[-1r, 5w]   |MH9        |MH              |                 |
-|egress::hdr.ethernet.src_addr[31:0]                   |[-1r, 5w]   |MW0        |MW              |                 |
-|egress::hdr.ipv4.diffserv                             |[-1r, 5w]   |B2         |B               |[7:2]            |
-|egress::hdr.ipv4.ecn                                  |[-1r, 5w]   |B2         |B               |[1:0]            |
-|egress::hdr.ipv4.hdr_checksum                         |[-1r, 5w]   |MH12       |MH              |                 |
-|egress::hdr.ipv4.src_addr                             |[-1r, 5w]   |MW2        |MW              |                 |
-|egress::hdr.ipv4.dst_addr                             |[-1r, 5w]   |MW3        |MW              |                 |
-|egress::hdr.udp.src_port[12:0]                        |[-1r, 5w]   |MH8        |MH              |[12:0]           |
-|egress::hdr.udp.src_port[13]                          |[-1r, 5w]   |MH8        |MH              |[13]             |
-|egress::hdr.udp.src_port[15:14]                       |[-1r, 5w]   |MH8        |MH              |[15:14]          |
-|egress::hdr.udp.dst_port                              |[-1r, 5w]   |MH3        |MH              |                 |
-|egress::hdr.udp.checksum                              |[-1r, 5w]   |MH11       |MH              |                 |
-|egress::hdr.bth.opcode                                |[-1r, 5w]   |B1         |B               |                 |
-|egress::hdr.bth.reserved1                             |[-1r, 5w]   |H25        |H               |[15:8]           |
-|egress::hdr.bth.dst_qpn[16]                           |[-1r, 5w]   |H25        |H               |[0]              |
-|egress::hdr.bth.dst_qpn[23:17]                        |[-1r, 5w]   |H25        |H               |[7:1]            |
-|egress::hdr.bth.dst_qpn[2:0]                          |[-1r, 5w]   |H26        |H               |[2:0]            |
-|egress::hdr.bth.dst_qpn[15:3]                         |[-1r, 5w]   |H26        |H               |[15:3]           |
-|egress::pnp_dip_hash_0[2:0]                           |[-1r, 5w]   |H24        |H               |[2:0]            |
-|egress::pnp_dip_hash_0[7:3]                           |[-1r, 5w]   |H24        |H               |[7:3]            |
-|egress::tmp1_0[47:32]                                 |[-1r, 5w]   |DH8        |DH              |                 |
-|egress::tmp1_0[31:0]                                  |[-1r, 5w]   |DW0        |DW              |                 |
-|egress::tmp2_0                                        |[-1r, 5w]   |DW1        |DW              |                 |
-|ingress::hdr.recir.$valid                             |[-1r, 5w]   |H0         |H               |[3]              |
-|ingress::hdr.ethernet.$valid                          |[-1r, 5w]   |H0         |H               |[4]              |
-|ingress::hdr.ipv4.$valid                              |[-1r, 5w]   |H0         |H               |[5]              |
-|ingress::hdr.tcp.$valid                               |[-1r, 5w]   |H0         |H               |[6]              |
-|ingress::hdr.udp.$valid                               |[-1r, 5w]   |H0         |H               |[7]              |
-|ingress::hdr.bth.$valid                               |[-1r, 5w]   |H0         |H               |[8]              |
-|ingress::hdr.arp.$valid                               |[-1r, 5w]   |H0         |H               |[9]              |
-|ingress::hdr.bridged_md.$valid                        |[-1r, 5w]   |H0         |H               |[10]             |
-|egress::hdr.ethernet.$valid                           |[-1r, 5w]   |B0         |B               |[2]              |
-|egress::hdr.ipv4.$valid                               |[-1r, 5w]   |B0         |B               |[3]              |
-|egress::hdr.tcp.$valid                                |[-1r, 5w]   |B0         |B               |[4]              |
-|egress::hdr.udp.$valid                                |[-1r, 5w]   |B0         |B               |[5]              |
-|egress::hdr.bth.$valid                                |[-1r, 5w]   |B0         |B               |[6]              |
-|egress::hdr.arp.$valid                                |[-1r, 5w]   |B0         |B               |[7]              |
+|ingress::meta.ing_mir_ses                             |[-1r, 8w]   |B1         |B               |                 |
+|ingress::meta.pkt_type                                |[-1r, 8w]   |B4         |B               |                 |
+|ingress::ig_intr_md.ingress_port                      |[-1r, 8w]   |H9         |H               |[8:0]            |
+|ingress::hdr.recir.cnt                                |[-1r, 8w]   |W0         |W               |                 |
+|ingress::hdr.ethernet.ether_type                      |[-1r, 8w]   |MH6        |MH              |                 |
+|ingress::hdr.ipv4.dst_addr                            |[-1r, 8w]   |MW2        |MW              |                 |
+|ingress::hdr.udp.dst_port                             |[-1r, 8w]   |MH5        |MH              |                 |
+|ingress::hdr.bth.opcode                               |[-1r, 8w]   |MB0        |MB              |                 |
+|ingress::hdr.bth.psn[23:16]                           |[-1r, 8w]   |MB1        |MB              |                 |
+|ingress::hdr.bth.psn[0]                               |[-1r, 8w]   |MH4        |MH              |[0]              |
+|ingress::hdr.bth.psn[15:1]                            |[-1r, 8w]   |MH4        |MH              |[15:1]           |
+|ingress::hdr.arp.dstIpv4Addr                          |[-1r, 8w]   |MW2        |MW              |                 |
+|ingress::ig_intr_md_for_tm.ucast_egress_port          |[-1r, 8w]   |H1         |H               |[8:0]            |
+|ingress::ig_intr_md_for_tm.bypass_egress              |[-1r, 8w]   |B2         |B               |[0]              |
+|ingress::ig_intr_md_for_tm.ucast_egress_port.$valid   |[-1r, 8w]   |H0         |H               |[0]              |
+|ingress::apply_l3_0                                   |[-1r, 8w]   |B2         |B               |[1]              |
+|ingress::ig_intr_md_for_tm.bypass_egress.$valid       |[-1r, 8w]   |H0         |H               |[1]              |
+|ingress::ig_intr_md_for_dprsr.mirror_type             |[-1r, 8w]   |B0         |B               |[3:0]            |
+|ingress::ig_intr_md_for_dprsr.mirror_type.$valid      |[-1r, 8w]   |H0         |H               |[2]              |
+|ingress::hdr.bridged_md.pkt_type                      |[-1r, 8w]   |B3         |B               |                 |
+|egress::eg_intr_md_for_dprsr.mirror_io_select         |[-1r, 8w]   |MH2        |MH              |[0]              |
+|egress::eg_intr_md_for_dprsr.mirror_io_select.$valid  |[-1r, 8w]   |H4         |H               |[0]              |
+|egress::eg_intr_md.egress_port                        |[-1r, 8w]   |MH1        |MH              |[8:0]            |
+|egress::eg_intr_md.egress_port.$valid                 |[-1r, 8w]   |H4         |H               |[1]              |
+|egress::meta.is_mirrored                              |[-1r, 8w]   |MH2        |MH              |[1]              |
+|egress::meta.udp_tmp_checksum                         |[-1r, 8w]   |MH0        |MH              |                 |
+|egress::hdr.ethernet.dst_addr[47:32]                  |[-1r, 8w]   |MH9        |MH              |                 |
+|egress::hdr.ethernet.dst_addr[31:0]                   |[-1r, 8w]   |MW1        |MW              |                 |
+|egress::hdr.ethernet.src_addr[47:32]                  |[-1r, 8w]   |MH8        |MH              |                 |
+|egress::hdr.ethernet.src_addr[31:0]                   |[-1r, 8w]   |MW0        |MW              |                 |
+|egress::hdr.ipv4.version                              |[-1r, 8w]   |H7         |H               |[15:12]          |
+|egress::hdr.ipv4.ihl                                  |[-1r, 8w]   |H7         |H               |[11:8]           |
+|egress::hdr.ipv4.diffserv                             |[-1r, 8w]   |H7         |H               |[7:2]            |
+|egress::hdr.ipv4.ecn                                  |[-1r, 8w]   |H7         |H               |[1:0]            |
+|egress::hdr.ipv4.total_len                            |[-1r, 8w]   |W6         |W               |[31:16]          |
+|egress::hdr.ipv4.identification                       |[-1r, 8w]   |W6         |W               |[15:0]           |
+|egress::hdr.ipv4.flags                                |[-1r, 8w]   |W13        |W               |[31:29]          |
+|egress::hdr.ipv4.frag_offset                          |[-1r, 8w]   |W13        |W               |[28:16]          |
+|egress::hdr.ipv4.ttl                                  |[-1r, 8w]   |W13        |W               |[15:8]           |
+|egress::hdr.ipv4.protocol                             |[-1r, 8w]   |W13        |W               |[7:0]            |
+|egress::hdr.ipv4.hdr_checksum                         |[-1r, 8w]   |MH10       |MH              |                 |
+|egress::hdr.ipv4.src_addr                             |[-1r, 8w]   |W12        |W               |                 |
+|egress::hdr.ipv4.dst_addr                             |[-1r, 8w]   |MW4        |MW              |                 |
+|egress::hdr.udp.src_port[12:0]                        |[-1r, 8w]   |MH3        |MH              |[12:0]           |
+|egress::hdr.udp.src_port[13]                          |[-1r, 8w]   |MH3        |MH              |[13]             |
+|egress::hdr.udp.src_port[15:14]                       |[-1r, 8w]   |MH3        |MH              |[15:14]          |
+|egress::hdr.udp.dst_port                              |[-1r, 8w]   |W5         |W               |[31:16]          |
+|egress::hdr.udp.hdr_length                            |[-1r, 8w]   |W5         |W               |[15:0]           |
+|egress::hdr.udp.checksum                              |[-1r, 8w]   |H8         |H               |                 |
+|egress::hdr.bth.opcode                                |[-1r, 8w]   |W3         |W               |[31:24]          |
+|egress::hdr.bth.solicited_event                       |[-1r, 8w]   |W3         |W               |[23]             |
+|egress::hdr.bth.mig_req                               |[-1r, 8w]   |W3         |W               |[22]             |
+|egress::hdr.bth.pad_count                             |[-1r, 8w]   |W3         |W               |[21:20]          |
+|egress::hdr.bth.header_v                              |[-1r, 8w]   |W3         |W               |[19:16]          |
+|egress::hdr.bth.parti_key                             |[-1r, 8w]   |W3         |W               |[15:0]           |
+|egress::hdr.bth.reserved1                             |[-1r, 8w]   |H5         |H               |[15:8]           |
+|egress::hdr.bth.dst_qpn[16]                           |[-1r, 8w]   |H5         |H               |[0]              |
+|egress::hdr.bth.dst_qpn[23:17]                        |[-1r, 8w]   |H5         |H               |[7:1]            |
+|egress::hdr.bth.dst_qpn[2:0]                          |[-1r, 8w]   |H6         |H               |[2:0]            |
+|egress::hdr.bth.dst_qpn[15:3]                         |[-1r, 8w]   |H6         |H               |[15:3]           |
+|egress::hdr.bth.ack_req                               |[-1r, 8w]   |W4         |W               |[31]             |
+|egress::hdr.bth.reserved2                             |[-1r, 8w]   |W4         |W               |[30:24]          |
+|egress::hdr.bth.psn                                   |[-1r, 8w]   |W4         |W               |[23:0]           |
+|egress::pnp_dip_hash_0[2:0]                           |[-1r, 8w]   |H2         |H               |[2:0]            |
+|egress::pnp_dip_hash_0[7:3]                           |[-1r, 8w]   |H2         |H               |[7:3]            |
+|egress::tmp1_0[47:32]                                 |[-1r, 8w]   |DH8        |DH              |                 |
+|egress::tmp1_0[31:0]                                  |[-1r, 8w]   |W1         |W               |                 |
+|egress::tmp2_0                                        |[-1r, 8w]   |MW6        |MW              |                 |
+|egress::hdr.cnp_padding.reserved1[7:0]                |[-1r, 8w]   |B16        |B               |                 |
+|egress::hdr.cnp_padding.reserved1[15:8]               |[-1r, 8w]   |B16        |B               |                 |
+|egress::hdr.cnp_padding.reserved1[23:16]              |[-1r, 8w]   |B16        |B               |                 |
+|egress::hdr.cnp_padding.reserved1[31:24]              |[-1r, 8w]   |B16        |B               |                 |
+|egress::hdr.cnp_padding.reserved1[39:32]              |[-1r, 8w]   |B16        |B               |                 |
+|egress::hdr.cnp_padding.reserved1[47:40]              |[-1r, 8w]   |B16        |B               |                 |
+|egress::hdr.cnp_padding.reserved1[55:48]              |[-1r, 8w]   |B16        |B               |                 |
+|egress::hdr.cnp_padding.reserved1[63:56]              |[-1r, 8w]   |B16        |B               |                 |
+|egress::hdr.cnp_padding.reserved2[7:0]                |[-1r, 8w]   |B16        |B               |                 |
+|egress::hdr.cnp_padding.reserved2[15:8]               |[-1r, 8w]   |B16        |B               |                 |
+|egress::hdr.cnp_padding.reserved2[23:16]              |[-1r, 8w]   |B16        |B               |                 |
+|egress::hdr.cnp_padding.reserved2[31:24]              |[-1r, 8w]   |B16        |B               |                 |
+|egress::hdr.cnp_padding.reserved2[39:32]              |[-1r, 8w]   |B16        |B               |                 |
+|egress::hdr.cnp_padding.reserved2[47:40]              |[-1r, 8w]   |B16        |B               |                 |
+|egress::hdr.cnp_padding.reserved2[55:48]              |[-1r, 8w]   |B16        |B               |                 |
+|egress::hdr.cnp_padding.reserved2[63:56]              |[-1r, 8w]   |B16        |B               |                 |
+|egress::hdr.icrc.value[7:0]                           |[-1r, 8w]   |W2         |W               |[7:0]            |
+|egress::hdr.icrc.value[15:8]                          |[-1r, 8w]   |W2         |W               |[15:8]           |
+|egress::hdr.icrc.value[23:16]                         |[-1r, 8w]   |W2         |W               |[23:16]          |
+|egress::hdr.icrc.value[31:24]                         |[-1r, 8w]   |W2         |W               |[31:24]          |
+|egress::icrc_raw_0[7:0]                               |[-1r, 8w]   |W1         |W               |[7:0]            |
+|egress::icrc_raw_0[15:8]                              |[-1r, 8w]   |W1         |W               |[15:8]           |
+|egress::icrc_raw_0[23:16]                             |[-1r, 8w]   |W1         |W               |[23:16]          |
+|egress::icrc_raw_0[31:24]                             |[-1r, 8w]   |W1         |W               |[31:24]          |
+|egress::hdr.udp.checksum.$deparse_original_csum       |[-1r, 8w]   |B17        |B               |[0]              |
+|egress::hdr.udp.checksum.$deparse_updated_csum_0      |[-1r, 8w]   |B17        |B               |[1]              |
+|ingress::hdr.recir.$valid                             |[-1r, 8w]   |H0         |H               |[3]              |
+|ingress::hdr.ethernet.$valid                          |[-1r, 8w]   |H0         |H               |[4]              |
+|ingress::hdr.ipv4.$valid                              |[-1r, 8w]   |H0         |H               |[5]              |
+|ingress::hdr.tcp.$valid                               |[-1r, 8w]   |H0         |H               |[6]              |
+|ingress::hdr.udp.$valid                               |[-1r, 8w]   |H0         |H               |[7]              |
+|ingress::hdr.bth.$valid                               |[-1r, 8w]   |H0         |H               |[8]              |
+|ingress::hdr.arp.$valid                               |[-1r, 8w]   |H0         |H               |[9]              |
+|ingress::hdr.bridged_md.$valid                        |[-1r, 8w]   |H0         |H               |[10]             |
+|egress::hdr.ethernet.$valid                           |[-1r, 8w]   |H4         |H               |[2]              |
+|egress::hdr.ipv4.$valid                               |[-1r, 8w]   |H4         |H               |[3]              |
+|egress::hdr.tcp.$valid                                |[-1r, 8w]   |H4         |H               |[4]              |
+|egress::hdr.udp.$valid                                |[-1r, 8w]   |H4         |H               |[5]              |
+|egress::hdr.bth.$valid                                |[-1r, 8w]   |H4         |H               |[6]              |
+|egress::hdr.arp.$valid                                |[-1r, 8w]   |H4         |H               |[7]              |
+|egress::hdr.cnp_padding.$valid                        |[-1r, 8w]   |H4         |H               |[8]              |
+|egress::hdr.icrc.$valid                               |[-1r, 8w]   |H4         |H               |[9]              |
 +------------------------------------------------------+------------+-----------+----------------+-----------------+
 
 
@@ -282,17 +374,17 @@ MAU Groups:
 +--------------------+-----------------+---------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
 |   Container Set    | Containers Used |   Bits Used   | Bits Used on Ingress | Bits Used on Egress | Bits Allocated | Bits Allocated on Ingress | Bits Allocated on Egress | Available Bits |
 +--------------------+-----------------+---------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
-|       B0-11        |   8 ( 66.7 %)   | 54 ( 56.2 %)  |     30 ( 31.2 %)     |    24 (  25  %)     |  54 ( 56.2 %)  |       30 ( 31.2 %)        |       24 (  25  %)       |       96       |
-|       MB0-3        |   4 (  100 %)   | 32 (  100 %)  |     32 (  100 %)     |     0 (   0  %)     |  32 (  100 %)  |       32 (  100 %)        |       0 (   0  %)        |       32       |
+|       B0-11        |   5 ( 41.7 %)   | 30 ( 31.2 %)  |     30 ( 31.2 %)     |     0 (   0  %)     |  30 ( 31.2 %)  |       30 ( 31.2 %)        |       0 (   0  %)        |       96       |
+|       MB0-3        |   2 (  50  %)   | 16 (  50  %)  |     16 (  50  %)     |     0 (   0  %)     |  16 (  50  %)  |       16 (  50  %)        |       0 (   0  %)        |       32       |
 |       DB0-3        |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |       32       |
 |                    |                 |               |                      |                     |                |                           |                          |                |
-| Usage for Group 1  |  12 (  60  %)   | 86 ( 53.8 %)  |     62 ( 38.8 %)     |    24 (  15  %)     |  86 ( 53.8 %)  |       62 ( 38.8 %)        |       24 (  15  %)       |      160       |
+| Usage for Group 1  |   7 (  35  %)   | 46 ( 28.8 %)  |     46 ( 28.8 %)     |     0 (   0  %)     |  46 ( 28.8 %)  |       46 ( 28.8 %)        |       0 (   0  %)        |      160       |
 +--------------------+-----------------+---------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
-|       B12-23       |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |       96       |
+|       B12-23       |   2 ( 16.7 %)   | 10 ( 10.4 %)  |     0 (   0  %)      |    10 ( 10.4 %)     | 130 (  135 %)  |        0 (   0  %)        |      130 (  135 %)       |       96       |
 |       MB4-7        |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |       32       |
 |       DB4-7        |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |       32       |
 |                    |                 |               |                      |                     |                |                           |                          |                |
-| Usage for Group 2  |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      160       |
+| Usage for Group 2  |   2 (  10  %)   | 10 ( 6.25 %)  |     0 (   0  %)      |    10 ( 6.25 %)     | 130 ( 81.2 %)  |        0 (   0  %)        |      130 ( 81.2 %)       |      160       |
 +--------------------+-----------------+---------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
 |       B24-35       |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |       96       |
 |       MB8-11       |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |       32       |
@@ -306,29 +398,29 @@ MAU Groups:
 |                    |                 |               |                      |                     |                |                           |                          |                |
 | Usage for Group 4  |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      160       |
 +--------------------+-----------------+---------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
-|       H0-11        |   3 (  25  %)   | 29 ( 15.1 %)  |     29 ( 15.1 %)     |     0 (   0  %)     |  29 ( 15.1 %)  |       29 ( 15.1 %)        |       0 (   0  %)        |      192       |
+|       H0-11        |   9 (  75  %)   | 111 ( 57.8 %) |     29 ( 15.1 %)     |    82 ( 42.7 %)     | 111 ( 57.8 %)  |       29 ( 15.1 %)        |       82 ( 42.7 %)       |      192       |
 |       MH0-3        |   4 (  100 %)   | 43 ( 67.2 %)  |     0 (   0  %)      |    43 ( 67.2 %)     |  43 ( 67.2 %)  |        0 (   0  %)        |       43 ( 67.2 %)       |       64       |
 |       DH0-3        |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |       64       |
 |                    |                 |               |                      |                     |                |                           |                          |                |
-| Usage for Group 5  |   7 (  35  %)   | 72 ( 22.5 %)  |     29 ( 9.06 %)     |    43 ( 13.4 %)     |  72 ( 22.5 %)  |       29 ( 9.06 %)        |       43 ( 13.4 %)       |      320       |
+| Usage for Group 5  |  13 (  65  %)   | 154 ( 48.1 %) |     29 ( 9.06 %)     |    125 ( 39.1 %)    | 154 ( 48.1 %)  |       29 ( 9.06 %)        |      125 ( 39.1 %)       |      320       |
 +--------------------+-----------------+---------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
 |       H12-23       |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      192       |
-|       MH4-7        |   4 (  100 %)   | 64 (  100 %)  |     64 (  100 %)     |     0 (   0  %)     |  64 (  100 %)  |       64 (  100 %)        |       0 (   0  %)        |       64       |
+|       MH4-7        |   3 (  75  %)   | 48 (  75  %)  |     48 (  75  %)     |     0 (   0  %)     |  48 (  75  %)  |       48 (  75  %)        |       0 (   0  %)        |       64       |
 |       DH4-7        |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |       64       |
 |                    |                 |               |                      |                     |                |                           |                          |                |
-| Usage for Group 6  |   4 (  20  %)   | 64 (  20  %)  |     64 (  20  %)     |     0 (   0  %)     |  64 (  20  %)  |       64 (  20  %)        |       0 (   0  %)        |      320       |
+| Usage for Group 6  |   3 (  15  %)   | 48 (  15  %)  |     48 (  15  %)     |     0 (   0  %)     |  48 (  15  %)  |       48 (  15  %)        |       0 (   0  %)        |      320       |
 +--------------------+-----------------+---------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
-|       H24-35       |   3 (  25  %)   | 40 ( 20.8 %)  |     0 (   0  %)      |    40 ( 20.8 %)     |  40 ( 20.8 %)  |        0 (   0  %)        |       40 ( 20.8 %)       |      192       |
-|       MH8-11       |   4 (  100 %)   | 64 (  100 %)  |     0 (   0  %)      |    64 (  100 %)     |  64 (  100 %)  |        0 (   0  %)        |       64 (  100 %)       |       64       |
+|       H24-35       |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      192       |
+|       MH8-11       |   3 (  75  %)   | 48 (  75  %)  |     0 (   0  %)      |    48 (  75  %)     |  48 (  75  %)  |        0 (   0  %)        |       48 (  75  %)       |       64       |
 |       DH8-11       |   1 (  25  %)   | 16 (  25  %)  |     0 (   0  %)      |    16 (  25  %)     |  16 (  25  %)  |        0 (   0  %)        |       16 (  25  %)       |       64       |
 |                    |                 |               |                      |                     |                |                           |                          |                |
-| Usage for Group 7  |   8 (  40  %)   | 120 ( 37.5 %) |     0 (   0  %)      |    120 ( 37.5 %)    | 120 ( 37.5 %)  |        0 (   0  %)        |      120 ( 37.5 %)       |      320       |
+| Usage for Group 7  |   4 (  20  %)   | 64 (  20  %)  |     0 (   0  %)      |    64 (  20  %)     |  64 (  20  %)  |        0 (   0  %)        |       64 (  20  %)       |      320       |
 +--------------------+-----------------+---------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
 |       H36-47       |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      192       |
-|      MH12-15       |   1 (  25  %)   | 16 (  25  %)  |     0 (   0  %)      |    16 (  25  %)     |  16 (  25  %)  |        0 (   0  %)        |       16 (  25  %)       |       64       |
+|      MH12-15       |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |       64       |
 |      DH12-15       |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |       64       |
 |                    |                 |               |                      |                     |                |                           |                          |                |
-| Usage for Group 8  |   1 (   5  %)   | 16 (   5  %)  |     0 (   0  %)      |    16 (   5  %)     |  16 (   5  %)  |        0 (   0  %)        |       16 (   5  %)       |      320       |
+| Usage for Group 8  |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      320       |
 +--------------------+-----------------+---------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
 |       H48-59       |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      192       |
 |      MH16-19       |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |       64       |
@@ -342,17 +434,17 @@ MAU Groups:
 |                    |                 |               |                      |                     |                |                           |                          |                |
 | Usage for Group 10 |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      320       |
 +--------------------+-----------------+---------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
-|       W0-11        |   1 ( 8.33 %)   | 32 ( 8.33 %)  |     32 ( 8.33 %)     |     0 (   0  %)     |  32 ( 8.33 %)  |       32 ( 8.33 %)        |       0 (   0  %)        |      384       |
-|       MW0-3        |   4 (  100 %)   | 128 (  100 %) |     0 (   0  %)      |    128 (  100 %)    | 128 (  100 %)  |        0 (   0  %)        |      128 (  100 %)       |      128       |
-|       DW0-3        |   2 (  50  %)   | 64 (  50  %)  |     0 (   0  %)      |    64 (  50  %)     |  64 (  50  %)  |        0 (   0  %)        |       64 (  50  %)       |      128       |
+|       W0-11        |   7 ( 58.3 %)   | 224 ( 58.3 %) |     32 ( 8.33 %)     |    192 (  50  %)    | 256 ( 66.7 %)  |       32 ( 8.33 %)        |      224 ( 58.3 %)       |      384       |
+|       MW0-3        |   3 (  75  %)   | 96 (  75  %)  |     32 (  25  %)     |    64 (  50  %)     | 128 (  100 %)  |       64 (  50  %)        |       64 (  50  %)       |      128       |
+|       DW0-3        |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      128       |
 |                    |                 |               |                      |                     |                |                           |                          |                |
-| Usage for Group 11 |   7 (  35  %)   | 224 (  35  %) |     32 (   5  %)     |    192 (  30  %)    | 224 (  35  %)  |       32 (   5  %)        |      192 (  30  %)       |      640       |
+| Usage for Group 11 |  10 (  50  %)   | 320 (  50  %) |     64 (  10  %)     |    256 (  40  %)    | 384 (  60  %)  |       96 (  15  %)        |      288 (  45  %)       |      640       |
 +--------------------+-----------------+---------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
-|       W12-23       |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      384       |
-|       MW4-7        |   1 (  25  %)   | 32 (  25  %)  |     32 (  25  %)     |     0 (   0  %)     |  64 (  50  %)  |       64 (  50  %)        |       0 (   0  %)        |      128       |
+|       W12-23       |   2 ( 16.7 %)   | 64 ( 16.7 %)  |     0 (   0  %)      |    64 ( 16.7 %)     |  64 ( 16.7 %)  |        0 (   0  %)        |       64 ( 16.7 %)       |      384       |
+|       MW4-7        |   2 (  50  %)   | 64 (  50  %)  |     0 (   0  %)      |    64 (  50  %)     |  64 (  50  %)  |        0 (   0  %)        |       64 (  50  %)       |      128       |
 |       DW4-7        |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      128       |
 |                    |                 |               |                      |                     |                |                           |                          |                |
-| Usage for Group 12 |   1 (   5  %)   | 32 (   5  %)  |     32 (   5  %)     |     0 (   0  %)     |  64 (  10  %)  |       64 (  10  %)        |       0 (   0  %)        |      640       |
+| Usage for Group 12 |   4 (  20  %)   | 128 (  20  %) |     0 (   0  %)      |    128 (  20  %)    | 128 (  20  %)  |        0 (   0  %)        |      128 (  20  %)       |      640       |
 +--------------------+-----------------+---------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
 |       W24-35       |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      384       |
 |       MW8-11       |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      128       |
@@ -366,15 +458,15 @@ MAU Groups:
 |                    |                 |               |                      |                     |                |                           |                          |                |
 | Usage for Group 14 |   0 (   0  %)   |  0 (   0  %)  |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      640       |
 +--------------------+-----------------+---------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
-|    Usage for 8b    |  12 (  15  %)   | 86 ( 13.4 %)  |     62 ( 9.69 %)     |    24 ( 3.75 %)     |  86 ( 13.4 %)  |       62 ( 9.69 %)        |       24 ( 3.75 %)       |      640       |
-|   Usage for 16b    |  20 ( 16.7 %)   | 272 ( 14.2 %) |     93 ( 4.84 %)     |    179 ( 9.32 %)    | 272 ( 14.2 %)  |       93 ( 4.84 %)        |      179 ( 9.32 %)       |      1920      |
-|   Usage for 32b    |   8 (  10  %)   | 256 (  10  %) |     64 (  2.5 %)     |    192 (  7.5 %)    | 288 ( 11.2 %)  |       96 ( 3.75 %)        |      192 (  7.5 %)       |      2560      |
+|    Usage for 8b    |   9 ( 11.2 %)   | 56 ( 8.75 %)  |     46 ( 7.19 %)     |    10 ( 1.56 %)     | 176 ( 27.5 %)  |       46 ( 7.19 %)        |      130 ( 20.3 %)       |      640       |
+|   Usage for 16b    |  20 ( 16.7 %)   | 266 ( 13.9 %) |     77 ( 4.01 %)     |    189 ( 9.84 %)    | 266 ( 13.9 %)  |       77 ( 4.01 %)        |      189 ( 9.84 %)       |      1920      |
+|   Usage for 32b    |  14 ( 17.5 %)   | 448 ( 17.5 %) |     64 (  2.5 %)     |    384 (  15  %)    | 512 (  20  %)  |       96 ( 3.75 %)        |      416 ( 16.2 %)       |      2560      |
 +--------------------+-----------------+---------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
-|   Usage for dark   |   3 ( 5.36 %)   | 80 ( 7.81 %)  |     0 (   0  %)      |    80 ( 7.81 %)     |  80 ( 7.81 %)  |        0 (   0  %)        |       80 ( 7.81 %)       |      1024      |
-|  Usage for mocha   |  22 ( 39.3 %)   | 379 (  37  %) |    128 ( 12.5 %)     |    251 ( 24.5 %)    | 411 ( 40.1 %)  |       160 ( 15.6 %)       |      251 ( 24.5 %)       |      1024      |
-|  Usage for normal  |  15 ( 8.93 %)   | 155 ( 5.05 %) |     91 ( 2.96 %)     |    64 ( 2.08 %)     | 155 ( 5.05 %)  |       91 ( 2.96 %)        |       64 ( 2.08 %)       |      3072      |
+|   Usage for dark   |   1 ( 1.79 %)   | 16 ( 1.56 %)  |     0 (   0  %)      |    16 ( 1.56 %)     |  16 ( 1.56 %)  |        0 (   0  %)        |       16 ( 1.56 %)       |      1024      |
+|  Usage for mocha   |  17 ( 30.4 %)   | 315 ( 30.8 %) |     96 ( 9.38 %)     |    219 ( 21.4 %)    | 347 ( 33.9 %)  |       128 ( 12.5 %)       |      219 ( 21.4 %)       |      1024      |
+|  Usage for normal  |  25 ( 14.9 %)   | 439 ( 14.3 %) |     91 ( 2.96 %)     |    348 ( 11.3 %)    | 591 ( 19.2 %)  |       91 ( 2.96 %)        |      500 ( 16.3 %)       |      3072      |
 +--------------------+-----------------+---------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
-| Overall PHV Usage  |  40 ( 14.3 %)   | 614 (  12  %) |    219 ( 4.28 %)     |    395 ( 7.71 %)    | 646 ( 12.6 %)  |       251 (  4.9 %)       |      395 ( 7.71 %)       |      5120      |
+| Overall PHV Usage  |  43 ( 15.4 %)   | 770 (  15  %) |    187 ( 3.65 %)     |    583 ( 11.4 %)    | 954 ( 18.6 %)  |       219 ( 4.28 %)       |      735 ( 14.4 %)       |      5120      |
 +--------------------+-----------------+---------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
 
 

@@ -1,8 +1,8 @@
 {
-    "build_date": "Fri Jun 26 14:20:30 2026",
+    "build_date": "Fri Aug 21 21:51:49 2026",
     "compiler_version": "9.7.1",
     "program_name": "themis.p4",
-    "run_id": "ab35a17c8bb560ea",
+    "run_id": "d667120bda015760",
     "schema_version": "1.0.1",
     "stage_characteristics": [
         {
@@ -564,7 +564,7 @@
                 "lpf_wred": false,
                 "selectors": false,
                 "stateful": false,
-                "statistics": false,
+                "statistics": true,
                 "ternary": true,
                 "max_selector_words": 0
             },
@@ -573,7 +573,7 @@
                 "lpf_wred": false,
                 "selectors": false,
                 "stateful": false,
-                "statistics": true,
+                "statistics": false,
                 "ternary": false
             },
             "gress": "egress",
@@ -606,8 +606,8 @@
             "stage_number": 3
         },
         {
-            "clock_cycles": 20,
-            "cycles_contribute_to_latency": 20,
+            "clock_cycles": 22,
+            "cycles_contribute_to_latency": 22,
             "dependency_to_previous": "match",
             "features": {
                 "exact": true,
@@ -624,14 +624,14 @@
                 "selectors": false,
                 "stateful": false,
                 "statistics": false,
-                "ternary": false
+                "ternary": true
             },
             "gress": "egress",
-            "predication_cycle": 11,
+            "predication_cycle": 13,
             "stage_number": 4
         },
         {
-            "clock_cycles": 20,
+            "clock_cycles": 22,
             "cycles_contribute_to_latency": 2,
             "dependency_to_previous": "action",
             "features": {
@@ -640,7 +640,7 @@
                 "selectors": false,
                 "stateful": false,
                 "statistics": false,
-                "ternary": false,
+                "ternary": true,
                 "max_selector_words": 0
             },
             "features_to_balance_latency": {
@@ -652,11 +652,11 @@
                 "ternary": false
             },
             "gress": "egress",
-            "predication_cycle": 11,
+            "predication_cycle": 13,
             "stage_number": 5
         },
         {
-            "clock_cycles": 20,
+            "clock_cycles": 22,
             "cycles_contribute_to_latency": 2,
             "dependency_to_previous": "action",
             "features": {
@@ -665,7 +665,7 @@
                 "selectors": false,
                 "stateful": false,
                 "statistics": false,
-                "ternary": false,
+                "ternary": true,
                 "max_selector_words": 0
             },
             "features_to_balance_latency": {
@@ -677,11 +677,11 @@
                 "ternary": false
             },
             "gress": "egress",
-            "predication_cycle": 11,
+            "predication_cycle": 13,
             "stage_number": 6
         },
         {
-            "clock_cycles": 20,
+            "clock_cycles": 22,
             "cycles_contribute_to_latency": 2,
             "dependency_to_previous": "action",
             "features": {
@@ -690,7 +690,7 @@
                 "selectors": false,
                 "stateful": false,
                 "statistics": false,
-                "ternary": false,
+                "ternary": true,
                 "max_selector_words": 0
             },
             "features_to_balance_latency": {
@@ -702,11 +702,11 @@
                 "ternary": false
             },
             "gress": "egress",
-            "predication_cycle": 11,
+            "predication_cycle": 13,
             "stage_number": 7
         },
         {
-            "clock_cycles": 20,
+            "clock_cycles": 22,
             "cycles_contribute_to_latency": 2,
             "dependency_to_previous": "action",
             "features": {
@@ -724,14 +724,14 @@
                 "selectors": false,
                 "stateful": false,
                 "statistics": true,
-                "ternary": false
+                "ternary": true
             },
             "gress": "egress",
-            "predication_cycle": 11,
+            "predication_cycle": 13,
             "stage_number": 8
         },
         {
-            "clock_cycles": 20,
+            "clock_cycles": 22,
             "cycles_contribute_to_latency": 2,
             "dependency_to_previous": "action",
             "features": {
@@ -749,14 +749,14 @@
                 "selectors": false,
                 "stateful": false,
                 "statistics": true,
-                "ternary": false
+                "ternary": true
             },
             "gress": "egress",
-            "predication_cycle": 11,
+            "predication_cycle": 13,
             "stage_number": 9
         },
         {
-            "clock_cycles": 20,
+            "clock_cycles": 22,
             "cycles_contribute_to_latency": 2,
             "dependency_to_previous": "action",
             "features": {
@@ -774,14 +774,14 @@
                 "selectors": false,
                 "stateful": false,
                 "statistics": true,
-                "ternary": false
+                "ternary": true
             },
             "gress": "egress",
-            "predication_cycle": 11,
+            "predication_cycle": 13,
             "stage_number": 10
         },
         {
-            "clock_cycles": 20,
+            "clock_cycles": 22,
             "cycles_contribute_to_latency": 2,
             "dependency_to_previous": "action",
             "features": {
@@ -799,14 +799,14 @@
                 "selectors": false,
                 "stateful": false,
                 "statistics": true,
-                "ternary": false
+                "ternary": true
             },
             "gress": "egress",
-            "predication_cycle": 11,
+            "predication_cycle": 13,
             "stage_number": 11
         },
         {
-            "clock_cycles": 20,
+            "clock_cycles": 22,
             "cycles_contribute_to_latency": 2,
             "dependency_to_previous": "action",
             "features": {
@@ -824,14 +824,14 @@
                 "selectors": false,
                 "stateful": false,
                 "statistics": true,
-                "ternary": false
+                "ternary": true
             },
             "gress": "egress",
-            "predication_cycle": 11,
+            "predication_cycle": 13,
             "stage_number": 12
         },
         {
-            "clock_cycles": 20,
+            "clock_cycles": 22,
             "cycles_contribute_to_latency": 2,
             "dependency_to_previous": "action",
             "features": {
@@ -849,14 +849,14 @@
                 "selectors": false,
                 "stateful": false,
                 "statistics": true,
-                "ternary": false
+                "ternary": true
             },
             "gress": "egress",
-            "predication_cycle": 11,
+            "predication_cycle": 13,
             "stage_number": 13
         },
         {
-            "clock_cycles": 20,
+            "clock_cycles": 22,
             "cycles_contribute_to_latency": 2,
             "dependency_to_previous": "action",
             "features": {
@@ -874,14 +874,14 @@
                 "selectors": false,
                 "stateful": false,
                 "statistics": true,
-                "ternary": false
+                "ternary": true
             },
             "gress": "egress",
-            "predication_cycle": 11,
+            "predication_cycle": 13,
             "stage_number": 14
         },
         {
-            "clock_cycles": 20,
+            "clock_cycles": 22,
             "cycles_contribute_to_latency": 2,
             "dependency_to_previous": "action",
             "features": {
@@ -899,14 +899,14 @@
                 "selectors": false,
                 "stateful": false,
                 "statistics": true,
-                "ternary": false
+                "ternary": true
             },
             "gress": "egress",
-            "predication_cycle": 11,
+            "predication_cycle": 13,
             "stage_number": 15
         },
         {
-            "clock_cycles": 20,
+            "clock_cycles": 22,
             "cycles_contribute_to_latency": 2,
             "dependency_to_previous": "action",
             "features": {
@@ -924,14 +924,14 @@
                 "selectors": false,
                 "stateful": false,
                 "statistics": true,
-                "ternary": false
+                "ternary": true
             },
             "gress": "egress",
-            "predication_cycle": 11,
+            "predication_cycle": 13,
             "stage_number": 16
         },
         {
-            "clock_cycles": 20,
+            "clock_cycles": 22,
             "cycles_contribute_to_latency": 2,
             "dependency_to_previous": "action",
             "features": {
@@ -949,14 +949,14 @@
                 "selectors": false,
                 "stateful": false,
                 "statistics": true,
-                "ternary": false
+                "ternary": true
             },
             "gress": "egress",
-            "predication_cycle": 11,
+            "predication_cycle": 13,
             "stage_number": 17
         },
         {
-            "clock_cycles": 20,
+            "clock_cycles": 22,
             "cycles_contribute_to_latency": 2,
             "dependency_to_previous": "action",
             "features": {
@@ -974,14 +974,14 @@
                 "selectors": false,
                 "stateful": false,
                 "statistics": true,
-                "ternary": false
+                "ternary": true
             },
             "gress": "egress",
-            "predication_cycle": 11,
+            "predication_cycle": 13,
             "stage_number": 18
         },
         {
-            "clock_cycles": 20,
+            "clock_cycles": 22,
             "cycles_contribute_to_latency": 2,
             "dependency_to_previous": "action",
             "features": {
@@ -999,10 +999,10 @@
                 "selectors": false,
                 "stateful": false,
                 "statistics": true,
-                "ternary": false
+                "ternary": true
             },
             "gress": "egress",
-            "predication_cycle": 11,
+            "predication_cycle": 13,
             "stage_number": 19
         },
         {
@@ -1606,6 +1606,19 @@
             ]
         },
         {
+            "gress": "egress",
+            "name": "egresshdr.udp.checksum_encode_update_condition_1_egress",
+            "stages": [
+                {
+                    "always_runs": true,
+                    "memories": [],
+                    "on_critical_path": true,
+                    "stage_number": 4,
+                    "weight": 0.0
+                }
+            ]
+        },
+        {
             "gress": "ingress",
             "name": "tbl_set_mirror_md",
             "stages": [
@@ -1853,7 +1866,7 @@
         },
         {
             "gress": "egress",
-            "name": "tbl_themis536",
+            "name": "tbl_themis538",
             "stages": [
                 {
                     "always_runs": true,
@@ -1866,7 +1879,7 @@
         },
         {
             "gress": "egress",
-            "name": "tbl_themis543",
+            "name": "tbl_themis546",
             "stages": [
                 {
                     "always_runs": true,
@@ -1874,7 +1887,7 @@
                         {
                             "access_type": "read",
                             "memory_type": "sram",
-                            "num_memories": 2
+                            "num_memories": 3
                         },
                         {
                             "access_type": "write",
@@ -1894,13 +1907,13 @@
                     ],
                     "on_critical_path": true,
                     "stage_number": 1,
-                    "weight": 24.66666666666667
+                    "weight": 31.58333333333334
                 }
             ]
         },
         {
             "gress": "egress",
-            "name": "tbl_themis555",
+            "name": "tbl_themis568",
             "stages": [
                 {
                     "always_runs": true,
@@ -1919,7 +1932,7 @@
         },
         {
             "gress": "egress",
-            "name": "tbl_themis556",
+            "name": "tbl_themis569",
             "stages": [
                 {
                     "always_runs": true,
@@ -1938,7 +1951,111 @@
         },
         {
             "gress": "egress",
-            "name": "tbl_themis559",
+            "name": "tbl_themis583",
+            "stages": [
+                {
+                    "always_runs": false,
+                    "memories": [],
+                    "on_critical_path": true,
+                    "stage_number": 4,
+                    "weight": 0.0
+                }
+            ]
+        },
+        {
+            "gress": "egress",
+            "name": "tbl_themis616",
+            "stages": [
+                {
+                    "always_runs": false,
+                    "memories": [
+                        {
+                            "access_type": "read",
+                            "memory_type": "sram",
+                            "num_memories": 1
+                        }
+                    ],
+                    "on_critical_path": true,
+                    "stage_number": 5,
+                    "weight": 6.916666666666667
+                }
+            ]
+        },
+        {
+            "gress": "egress",
+            "name": "tbl_themis617",
+            "stages": [
+                {
+                    "always_runs": false,
+                    "memories": [
+                        {
+                            "access_type": "read",
+                            "memory_type": "sram",
+                            "num_memories": 1
+                        }
+                    ],
+                    "on_critical_path": true,
+                    "stage_number": 6,
+                    "weight": 6.916666666666667
+                }
+            ]
+        },
+        {
+            "gress": "egress",
+            "name": "tbl_themis618",
+            "stages": [
+                {
+                    "always_runs": false,
+                    "memories": [
+                        {
+                            "access_type": "read",
+                            "memory_type": "sram",
+                            "num_memories": 1
+                        }
+                    ],
+                    "on_critical_path": true,
+                    "stage_number": 7,
+                    "weight": 6.916666666666667
+                }
+            ]
+        },
+        {
+            "gress": "egress",
+            "name": "tbl_themis620",
+            "stages": [
+                {
+                    "always_runs": true,
+                    "memories": [
+                        {
+                            "access_type": "read",
+                            "memory_type": "sram",
+                            "num_memories": 2
+                        },
+                        {
+                            "access_type": "write",
+                            "memory_type": "sram",
+                            "num_memories": 1
+                        },
+                        {
+                            "access_type": "read",
+                            "memory_type": "map_ram",
+                            "num_memories": 2
+                        },
+                        {
+                            "access_type": "write",
+                            "memory_type": "map_ram",
+                            "num_memories": 1
+                        }
+                    ],
+                    "on_critical_path": true,
+                    "stage_number": 2,
+                    "weight": 24.66666666666667
+                }
+            ]
+        },
+        {
+            "gress": "egress",
+            "name": "tbl_themis621",
             "stages": [
                 {
                     "always_runs": true,
@@ -1972,7 +2089,7 @@
         },
         {
             "gress": "egress",
-            "name": "tbl_themis560",
+            "name": "tbl_themis622",
             "stages": [
                 {
                     "always_runs": true,
@@ -2006,7 +2123,7 @@
         },
         {
             "gress": "egress",
-            "name": "tbl_themis566",
+            "name": "tbl_themis628",
             "stages": [
                 {
                     "always_runs": true,
@@ -2047,7 +2164,7 @@
         },
         {
             "gress": "egress",
-            "latency": 96,
+            "latency": 98,
             "pipe_number": 0
         },
         {
@@ -2065,7 +2182,7 @@
         {
             "gress": "egress",
             "pipe_number": 0,
-            "power": 1.3168000000000003
+            "power": 1.8192000000000004
         },
         {
             "gress": "ghost",

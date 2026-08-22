@@ -1,7 +1,7 @@
-# 1 "/sde/bf-sde-9.7.1/themis/dataplane/themis.p4"
+# 1 "/sde/bf-sde-9.7.1/spfc/dataplane/themis.p4"
 # 1 "<built-in>"
 # 1 "<command-line>"
-# 1 "/sde/bf-sde-9.7.1/themis/dataplane/themis.p4"
+# 1 "/sde/bf-sde-9.7.1/spfc/dataplane/themis.p4"
 /* P4_16 */
 
 # 1 "/sde/bf-sde-9.7.1/install/share/p4c/p4include/core.p4" 1
@@ -87,7 +87,7 @@ match_kind {
     /// Longest-prefix match.
     lpm
 }
-# 4 "/sde/bf-sde-9.7.1/themis/dataplane/themis.p4" 2
+# 4 "/sde/bf-sde-9.7.1/spfc/dataplane/themis.p4" 2
 # 1 "/sde/bf-sde-9.7.1/install/share/p4c/p4include/tna.p4" 1
 /**
  * Copyright 2013-2021 Intel Corporation.
@@ -1183,9 +1183,9 @@ package MultiParserSwitch<IH0, IM0, EH0, EM0, IH1, IM1, EH1, EM1,
     @optional MultiParserPipeline<IH2, IM2, EH2, EM2> pipe2,
     @optional MultiParserPipeline<IH3, IM3, EH3, EM3> pipe3);
 # 29 "/sde/bf-sde-9.7.1/install/share/p4c/p4include/tna.p4" 2
-# 5 "/sde/bf-sde-9.7.1/themis/dataplane/themis.p4" 2
+# 5 "/sde/bf-sde-9.7.1/spfc/dataplane/themis.p4" 2
 
-# 1 "/sde/bf-sde-9.7.1/themis/dataplane/header.p4" 1
+# 1 "/sde/bf-sde-9.7.1/spfc/dataplane/header.p4" 1
 
 
 
@@ -1209,6 +1209,9 @@ const l4_port_t UDP_ROCE_DST_PORT = 4791;
 const bit<8> CNP_OPCODE = 129;
 const bit<2> ECN_CE = 3;
 const bit<2> ECN_NOT_ECT = 0;
+const bit<16> CNP_IPV4_TOTAL_LEN = 60; // IPv4 + UDP + BTH + 16B CNP pad + iCRC
+const bit<16> CNP_UDP_LENGTH = 40; // UDP + BTH + 16B CNP pad + iCRC
+const bit<8> BTH_CNP_BECN = 8w0x40; // BTH FECN/BECN/resv6 byte: only BECN on wire
 
 // rixin: 由于使用了mirror，所以需要区分
 typedef bit<8> pkt_type_t;
@@ -1296,6 +1299,15 @@ header bth_h {
     bit<24> psn;
 }
 
+header cnp_padding_h {
+    bit<64> reserved1;
+    bit<64> reserved2;
+}
+
+header icrc_h {
+    bit<32> value;
+}
+
 header arp_h {
     bit<16> hw_type;
     bit<16> proto_type;
@@ -1310,6 +1322,12 @@ header arp_h {
 
 header recir_h {
     bit<32> cnt;
+    // OLD LOGIC DISABLED:
+    // This field was temporarily added to select the CNP mirror session based
+    // on the original ingress dev_port. The user chose to revert to one fixed
+    // CNP mirror port, so the active recirculation header only needs cnt.
+    //
+    // bit<16> orig_ingress_port;
 }
 
 header mirror_bridged_metadata_h {
@@ -1318,9 +1336,17 @@ header mirror_bridged_metadata_h {
 
 header mirror_h {
     pkt_type_t pkt_type;
-    bit<8> is_last_recir_pkt;
-    bit<16> pnp_udp_src_port;
-    bit<8> pnp_dip_hash;
+    // OLD LOGIC DISABLED:
+    // The previous mirror metadata carried is_last_recir_pkt, encoded UDP
+    // source port, and dIP hash. On Tofino2 this made egress mirror parsing
+    // fragile because the mirror packet's post-metadata offset did not line up
+    // with ethernet in practice. The active path follows the SDE tna_mirror
+    // example and keeps mirror metadata to a single pkt_type byte; egress
+    // reconstructs sQPN directly from the mirrored RoCE packet fields.
+    //
+    // bit<8> is_last_recir_pkt;
+    // bit<16> pnp_udp_src_port;
+    // bit<8> pnp_dip_hash;
 }
 
 struct my_ingress_headers_t {
@@ -1343,13 +1369,15 @@ struct my_egress_headers_t {
     tcp_h tcp;
     udp_h udp;
     bth_h bth;
+    cnp_padding_h cnp_padding;
+    icrc_h icrc;
 }
 
 struct empty_header_t {}
 
 struct empty_metadata_t {}
-# 7 "/sde/bf-sde-9.7.1/themis/dataplane/themis.p4" 2
-# 1 "/sde/bf-sde-9.7.1/themis/dataplane/util.p4" 1
+# 7 "/sde/bf-sde-9.7.1/spfc/dataplane/themis.p4" 2
+# 1 "/sde/bf-sde-9.7.1/spfc/dataplane/util.p4" 1
 
 
 
@@ -1431,7 +1459,7 @@ control EmptyEgress(
         inout egress_intrinsic_metadata_for_output_port_t eg_intr_oport_md) {
     apply {}
 }
-# 8 "/sde/bf-sde-9.7.1/themis/dataplane/themis.p4" 2
+# 8 "/sde/bf-sde-9.7.1/spfc/dataplane/themis.p4" 2
 
 /*************************************************************************
  **************  I N G R E S S   P R O C E S S I N G   *******************
@@ -1936,12 +1964,14 @@ control Egress(
     inout egress_intrinsic_metadata_for_output_port_t eg_oport_md)
 {
     Hash<bit<8>>(HashAlgorithm_t.CRC8) egress_pnp_dip_hash_calc;
+    Hash<bit<32>>(HashAlgorithm_t.CRC32) cnp_icrc_hash_calc;
     // Create indirect counter
     Counter<bit<32>, bit<32>>(
         512, CounterType_t.PACKETS) indirect_counter;
     Counter<bit<32>, bit<32>>(1, CounterType_t.PACKETS) egress_mirror_seen_counter;
     Counter<bit<32>, bit<32>>(1, CounterType_t.PACKETS) egress_mirror_bth_counter;
     Counter<bit<32>, bit<32>>(1, CounterType_t.PACKETS) egress_mirror_cnp_set_counter;
+    Counter<bit<32>, bit<32>>(1, CounterType_t.PACKETS) egress_mirror_icrc_counter;
     Counter<bit<32>, bit<32>>(1, CounterType_t.PACKETS) egress_roce_data_counter;
 
     action inc_cnp_counter () {
@@ -1967,6 +1997,7 @@ control Egress(
         // rixin: 判断出当前是个mirrored pkt即cnp
         if (meta.is_mirrored == 1)
         {
+            bit<32> icrc_raw = 0;
             egress_mirror_seen_counter.count(0);
             // rixin: 设置好cnp的mac地址
             hdr.ethernet.dst_addr = hdr.ethernet.src_addr;
@@ -1974,7 +2005,17 @@ control Egress(
             // rixin: 设置好cnp的ip地址
             hdr.ipv4.dst_addr = hdr.ipv4.src_addr;
             hdr.ipv4.src_addr = tmp2;
+            hdr.ipv4.version = 4w4;
+            hdr.ipv4.ihl = 4w5;
             hdr.ipv4.ecn = ECN_NOT_ECT;
+            hdr.ipv4.total_len = CNP_IPV4_TOTAL_LEN;
+            hdr.ipv4.flags = 3w0;
+            hdr.ipv4.frag_offset = 13w0;
+            hdr.ipv4.ttl = 8w64;
+            hdr.ipv4.protocol = IP_PROTOCOLS_UDP;
+            hdr.udp.dst_port = UDP_ROCE_DST_PORT;
+            hdr.udp.hdr_length = CNP_UDP_LENGTH;
+            hdr.udp.checksum = 16w0;
             // PNP reconstructs sQPN from the mirrored original data packet.
             // Before the IP swap above, hdr.ipv4.dst_addr is the original server
             // IP and hdr.udp.src_port still carries encoded sQPN[16:3].
@@ -1982,9 +2023,58 @@ control Egress(
             hdr.bth.dst_qpn[16:3] = hdr.udp.src_port[13:0];
             hdr.bth.dst_qpn[2:0] = pnp_dip_hash[2:0];
             hdr.bth.opcode = CNP_OPCODE;
+            hdr.bth.solicited_event = 1w0;
+            hdr.bth.mig_req = 1w0;
+            hdr.bth.pad_count = 2w0;
+            hdr.bth.header_v = 4w0;
+            hdr.bth.reserved1 = BTH_CNP_BECN;
+            hdr.bth.ack_req = 1w0;
+            hdr.bth.reserved2 = 7w0;
+            hdr.bth.psn = 24w0;
+            hdr.cnp_padding.setValid();
+            hdr.cnp_padding.reserved1 = 64w0;
+            hdr.cnp_padding.reserved2 = 64w0;
+            hdr.icrc.setValid();
+            icrc_raw = cnp_icrc_hash_calc.get({
+                64w0xffffffffffffffff,
+                hdr.ipv4.version,
+                hdr.ipv4.ihl,
+                8w0xff,
+                hdr.ipv4.total_len,
+                hdr.ipv4.identification,
+                hdr.ipv4.flags,
+                hdr.ipv4.frag_offset,
+                8w0xff,
+                hdr.ipv4.protocol,
+                16w0xffff,
+                hdr.ipv4.src_addr,
+                hdr.ipv4.dst_addr,
+                hdr.udp.src_port,
+                hdr.udp.dst_port,
+                hdr.udp.hdr_length,
+                16w0xffff,
+                hdr.bth.opcode,
+                hdr.bth.solicited_event,
+                hdr.bth.mig_req,
+                hdr.bth.pad_count,
+                hdr.bth.header_v,
+                hdr.bth.parti_key,
+                8w0xff,
+                hdr.bth.dst_qpn,
+                hdr.bth.ack_req,
+                hdr.bth.reserved2,
+                hdr.bth.psn,
+                hdr.cnp_padding.reserved1,
+                hdr.cnp_padding.reserved2
+            });
+            hdr.icrc.value[31:24] = icrc_raw[7:0];
+            hdr.icrc.value[23:16] = icrc_raw[15:8];
+            hdr.icrc.value[15:8] = icrc_raw[23:16];
+            hdr.icrc.value[7:0] = icrc_raw[31:24];
             if (hdr.bth.isValid()) {
                 egress_mirror_bth_counter.count(0);
                 egress_mirror_cnp_set_counter.count(0);
+                egress_mirror_icrc_counter.count(0);
             }
         }
         else if (hdr.udp.isValid() && hdr.bth.isValid() &&
@@ -2021,7 +2111,7 @@ control EgressDeparser(packet_out pkt,
             hdr.ipv4.src_addr,
             hdr.ipv4.dst_addr});
         }
-        if (hdr.udp.isValid()) {
+        if (hdr.udp.isValid() && !hdr.icrc.isValid()) {
             hdr.udp.checksum = udp_csum.update({
             hdr.udp.src_port,
             hdr.udp.dst_port, meta.udp_tmp_checksum}, true);
@@ -2032,6 +2122,8 @@ control EgressDeparser(packet_out pkt,
         pkt.emit(hdr.tcp);
         pkt.emit(hdr.udp);
         pkt.emit(hdr.bth);
+        pkt.emit(hdr.cnp_padding);
+        pkt.emit(hdr.icrc);
     }
 }
 

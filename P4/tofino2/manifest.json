@@ -1,9 +1,20 @@
 {
+  "architecture": "t2na",
+  "schema_version": "2.0.6",
+  "compilation_time": "13.884781122207642",
   "compilation_succeeded": true,
+  "run_id": "d667120bda015760",
+  "target": "tofino2",
+  "conf_file": "themis.conf",
+  "compile_command": "/sde/bf-sde-9.7.1/install/bin/bf-p4c --std p4-16 --target tofino2 --arch t2na --bf-rt-schema themis/tofino2/bf-rt.json -o /sde/bf-sde-9.7.1/build/p4-build/tofino2/themis/themis/tofino2 -g --verbose 2 -g /sde/bf-sde-9.7.1/spfc/dataplane/themis.p4",
   "programs": [
     {
       "source_files": {
-        "src_root": "/sde/bf-sde-9.7.1/themis/dataplane",
+        "src_root": "/sde/bf-sde-9.7.1/spfc/dataplane",
+        "includes": [
+          "/sde/bf-sde-9.7.1/install/share/p4c/p4include"
+        ],
+        "src_map": "source.json",
         "defines": [
           "__TARGET_TOFINO__=2",
           "__TOFINO2_VARIANT__=1",
@@ -12,16 +23,11 @@
           "__p4c_minor__=7",
           "__p4c_patchlevel__=1",
           "__p4c_version__=\"9.7.1\""
-        ],
-        "src_map": "source.json",
-        "includes": [
-          "/sde/bf-sde-9.7.1/install/share/p4c/p4include"
         ]
       },
+      "p4_version": "p4-16",
       "pipes": [
         {
-          "pipe_id": 0,
-          "pipe_name": "pipe",
           "files": {
             "metrics": {
               "path": "pipe/logs/metrics.json"
@@ -29,12 +35,6 @@
             "context": {
               "path": "pipe/context.json"
             },
-            "resources": [
-              {
-                "path": "pipe/logs/resources.json",
-                "type": "resources"
-              }
-            ],
             "logs": [
               {
                 "path": "pipe/logs/clot_allocation.log",
@@ -93,99 +93,99 @@
                 "log_type": "mau"
               }
             ],
+            "resources": [
+              {
+                "type": "resources",
+                "path": "pipe/logs/resources.json"
+              }
+            ],
             "graphs": [
               {
-                "graph_type": "table",
                 "gress": "ingress",
+                "graph_type": "table",
                 "path": "pipe/graphs/program_graph.dot",
                 "graph_format": ".dot"
               },
               {
-                "graph_type": "control",
                 "gress": "ingress",
-                "path": "pipe/graphs/Ingress.dot",
-                "graph_format": ".dot"
-              },
-              {
                 "graph_type": "parser",
-                "gress": "ingress",
                 "path": "pipe/graphs/IngressParser.dot",
                 "graph_format": ".dot"
               },
               {
-                "graph_type": "control",
                 "gress": "egress",
+                "graph_type": "control",
                 "path": "pipe/graphs/Egress.dot",
                 "graph_format": ".dot"
               },
               {
-                "graph_type": "parser",
                 "gress": "egress",
+                "graph_type": "parser",
                 "path": "pipe/graphs/EgressParser.dot",
                 "graph_format": ".dot"
               },
               {
-                "graph_type": "table",
                 "gress": "ingress",
+                "graph_type": "control",
+                "path": "pipe/graphs/Ingress.dot",
+                "graph_format": ".dot"
+              },
+              {
+                "gress": "ingress",
+                "graph_type": "table",
+                "path": "pipe/graphs/dep.json",
+                "graph_format": ".json"
+              },
+              {
+                "gress": "ingress",
+                "graph_type": "table",
                 "path": "pipe/graphs/table_dep_graph_placement_0.dot",
                 "graph_format": ".dot"
               },
               {
-                "graph_type": "table",
                 "gress": "ingress",
+                "graph_type": "table",
                 "path": "pipe/graphs/placement_graph.dot",
                 "graph_format": ".dot"
               },
               {
-                "graph_type": "table",
                 "gress": "ingress",
+                "graph_type": "table",
                 "path": "pipe/graphs/power_graph.dot",
                 "graph_format": ".dot"
-              },
-              {
-                "graph_type": "table",
-                "gress": "ingress",
-                "path": "pipe/graphs/dep.json",
-                "graph_format": ".json"
               }
             ]
-          }
+          },
+          "pipe_id": 0,
+          "pipe_name": "pipe"
         }
       ],
-      "frontend_ir_log_file": "frontend-ir.json",
       "event_log_file": "events.json",
-      "program_name": "themis.p4",
-      "p4_version": "p4-16"
+      "frontend_ir_log_file": "frontend-ir.json",
+      "program_name": "themis.p4"
     }
   ],
-  "target": "tofino2",
+  "build_date": "Fri Aug 21 21:51:49 2026",
   "architectureConfig": {
     "name": "64q",
     "pipes": [
       {
-        "pipe": 0,
         "ingress": {
-          "pipeName": "Ingress",
           "nextControl": [
             {
               "pipe": 0,
               "pipeName": "Egress"
             }
-          ]
+          ],
+          "pipeName": "Ingress"
         },
         "egress": {
-          "pipeName": "Egress",
-          "nextControl": []
-        }
+          "nextControl": [],
+          "pipeName": "Egress"
+        },
+        "pipe": 0
       }
     ]
   },
-  "build_date": "Fri Jun 26 14:20:30 2026",
-  "run_id": "ab35a17c8bb560ea",
-  "conf_file": "themis.conf",
-  "compile_command": "/sde/bf-sde-9.7.1/install/bin/bf-p4c --std p4-16 --target tofino2 --arch t2na --bf-rt-schema themis/tofino2/bf-rt.json -o /sde/bf-sde-9.7.1/build/p4-build/tofino2/themis/themis/tofino2 -g --verbose 2 -g /sde/bf-sde-9.7.1/themis/dataplane/themis.p4",
-  "compiler_version": "9.7.1 (4316cda)",
-  "compilation_time": "11.43479299545288",
-  "architecture": "t2na",
-  "schema_version": "2.0.6"
+  "compiler_version": "9.7.1 (4316cda)"
 }

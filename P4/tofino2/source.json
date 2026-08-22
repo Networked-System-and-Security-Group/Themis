@@ -5,15 +5,15 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 559,
-                    "column": 17
+                    "line": 583,
+                    "column": 24
                 }
             ],
-            "symbol_name": "Egress.egress_mirror_bth_counter",
+            "symbol_name": "Egress.cnp_icrc_hash_calc",
             "declaration": {
                 "file": "themis.p4",
-                "line": 516,
-                "column": 57
+                "line": 512,
+                "column": 42
             },
             "symbol_type": "Declaration_Instance_Type_Specialized"
         },
@@ -21,11 +21,11 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 560,
+                    "line": 620,
                     "column": 17
                 }
             ],
-            "symbol_name": "Egress.egress_mirror_cnp_set_counter",
+            "symbol_name": "Egress.egress_mirror_bth_counter",
             "declaration": {
                 "file": "themis.p4",
                 "line": 517,
@@ -37,14 +37,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 543,
-                    "column": 13
+                    "line": 621,
+                    "column": 17
                 }
             ],
-            "symbol_name": "Egress.egress_mirror_seen_counter",
+            "symbol_name": "Egress.egress_mirror_cnp_set_counter",
             "declaration": {
                 "file": "themis.p4",
-                "line": 515,
+                "line": 518,
                 "column": 57
             },
             "symbol_type": "Declaration_Instance_Type_Specialized"
@@ -53,7 +53,39 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 536,
+                    "line": 622,
+                    "column": 17
+                }
+            ],
+            "symbol_name": "Egress.egress_mirror_icrc_counter",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 519,
+                "column": 57
+            },
+            "symbol_type": "Declaration_Instance_Type_Specialized"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 546,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.egress_mirror_seen_counter",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 516,
+                "column": 57
+            },
+            "symbol_type": "Declaration_Instance_Type_Specialized"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 538,
                     "column": 31
                 }
             ],
@@ -69,14 +101,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 566,
+                    "line": 628,
                     "column": 13
                 }
             ],
             "symbol_name": "Egress.egress_roce_data_counter",
             "declaration": {
                 "file": "themis.p4",
-                "line": 518,
+                "line": 520,
                 "column": 57
             },
             "symbol_type": "Declaration_Instance_Type_Specialized"
@@ -85,14 +117,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 521,
+                    "line": 523,
                     "column": 9
                 }
             ],
             "symbol_name": "Egress.indirect_counter",
             "declaration": {
                 "file": "themis.p4",
-                "line": 514,
+                "line": 515,
                 "column": 37
             },
             "symbol_type": "Declaration_Instance_Type_Specialized"
@@ -101,14 +133,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 587,
+                    "line": 649,
                     "column": 37
                 }
             ],
             "symbol_name": "EgressDeparser.ipv4_csum",
             "declaration": {
                 "file": "themis.p4",
-                "line": 583,
+                "line": 645,
                 "column": 16
             },
             "symbol_type": "Declaration_Instance_Type_Extern"
@@ -117,14 +149,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 598,
+                    "line": 660,
                     "column": 32
                 }
             ],
             "symbol_name": "EgressDeparser.udp_csum",
             "declaration": {
                 "file": "themis.p4",
-                "line": 584,
+                "line": 646,
                 "column": 16
             },
             "symbol_type": "Declaration_Instance_Type_Extern"
@@ -271,14 +303,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 622,
+                    "line": 686,
                     "column": 8
                 }
             ],
             "symbol_name": "pipe",
             "declaration": {
                 "file": "themis.p4",
-                "line": 620,
+                "line": 684,
                 "column": 3
             },
             "symbol_type": "Declaration_Instance_Type_Specialized"
@@ -287,41 +319,35 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 536,
-                    "column": 16
+                    "line": 583,
+                    "column": 13
                 },
                 {
                     "file": "themis.p4",
-                    "line": 556,
-                    "column": 36
-                }
-            ],
-            "symbol_name": "Egress.pnp_dip_hash",
-            "declaration": {
-                "file": "themis.p4",
-                "line": 536,
-                "column": 9
-            },
-            "symbol_type": "Declaration_Variable_Type_Bits"
-        },
-        {
-            "references": [
-                {
-                    "file": "themis.p4",
-                    "line": 537,
-                    "column": 20
-                },
-                {
-                    "file": "themis.p4",
-                    "line": 546,
+                    "line": 615,
                     "column": 37
+                },
+                {
+                    "file": "themis.p4",
+                    "line": 616,
+                    "column": 37
+                },
+                {
+                    "file": "themis.p4",
+                    "line": 617,
+                    "column": 36
+                },
+                {
+                    "file": "themis.p4",
+                    "line": 618,
+                    "column": 35
                 }
             ],
-            "symbol_name": "Egress.tmp1",
+            "symbol_name": "Egress.icrc_raw",
             "declaration": {
                 "file": "themis.p4",
-                "line": 537,
-                "column": 9
+                "line": 545,
+                "column": 13
             },
             "symbol_type": "Declaration_Variable_Type_Bits"
         },
@@ -330,18 +356,60 @@
                 {
                     "file": "themis.p4",
                     "line": 538,
-                    "column": 21
+                    "column": 16
+                },
+                {
+                    "file": "themis.p4",
+                    "line": 569,
+                    "column": 36
+                }
+            ],
+            "symbol_name": "Egress.pnp_dip_hash",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 538,
+                "column": 9
+            },
+            "symbol_type": "Declaration_Variable_Type_Bits"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 539,
+                    "column": 20
                 },
                 {
                     "file": "themis.p4",
                     "line": 549,
+                    "column": 37
+                }
+            ],
+            "symbol_name": "Egress.tmp1",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 539,
+                "column": 9
+            },
+            "symbol_type": "Declaration_Variable_Type_Bits"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 540,
+                    "column": 21
+                },
+                {
+                    "file": "themis.p4",
+                    "line": 552,
                     "column": 33
                 }
             ],
             "symbol_name": "Egress.tmp2",
             "declaration": {
                 "file": "themis.p4",
-                "line": 538,
+                "line": 540,
                 "column": 9
             },
             "symbol_type": "Declaration_Variable_Type_Bits"
@@ -391,99 +459,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 358,
-                    "column": 22
-                },
-                {
-                    "file": "themis.p4",
-                    "line": 359,
-                    "column": 13
-                }
-            ],
-            "symbol_name": "IngressDeparser.mirror_md.$valid",
-            "declaration": {
-                "file": "themis.p4",
-                "line": 358,
-                "column": 13
-            },
-            "symbol_type": "Declaration_Variable_Type_Header"
-        },
-        {
-            "references": [
-                {
-                    "file": "themis.p4",
-                    "line": 378,
-                    "column": 53
-                }
-            ],
-            "symbol_name": "IngressDeparser.mirror_md.is_last_recir_pkt",
-            "declaration": {
-                "file": "themis.p4",
-                "line": 358,
-                "column": 13
-            },
-            "symbol_type": "Declaration_Variable_Type_Header"
-        },
-        {
-            "references": [
-                {
-                    "file": "themis.p4",
-                    "line": 360,
-                    "column": 13
-                }
-            ],
-            "symbol_name": "IngressDeparser.mirror_md.pkt_type",
-            "declaration": {
-                "file": "themis.p4",
-                "line": 358,
-                "column": 13
-            },
-            "symbol_type": "Declaration_Variable_Type_Header"
-        },
-        {
-            "references": [
-                {
-                    "file": "themis.p4",
-                    "line": 378,
-                    "column": 53
-                }
-            ],
-            "symbol_name": "IngressDeparser.mirror_md.pnp_dip_hash",
-            "declaration": {
-                "file": "themis.p4",
-                "line": 358,
-                "column": 13
-            },
-            "symbol_type": "Declaration_Variable_Type_Header"
-        },
-        {
-            "references": [
-                {
-                    "file": "themis.p4",
-                    "line": 378,
-                    "column": 53
-                }
-            ],
-            "symbol_name": "IngressDeparser.mirror_md.pnp_udp_src_port",
-            "declaration": {
-                "file": "themis.p4",
-                "line": 358,
-                "column": 13
-            },
-            "symbol_type": "Declaration_Variable_Type_Header"
-        },
-        {
-            "references": [
-                {
-                    "file": "themis.p4",
-                    "line": 529,
+                    "line": 531,
                     "column": 13
                 }
             ],
             "symbol_name": "Egress.inc_cnp_counter",
             "declaration": {
                 "file": "themis.p4",
-                "line": 520,
+                "line": 522,
                 "column": 12
             },
             "symbol_type": "P4Action"
@@ -583,13 +566,13 @@
                 },
                 {
                     "file": "themis.p4",
-                    "line": 525,
+                    "line": 527,
                     "column": 9,
-                    "end_line": 532
+                    "end_line": 534
                 },
                 {
                     "file": "themis.p4",
-                    "line": 530,
+                    "line": 532,
                     "column": 26
                 }
             ],
@@ -605,14 +588,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 569,
+                    "line": 631,
                     "column": 13
                 }
             ],
             "symbol_name": "Egress.count_cnp",
             "declaration": {
                 "file": "themis.p4",
-                "line": 524,
+                "line": 526,
                 "column": 11
             },
             "symbol_type": "P4Table"
@@ -764,73 +747,124 @@
         },
         {
             "references": [],
-            "symbol_name": "tbl_themis536",
+            "symbol_name": "tbl_themis538",
             "declaration": {
                 "file": "themis.p4",
-                "line": 536,
+                "line": 538,
                 "column": 9,
-                "end_line": 538
+                "end_line": 540
             },
             "symbol_type": "P4Table"
         },
         {
             "references": [],
-            "symbol_name": "tbl_themis543",
+            "symbol_name": "tbl_themis546",
             "declaration": {
                 "file": "themis.p4",
-                "line": 543,
+                "line": 546,
                 "column": 13,
-                "end_line": 554
+                "end_line": 567
             },
             "symbol_type": "P4Table"
         },
         {
             "references": [],
-            "symbol_name": "tbl_themis555",
+            "symbol_name": "tbl_themis568",
             "declaration": {
                 "file": "themis.p4",
-                "line": 555,
+                "line": 568,
                 "column": 35
             },
             "symbol_type": "P4Table"
         },
         {
             "references": [],
-            "symbol_name": "tbl_themis556",
+            "symbol_name": "tbl_themis569",
             "declaration": {
                 "file": "themis.p4",
-                "line": 556,
+                "line": 569,
                 "column": 34,
-                "end_line": 557
+                "end_line": 582
             },
             "symbol_type": "P4Table"
         },
         {
             "references": [],
-            "symbol_name": "tbl_themis559",
+            "symbol_name": "tbl_themis583",
             "declaration": {
                 "file": "themis.p4",
-                "line": 559,
+                "line": 583,
+                "column": 22,
+                "end_line": 615
+            },
+            "symbol_type": "P4Table"
+        },
+        {
+            "references": [],
+            "symbol_name": "tbl_themis616",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 616,
+                "column": 35
+            },
+            "symbol_type": "P4Table"
+        },
+        {
+            "references": [],
+            "symbol_name": "tbl_themis617",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 617,
+                "column": 34
+            },
+            "symbol_type": "P4Table"
+        },
+        {
+            "references": [],
+            "symbol_name": "tbl_themis618",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 618,
+                "column": 33
+            },
+            "symbol_type": "P4Table"
+        },
+        {
+            "references": [],
+            "symbol_name": "tbl_themis620",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 620,
                 "column": 17
             },
             "symbol_type": "P4Table"
         },
         {
             "references": [],
-            "symbol_name": "tbl_themis560",
+            "symbol_name": "tbl_themis621",
             "declaration": {
                 "file": "themis.p4",
-                "line": 560,
+                "line": 621,
                 "column": 17
             },
             "symbol_type": "P4Table"
         },
         {
             "references": [],
-            "symbol_name": "tbl_themis566",
+            "symbol_name": "tbl_themis622",
             "declaration": {
                 "file": "themis.p4",
-                "line": 566,
+                "line": 622,
+                "column": 17
+            },
+            "symbol_type": "P4Table"
+        },
+        {
+            "references": [],
+            "symbol_name": "tbl_themis628",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 628,
                 "column": 13
             },
             "symbol_type": "P4Table"
@@ -839,17 +873,17 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 558,
+                    "line": 619,
                     "column": 17
                 },
                 {
                     "file": "themis.p4",
-                    "line": 563,
+                    "line": 625,
                     "column": 39
                 },
                 {
                     "file": "themis.p4",
-                    "line": 568,
+                    "line": 630,
                     "column": 13
                 }
             ],
@@ -865,18 +899,39 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 554,
+                    "line": 576,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.bth.ack_req",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 567,
                     "column": 13
                 },
                 {
                     "file": "themis.p4",
-                    "line": 555,
+                    "line": 568,
                     "column": 13
                 },
                 {
                     "file": "themis.p4",
-                    "line": 556,
+                    "line": 569,
                     "column": 13
+                },
+                {
+                    "file": "themis.p4",
+                    "line": 608,
+                    "column": 17
                 }
             ],
             "symbol_name": "Egress.hdr.bth.dst_qpn",
@@ -891,17 +946,49 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 526,
+                    "line": 574,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.bth.header_v",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 572,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.bth.mig_req",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 528,
                     "column": 13
                 },
                 {
                     "file": "themis.p4",
-                    "line": 557,
+                    "line": 570,
                     "column": 13
                 },
                 {
                     "file": "themis.p4",
-                    "line": 565,
+                    "line": 627,
                     "column": 18
                 }
             ],
@@ -917,12 +1004,156 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 537,
+                    "line": 573,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.bth.pad_count",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 606,
+                    "column": 17
+                }
+            ],
+            "symbol_name": "Egress.hdr.bth.parti_key",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 578,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.bth.psn",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 575,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.bth.reserved1",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 577,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.bth.reserved2",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 571,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.bth.solicited_event",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 579,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.cnp_padding.$valid",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 580,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.cnp_padding.reserved1",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 581,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.cnp_padding.reserved2",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 539,
                     "column": 27
                 },
                 {
                     "file": "themis.p4",
-                    "line": 545,
+                    "line": 548,
                     "column": 13
                 }
             ],
@@ -938,12 +1169,12 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 545,
+                    "line": 548,
                     "column": 37
                 },
                 {
                     "file": "themis.p4",
-                    "line": 546,
+                    "line": 549,
                     "column": 13
                 }
             ],
@@ -959,18 +1190,70 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 536,
+                    "line": 582,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.icrc.$valid",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 615,
+                    "column": 13
+                },
+                {
+                    "file": "themis.p4",
+                    "line": 616,
+                    "column": 13
+                },
+                {
+                    "file": "themis.p4",
+                    "line": 617,
+                    "column": 13
+                },
+                {
+                    "file": "themis.p4",
+                    "line": 618,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.icrc.value",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 538,
                     "column": 61
                 },
                 {
                     "file": "themis.p4",
-                    "line": 538,
+                    "line": 540,
                     "column": 28
                 },
                 {
                     "file": "themis.p4",
-                    "line": 548,
+                    "line": 551,
                     "column": 13
+                },
+                {
+                    "file": "themis.p4",
+                    "line": 596,
+                    "column": 17
                 }
             ],
             "symbol_name": "Egress.hdr.ipv4.dst_addr",
@@ -985,7 +1268,7 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 550,
+                    "line": 555,
                     "column": 13
                 }
             ],
@@ -1001,12 +1284,92 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 548,
+                    "line": 557,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.ipv4.flags",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 558,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.ipv4.frag_offset",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 589,
+                    "column": 17
+                }
+            ],
+            "symbol_name": "Egress.hdr.ipv4.identification",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 554,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.ipv4.ihl",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 560,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.ipv4.protocol",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 551,
                     "column": 33
                 },
                 {
                     "file": "themis.p4",
-                    "line": 549,
+                    "line": 552,
                     "column": 13
                 }
             ],
@@ -1022,7 +1385,55 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 563,
+                    "line": 556,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.ipv4.total_len",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 559,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.ipv4.ttl",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 553,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.ipv4.version",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 625,
                     "column": 18
                 }
             ],
@@ -1038,7 +1449,28 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 564,
+                    "line": 563,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.udp.checksum",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 561,
+                    "column": 13
+                },
+                {
+                    "file": "themis.p4",
+                    "line": 626,
                     "column": 18
                 }
             ],
@@ -1054,8 +1486,29 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 555,
+                    "line": 562,
+                    "column": 13
+                }
+            ],
+            "symbol_name": "Egress.hdr.udp.hdr_length",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 503,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 568,
                     "column": 37
+                },
+                {
+                    "file": "themis.p4",
+                    "line": 597,
+                    "column": 17
                 }
             ],
             "symbol_name": "Egress.hdr.udp.src_port",
@@ -1070,7 +1523,7 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 541,
+                    "line": 543,
                     "column": 13
                 }
             ],
@@ -1086,14 +1539,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 604,
+                    "line": 666,
                     "column": 18
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.arp",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1102,14 +1555,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 607,
+                    "line": 669,
                     "column": 18
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.bth",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1118,14 +1571,30 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 602,
+                    "line": 670,
+                    "column": 18
+                }
+            ],
+            "symbol_name": "EgressDeparser.hdr.cnp_padding",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 640,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 664,
                     "column": 18
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.ethernet",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1134,19 +1603,40 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 586,
+                    "line": 659,
+                    "column": 35
+                },
+                {
+                    "file": "themis.p4",
+                    "line": 671,
+                    "column": 18
+                }
+            ],
+            "symbol_name": "EgressDeparser.hdr.icrc",
+            "declaration": {
+                "file": "themis.p4",
+                "line": 640,
+                "column": 31
+            },
+            "symbol_type": "Parameter_Type_Struct"
+        },
+        {
+            "references": [
+                {
+                    "file": "themis.p4",
+                    "line": 648,
                     "column": 13
                 },
                 {
                     "file": "themis.p4",
-                    "line": 603,
+                    "line": 665,
                     "column": 18
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.ipv4",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1155,14 +1645,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 588,
+                    "line": 650,
                     "column": 45
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.ipv4.diffserv",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1171,14 +1661,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 595,
+                    "line": 657,
                     "column": 13
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.ipv4.dst_addr",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1187,14 +1677,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 588,
+                    "line": 650,
                     "column": 64
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.ipv4.ecn",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1203,14 +1693,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 591,
+                    "line": 653,
                     "column": 13
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.ipv4.flags",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1219,14 +1709,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 591,
+                    "line": 653,
                     "column": 29
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.ipv4.frag_offset",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1235,14 +1725,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 587,
+                    "line": 649,
                     "column": 13
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.ipv4.hdr_checksum",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1251,14 +1741,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 590,
+                    "line": 652,
                     "column": 13
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.ipv4.identification",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1267,14 +1757,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 588,
+                    "line": 650,
                     "column": 31
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.ipv4.ihl",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1283,14 +1773,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 592,
+                    "line": 654,
                     "column": 27
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.ipv4.protocol",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1299,14 +1789,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 594,
+                    "line": 656,
                     "column": 13
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.ipv4.src_addr",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1315,14 +1805,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 589,
+                    "line": 651,
                     "column": 13
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.ipv4.total_len",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1331,14 +1821,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 592,
+                    "line": 654,
                     "column": 13
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.ipv4.ttl",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1347,14 +1837,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 588,
+                    "line": 650,
                     "column": 13
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.ipv4.version",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1363,14 +1853,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 605,
+                    "line": 667,
                     "column": 18
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.tcp",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1379,19 +1869,19 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 597,
+                    "line": 659,
                     "column": 13
                 },
                 {
                     "file": "themis.p4",
-                    "line": 606,
+                    "line": 668,
                     "column": 18
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.udp",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1400,14 +1890,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 598,
+                    "line": 660,
                     "column": 13
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.udp.checksum",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1416,14 +1906,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 600,
+                    "line": 662,
                     "column": 13
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.udp.dst_port",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1432,14 +1922,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 599,
+                    "line": 661,
                     "column": 13
                 }
             ],
             "symbol_name": "EgressDeparser.hdr.udp.src_port",
             "declaration": {
                 "file": "themis.p4",
-                "line": 578,
+                "line": 640,
                 "column": 31
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1448,14 +1938,14 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 600,
+                    "line": 662,
                     "column": 31
                 }
             ],
             "symbol_name": "EgressDeparser.meta.udp_tmp_checksum",
             "declaration": {
                 "file": "themis.p4",
-                "line": 579,
+                "line": 641,
                 "column": 29
             },
             "symbol_type": "Parameter_Type_Struct"
@@ -1464,39 +1954,49 @@
             "references": [
                 {
                     "file": "themis.p4",
-                    "line": 602,
+                    "line": 664,
                     "column": 9
                 },
                 {
                     "file": "themis.p4",
-                    "line": 603,
+                    "line": 665,
                     "column": 9
                 },
                 {
                     "file": "themis.p4",
-                    "line": 604,
+                    "line": 666,
                     "column": 9
                 },
                 {
                     "file": "themis.p4",
-                    "line": 605,
+                    "line": 667,
                     "column": 9
                 },
                 {
                     "file": "themis.p4",
-                    "line": 606,
+                    "line": 668,
                     "column": 9
                 },
                 {
                     "file": "themis.p4",
-                    "line": 607,
+                    "line": 669,
+                    "column": 9
+                },
+                {
+                    "file": "themis.p4",
+                    "line": 670,
+                    "column": 9
+                },
+                {
+                    "file": "themis.p4",
+                    "line": 671,
                     "column": 9
                 }
             ],
             "symbol_name": "EgressDeparser.pkt",
             "declaration": {
                 "file": "themis.p4",
-                "line": 576,
+                "line": 638,
                 "column": 35
             },
             "symbol_type": "Parameter_Type_Extern"
@@ -3020,7 +3520,7 @@
             "symbol_name": "cond-10",
             "declaration": {
                 "file": "themis.p4",
-                "line": 541,
+                "line": 543,
                 "column": 9
             },
             "symbol_type": "IfStatement"
@@ -3030,7 +3530,7 @@
             "symbol_name": "cond-11",
             "declaration": {
                 "file": "themis.p4",
-                "line": 558,
+                "line": 619,
                 "column": 13
             },
             "symbol_type": "IfStatement"
@@ -3040,7 +3540,7 @@
             "symbol_name": "cond-12",
             "declaration": {
                 "file": "themis.p4",
-                "line": 563,
+                "line": 625,
                 "column": 14
             },
             "symbol_type": "IfStatement"
@@ -3050,7 +3550,7 @@
             "symbol_name": "cond-13",
             "declaration": {
                 "file": "themis.p4",
-                "line": 568,
+                "line": 630,
                 "column": 9
             },
             "symbol_type": "IfStatement"
@@ -3150,7 +3650,7 @@
             "symbol_name": "cond-23",
             "declaration": {
                 "file": "themis.p4",
-                "line": 541,
+                "line": 543,
                 "column": 9
             },
             "symbol_type": "IfStatement"
@@ -3160,7 +3660,7 @@
             "symbol_name": "cond-24",
             "declaration": {
                 "file": "themis.p4",
-                "line": 558,
+                "line": 619,
                 "column": 13
             },
             "symbol_type": "IfStatement"
@@ -3170,7 +3670,7 @@
             "symbol_name": "cond-25",
             "declaration": {
                 "file": "themis.p4",
-                "line": 563,
+                "line": 625,
                 "column": 14
             },
             "symbol_type": "IfStatement"
@@ -3180,11 +3680,11 @@
             "symbol_name": "cond-26",
             "declaration": {
                 "file": "themis.p4",
-                "line": 568,
+                "line": 630,
                 "column": 9
             },
             "symbol_type": "IfStatement"
         }
     ],
-    "source_root": "/sde/bf-sde-9.7.1/themis/dataplane"
+    "source_root": "/sde/bf-sde-9.7.1/spfc/dataplane"
 }

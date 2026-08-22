@@ -1,7 +1,7 @@
 {
-    "build_date": "Fri Jun 26 14:20:30 2026", 
+    "build_date": "Fri Aug 21 21:51:49 2026", 
     "program_name": "themis", 
-    "run_id": "ab35a17c8bb560ea", 
+    "run_id": "d667120bda015760", 
     "compiler_version": "9.7.1 (4316cda)", 
     "schema_version": "1.0.0", 
     "tables": [
@@ -388,6 +388,76 @@
                                 ]
                             }
                         ]
+                    }, 
+                    "action_formats": []
+                }
+            ]
+        }, 
+        {
+            "name": "egresshdr.udp.checksum_encode_update_condition_1_egress", 
+            "gress": "egress", 
+            "lookup_types": [
+                "exact"
+            ], 
+            "entries_requested": 0, 
+            "entries_allocated": 1, 
+            "match_fields": [
+                {
+                    "name": "hdr.udp.$valid", 
+                    "start_bit": 0, 
+                    "bit_width": 1, 
+                    "lookup_type": "exact"
+                }, 
+                {
+                    "name": "hdr.icrc.$valid", 
+                    "start_bit": 0, 
+                    "bit_width": 1, 
+                    "lookup_type": "exact"
+                }
+            ], 
+            "action_parameters": [
+                {
+                    "action_name": "_set_checksum_update_", 
+                    "parameters": [
+                        {
+                            "name": "x0", 
+                            "bit_width": 1
+                        }, 
+                        {
+                            "name": "x1", 
+                            "bit_width": 1
+                        }
+                    ]
+                }, 
+                {
+                    "action_name": "__nop_", 
+                    "parameters": []
+                }
+            ], 
+            "stage_allocation": [
+                {
+                    "stage_number": 4, 
+                    "memories": [
+                        {
+                            "memory_type": "sram", 
+                            "table_word_width": 0, 
+                            "memory_word_width": 0, 
+                            "entries_per_table_word": 0, 
+                            "table_type": "match", 
+                            "num_memories": 0, 
+                            "entries_requested": 0, 
+                            "entries_allocated": 1, 
+                            "imm_bit_width_in_overhead_requested": 2, 
+                            "imm_bit_width_in_overhead_allocated": 0, 
+                            "entry_bit_width_requested": 2, 
+                            "entry_bit_width_allocated": 0, 
+                            "ideal_entries_per_table_word": 1, 
+                            "ideal_table_word_bit_width": 4
+                        }
+                    ], 
+                    "overhead_fields": [], 
+                    "match_format": {
+                        "entries": []
                     }, 
                     "action_formats": []
                 }
@@ -841,7 +911,7 @@
             ]
         }, 
         {
-            "name": "tbl_themis536", 
+            "name": "tbl_themis538", 
             "gress": "egress", 
             "lookup_types": [], 
             "entries_requested": 256, 
@@ -849,7 +919,7 @@
             "match_fields": [], 
             "action_parameters": [
                 {
-                    "action_name": "themis536", 
+                    "action_name": "themis538", 
                     "parameters": []
                 }
             ], 
@@ -866,7 +936,7 @@
             ]
         }, 
         {
-            "name": "tbl_themis543", 
+            "name": "tbl_themis546", 
             "gress": "egress", 
             "lookup_types": [], 
             "entries_requested": 0, 
@@ -874,7 +944,7 @@
             "match_fields": [], 
             "action_parameters": [
                 {
-                    "action_name": "themis543", 
+                    "action_name": "themis546", 
                     "parameters": []
                 }
             ], 
@@ -891,12 +961,24 @@
                             "num_memories": 0, 
                             "entries_requested": 0, 
                             "entries_allocated": 0, 
-                            "imm_bit_width_in_overhead_requested": 0, 
-                            "imm_bit_width_in_overhead_allocated": 0, 
+                            "imm_bit_width_in_overhead_requested": 16, 
+                            "imm_bit_width_in_overhead_allocated": 16, 
                             "entry_bit_width_requested": 0, 
                             "entry_bit_width_allocated": 0, 
                             "ideal_entries_per_table_word": 0, 
                             "ideal_table_word_bit_width": 0
+                        }, 
+                        {
+                            "memory_type": "sram", 
+                            "table_word_width": 128, 
+                            "memory_word_width": 128, 
+                            "entries_per_table_word": 2, 
+                            "table_type": "action", 
+                            "num_memories": 1, 
+                            "entry_bit_width_requested": 0, 
+                            "entry_bit_width_allocated": 64, 
+                            "ideal_entries_per_table_word": 1, 
+                            "ideal_table_word_bit_width": 128
                         }, 
                         {
                             "memory_type": "sram", 
@@ -907,7 +989,12 @@
                             "num_memories": 2
                         }
                     ], 
-                    "overhead_fields": [], 
+                    "overhead_fields": [
+                        {
+                            "name": "immediate", 
+                            "bit_width": 16
+                        }
+                    ], 
                     "match_format": {
                         "entries": [
                             {
@@ -916,12 +1003,139 @@
                             }
                         ]
                     }, 
-                    "action_formats": []
+                    "action_formats": [
+                        {
+                            "name": "themis546", 
+                            "action_format": {
+                                "entries": [
+                                    {
+                                        "entry_number": 1, 
+                                        "fields": [
+                                            {
+                                                "name": "$constant0", 
+                                                "bit_width": 4, 
+                                                "start_bit": 0, 
+                                                "memory_start_bit": 76
+                                            }, 
+                                            {
+                                                "name": "$constant1", 
+                                                "bit_width": 4, 
+                                                "start_bit": 0, 
+                                                "memory_start_bit": 72
+                                            }, 
+                                            {
+                                                "name": "$constant2", 
+                                                "bit_width": 2, 
+                                                "start_bit": 0, 
+                                                "memory_start_bit": 64
+                                            }, 
+                                            {
+                                                "name": "$constant3", 
+                                                "bit_width": 2, 
+                                                "start_bit": 0, 
+                                                "memory_start_bit": 80
+                                            }, 
+                                            {
+                                                "name": "$constant4", 
+                                                "bit_width": 8, 
+                                                "start_bit": 0, 
+                                                "memory_start_bit": 88
+                                            }, 
+                                            {
+                                                "name": "$constant5", 
+                                                "bit_width": 16, 
+                                                "start_bit": 0, 
+                                                "memory_start_bit": 112
+                                            }, 
+                                            {
+                                                "name": "$constant6", 
+                                                "bit_width": 16, 
+                                                "start_bit": 0, 
+                                                "memory_start_bit": 96
+                                            }, 
+                                            {
+                                                "name": "--padding_2_7--", 
+                                                "bit_width": 6, 
+                                                "start_bit": 0, 
+                                                "memory_start_bit": 66
+                                            }, 
+                                            {
+                                                "name": "--padding_18_23--", 
+                                                "bit_width": 6, 
+                                                "start_bit": 0, 
+                                                "memory_start_bit": 82
+                                            }
+                                        ]
+                                    }, 
+                                    {
+                                        "entry_number": 0, 
+                                        "fields": [
+                                            {
+                                                "name": "$constant0", 
+                                                "bit_width": 4, 
+                                                "start_bit": 0, 
+                                                "memory_start_bit": 12
+                                            }, 
+                                            {
+                                                "name": "$constant1", 
+                                                "bit_width": 4, 
+                                                "start_bit": 0, 
+                                                "memory_start_bit": 8
+                                            }, 
+                                            {
+                                                "name": "$constant2", 
+                                                "bit_width": 2, 
+                                                "start_bit": 0, 
+                                                "memory_start_bit": 0
+                                            }, 
+                                            {
+                                                "name": "$constant3", 
+                                                "bit_width": 2, 
+                                                "start_bit": 0, 
+                                                "memory_start_bit": 16
+                                            }, 
+                                            {
+                                                "name": "$constant4", 
+                                                "bit_width": 8, 
+                                                "start_bit": 0, 
+                                                "memory_start_bit": 24
+                                            }, 
+                                            {
+                                                "name": "$constant5", 
+                                                "bit_width": 16, 
+                                                "start_bit": 0, 
+                                                "memory_start_bit": 48
+                                            }, 
+                                            {
+                                                "name": "$constant6", 
+                                                "bit_width": 16, 
+                                                "start_bit": 0, 
+                                                "memory_start_bit": 32
+                                            }, 
+                                            {
+                                                "name": "--padding_2_7--", 
+                                                "bit_width": 6, 
+                                                "start_bit": 0, 
+                                                "memory_start_bit": 2
+                                            }, 
+                                            {
+                                                "name": "--padding_18_23--", 
+                                                "bit_width": 6, 
+                                                "start_bit": 0, 
+                                                "memory_start_bit": 18
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }, 
+                            "parameter_map": []
+                        }
+                    ]
                 }
             ]
         }, 
         {
-            "name": "tbl_themis555", 
+            "name": "tbl_themis568", 
             "gress": "egress", 
             "lookup_types": [], 
             "entries_requested": 0, 
@@ -929,7 +1143,7 @@
             "match_fields": [], 
             "action_parameters": [
                 {
-                    "action_name": "themis555", 
+                    "action_name": "themis568", 
                     "parameters": []
                 }
             ], 
@@ -968,7 +1182,7 @@
             ]
         }, 
         {
-            "name": "tbl_themis556", 
+            "name": "tbl_themis569", 
             "gress": "egress", 
             "lookup_types": [], 
             "entries_requested": 0, 
@@ -976,7 +1190,7 @@
             "match_fields": [], 
             "action_parameters": [
                 {
-                    "action_name": "themis556", 
+                    "action_name": "themis569", 
                     "parameters": []
                 }
             ], 
@@ -993,6 +1207,83 @@
                             "num_memories": 0, 
                             "entries_requested": 0, 
                             "entries_allocated": 0, 
+                            "imm_bit_width_in_overhead_requested": 16, 
+                            "imm_bit_width_in_overhead_allocated": 16, 
+                            "entry_bit_width_requested": 0, 
+                            "entry_bit_width_allocated": 0, 
+                            "ideal_entries_per_table_word": 0, 
+                            "ideal_table_word_bit_width": 0
+                        }
+                    ], 
+                    "overhead_fields": [
+                        {
+                            "name": "immediate", 
+                            "bit_width": 16
+                        }
+                    ], 
+                    "match_format": {
+                        "entries": [
+                            {
+                                "entry_number": 0, 
+                                "fields": []
+                            }
+                        ]
+                    }, 
+                    "action_formats": []
+                }
+            ]
+        }, 
+        {
+            "name": "tbl_themis583", 
+            "gress": "egress", 
+            "lookup_types": [], 
+            "entries_requested": 65536, 
+            "entries_allocated": 1, 
+            "match_fields": [], 
+            "action_parameters": [
+                {
+                    "action_name": "themis583", 
+                    "parameters": []
+                }
+            ], 
+            "stage_allocation": [
+                {
+                    "stage_number": 4, 
+                    "memories": [], 
+                    "overhead_fields": [], 
+                    "match_format": {
+                        "entries": []
+                    }, 
+                    "action_formats": []
+                }
+            ]
+        }, 
+        {
+            "name": "tbl_themis616", 
+            "gress": "egress", 
+            "lookup_types": [], 
+            "entries_requested": 0, 
+            "entries_allocated": 0, 
+            "match_fields": [], 
+            "action_parameters": [
+                {
+                    "action_name": "themis616", 
+                    "parameters": []
+                }
+            ], 
+            "stage_allocation": [
+                {
+                    "stage_number": 5, 
+                    "memories": [
+                        {
+                            "memory_type": "sram", 
+                            "table_word_width": 0, 
+                            "memory_word_width": 44, 
+                            "entries_per_table_word": 1, 
+                            "table_type": "match", 
+                            "num_memories": 0, 
+                            "entries_requested": 0, 
+                            "entries_allocated": 0, 
                             "imm_bit_width_in_overhead_requested": 0, 
                             "imm_bit_width_in_overhead_allocated": 0, 
                             "entry_bit_width_requested": 0, 
@@ -1015,7 +1306,7 @@
             ]
         }, 
         {
-            "name": "tbl_themis559", 
+            "name": "tbl_themis617", 
             "gress": "egress", 
             "lookup_types": [], 
             "entries_requested": 0, 
@@ -1023,7 +1314,156 @@
             "match_fields": [], 
             "action_parameters": [
                 {
-                    "action_name": "themis559", 
+                    "action_name": "themis617", 
+                    "parameters": []
+                }
+            ], 
+            "stage_allocation": [
+                {
+                    "stage_number": 6, 
+                    "memories": [
+                        {
+                            "memory_type": "sram", 
+                            "table_word_width": 0, 
+                            "memory_word_width": 44, 
+                            "entries_per_table_word": 1, 
+                            "table_type": "match", 
+                            "num_memories": 0, 
+                            "entries_requested": 0, 
+                            "entries_allocated": 0, 
+                            "imm_bit_width_in_overhead_requested": 0, 
+                            "imm_bit_width_in_overhead_allocated": 0, 
+                            "entry_bit_width_requested": 0, 
+                            "entry_bit_width_allocated": 0, 
+                            "ideal_entries_per_table_word": 0, 
+                            "ideal_table_word_bit_width": 0
+                        }
+                    ], 
+                    "overhead_fields": [], 
+                    "match_format": {
+                        "entries": [
+                            {
+                                "entry_number": 0, 
+                                "fields": []
+                            }
+                        ]
+                    }, 
+                    "action_formats": []
+                }
+            ]
+        }, 
+        {
+            "name": "tbl_themis618", 
+            "gress": "egress", 
+            "lookup_types": [], 
+            "entries_requested": 0, 
+            "entries_allocated": 0, 
+            "match_fields": [], 
+            "action_parameters": [
+                {
+                    "action_name": "themis618", 
+                    "parameters": []
+                }
+            ], 
+            "stage_allocation": [
+                {
+                    "stage_number": 7, 
+                    "memories": [
+                        {
+                            "memory_type": "sram", 
+                            "table_word_width": 0, 
+                            "memory_word_width": 44, 
+                            "entries_per_table_word": 1, 
+                            "table_type": "match", 
+                            "num_memories": 0, 
+                            "entries_requested": 0, 
+                            "entries_allocated": 0, 
+                            "imm_bit_width_in_overhead_requested": 0, 
+                            "imm_bit_width_in_overhead_allocated": 0, 
+                            "entry_bit_width_requested": 0, 
+                            "entry_bit_width_allocated": 0, 
+                            "ideal_entries_per_table_word": 0, 
+                            "ideal_table_word_bit_width": 0
+                        }
+                    ], 
+                    "overhead_fields": [], 
+                    "match_format": {
+                        "entries": [
+                            {
+                                "entry_number": 0, 
+                                "fields": []
+                            }
+                        ]
+                    }, 
+                    "action_formats": []
+                }
+            ]
+        }, 
+        {
+            "name": "tbl_themis620", 
+            "gress": "egress", 
+            "lookup_types": [], 
+            "entries_requested": 0, 
+            "entries_allocated": 0, 
+            "match_fields": [], 
+            "action_parameters": [
+                {
+                    "action_name": "themis620", 
+                    "parameters": []
+                }
+            ], 
+            "stage_allocation": [
+                {
+                    "stage_number": 2, 
+                    "memories": [
+                        {
+                            "memory_type": "sram", 
+                            "table_word_width": 0, 
+                            "memory_word_width": 44, 
+                            "entries_per_table_word": 1, 
+                            "table_type": "match", 
+                            "num_memories": 0, 
+                            "entries_requested": 0, 
+                            "entries_allocated": 0, 
+                            "imm_bit_width_in_overhead_requested": 0, 
+                            "imm_bit_width_in_overhead_allocated": 0, 
+                            "entry_bit_width_requested": 0, 
+                            "entry_bit_width_allocated": 0, 
+                            "ideal_entries_per_table_word": 0, 
+                            "ideal_table_word_bit_width": 0
+                        }, 
+                        {
+                            "memory_type": "sram", 
+                            "table_word_width": 128, 
+                            "memory_word_width": 128, 
+                            "entries_per_table_word": 4, 
+                            "table_type": "statistics", 
+                            "num_memories": 2
+                        }
+                    ], 
+                    "overhead_fields": [], 
+                    "match_format": {
+                        "entries": [
+                            {
+                                "entry_number": 0, 
+                                "fields": []
+                            }
+                        ]
+                    }, 
+                    "action_formats": []
+                }
+            ]
+        }, 
+        {
+            "name": "tbl_themis621", 
+            "gress": "egress", 
+            "lookup_types": [], 
+            "entries_requested": 0, 
+            "entries_allocated": 0, 
+            "match_fields": [], 
+            "action_parameters": [
+                {
+                    "action_name": "themis621", 
                     "parameters": []
                 }
             ], 
@@ -1070,7 +1510,7 @@
             ]
         }, 
         {
-            "name": "tbl_themis560", 
+            "name": "tbl_themis622", 
             "gress": "egress", 
             "lookup_types": [], 
             "entries_requested": 0, 
@@ -1078,7 +1518,7 @@
             "match_fields": [], 
             "action_parameters": [
                 {
-                    "action_name": "themis560", 
+                    "action_name": "themis622", 
                     "parameters": []
                 }
             ], 
@@ -1125,7 +1565,7 @@
             ]
         }, 
         {
-            "name": "tbl_themis566", 
+            "name": "tbl_themis628", 
             "gress": "egress", 
             "lookup_types": [], 
             "entries_requested": 0, 
@@ -1133,7 +1573,7 @@
             "match_fields": [], 
             "action_parameters": [
                 {
-                    "action_name": "themis566", 
+                    "action_name": "themis628", 
                     "parameters": []
                 }
             ], 
