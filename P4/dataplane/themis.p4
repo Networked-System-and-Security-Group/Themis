@@ -509,12 +509,14 @@ control Egress(
     inout egress_intrinsic_metadata_for_output_port_t  eg_oport_md)
 {
     Hash<bit<8>>(HashAlgorithm_t.CRC8) egress_pnp_dip_hash_calc;
+    Hash<bit<32>>(HashAlgorithm_t.CRC32) cnp_icrc_hash_calc;
     // Create indirect counter
     Counter<bit<32>, bit<32>>(
         512, CounterType_t.PACKETS) indirect_counter;
     Counter<bit<32>, bit<32>>(1, CounterType_t.PACKETS) egress_mirror_seen_counter;
     Counter<bit<32>, bit<32>>(1, CounterType_t.PACKETS) egress_mirror_bth_counter;
     Counter<bit<32>, bit<32>>(1, CounterType_t.PACKETS) egress_mirror_cnp_set_counter;
+    Counter<bit<32>, bit<32>>(1, CounterType_t.PACKETS) egress_mirror_icrc_counter;
     Counter<bit<32>, bit<32>>(1, CounterType_t.PACKETS) egress_roce_data_counter;
 
     action inc_cnp_counter () {
@@ -540,6 +542,7 @@ control Egress(
         // rixin: 判断出当前是个mirrored pkt即cnp
         if (meta.is_mirrored == 1)
         {
+            bit<32> icrc_raw = 0;
             egress_mirror_seen_counter.count(0);
             // rixin: 设置好cnp的mac地址
             hdr.ethernet.dst_addr = hdr.ethernet.src_addr;
@@ -547,7 +550,17 @@ control Egress(
             // rixin: 设置好cnp的ip地址
             hdr.ipv4.dst_addr = hdr.ipv4.src_addr;
             hdr.ipv4.src_addr = tmp2;
+            hdr.ipv4.version = 4w4;
+            hdr.ipv4.ihl = 4w5;
             hdr.ipv4.ecn = ECN_NOT_ECT;
+            hdr.ipv4.total_len = CNP_IPV4_TOTAL_LEN;
+            hdr.ipv4.flags = 3w0;
+            hdr.ipv4.frag_offset = 13w0;
+            hdr.ipv4.ttl = 8w64;
+            hdr.ipv4.protocol = IP_PROTOCOLS_UDP;
+            hdr.udp.dst_port = UDP_ROCE_DST_PORT;
+            hdr.udp.hdr_length = CNP_UDP_LENGTH;
+            hdr.udp.checksum = 16w0;
             // PNP reconstructs sQPN from the mirrored original data packet.
             // Before the IP swap above, hdr.ipv4.dst_addr is the original server
             // IP and hdr.udp.src_port still carries encoded sQPN[16:3].
@@ -555,9 +568,58 @@ control Egress(
             hdr.bth.dst_qpn[16:3] = hdr.udp.src_port[13:0];
             hdr.bth.dst_qpn[2:0] = pnp_dip_hash[2:0];
             hdr.bth.opcode = CNP_OPCODE;
+            hdr.bth.solicited_event = 1w0;
+            hdr.bth.mig_req = 1w0;
+            hdr.bth.pad_count = 2w0;
+            hdr.bth.header_v = 4w0;
+            hdr.bth.reserved1 = BTH_CNP_BECN;
+            hdr.bth.ack_req = 1w0;
+            hdr.bth.reserved2 = 7w0;
+            hdr.bth.psn = 24w0;
+            hdr.cnp_padding.setValid();
+            hdr.cnp_padding.reserved1 = 64w0;
+            hdr.cnp_padding.reserved2 = 64w0;
+            hdr.icrc.setValid();
+            icrc_raw = cnp_icrc_hash_calc.get({
+                64w0xffffffffffffffff,
+                hdr.ipv4.version,
+                hdr.ipv4.ihl,
+                8w0xff,
+                hdr.ipv4.total_len,
+                hdr.ipv4.identification,
+                hdr.ipv4.flags,
+                hdr.ipv4.frag_offset,
+                8w0xff,
+                hdr.ipv4.protocol,
+                16w0xffff,
+                hdr.ipv4.src_addr,
+                hdr.ipv4.dst_addr,
+                hdr.udp.src_port,
+                hdr.udp.dst_port,
+                hdr.udp.hdr_length,
+                16w0xffff,
+                hdr.bth.opcode,
+                hdr.bth.solicited_event,
+                hdr.bth.mig_req,
+                hdr.bth.pad_count,
+                hdr.bth.header_v,
+                hdr.bth.parti_key,
+                8w0xff,
+                hdr.bth.dst_qpn,
+                hdr.bth.ack_req,
+                hdr.bth.reserved2,
+                hdr.bth.psn,
+                hdr.cnp_padding.reserved1,
+                hdr.cnp_padding.reserved2
+            });
+            hdr.icrc.value[31:24] = icrc_raw[7:0];
+            hdr.icrc.value[23:16] = icrc_raw[15:8];
+            hdr.icrc.value[15:8] = icrc_raw[23:16];
+            hdr.icrc.value[7:0] = icrc_raw[31:24];
             if (hdr.bth.isValid()) {
                 egress_mirror_bth_counter.count(0);
                 egress_mirror_cnp_set_counter.count(0);
+                egress_mirror_icrc_counter.count(0);
             }
         }
         else if (hdr.udp.isValid() && hdr.bth.isValid() &&
@@ -594,7 +656,7 @@ control EgressDeparser(packet_out pkt,
             hdr.ipv4.src_addr,
             hdr.ipv4.dst_addr});
         }
-        if (hdr.udp.isValid()) {
+        if (hdr.udp.isValid() && !hdr.icrc.isValid()) {
             hdr.udp.checksum = udp_csum.update({
             hdr.udp.src_port,
             hdr.udp.dst_port, meta.udp_tmp_checksum}, true);
@@ -605,6 +667,8 @@ control EgressDeparser(packet_out pkt,
         pkt.emit(hdr.tcp);
         pkt.emit(hdr.udp);
         pkt.emit(hdr.bth);
+        pkt.emit(hdr.cnp_padding);
+        pkt.emit(hdr.icrc);
     }
 }
 

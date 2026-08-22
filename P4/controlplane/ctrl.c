@@ -293,8 +293,8 @@ static void print_recirc_port_inventory(bf_dev_id_t dev_id,
                bf_status);
     }
 
-    printf("[recirc-port] note: 10.99.1.2 is an IPv4 route target in act_l3_table, "
-           "mapped to front-panel 3/0. It cannot be used as RECIRC_PORT.\n");
+    printf("[recirc-port] note: front-panel route targets in act_l3_table "
+           "cannot be used as RECIRC_PORT.\n");
     fflush(stdout);
 }
 
@@ -1089,6 +1089,7 @@ static void monitor_debug_counters(void)
     static uint64_t last_egress_mirror_cnp_set = 0;
     static uint64_t last_egress_roce_data = 0;
     static uint64_t last_ingress_port_counts[512] = {0};
+    static uint64_t last_mac_rx_counts[ARRLEN(PORT_LIST)] = {0};
     uint64_t recir_start = 0;
     uint64_t recir_return = 0;
     uint64_t recir_return_roce = 0;
@@ -1506,6 +1507,96 @@ static void monitor_debug_counters(void)
                 }
             }
         }
+
+        for (uint32_t idx = 0; idx < ARRLEN(PORT_LIST); idx++)
+        {
+            bf_dev_port_t dev_port = fp_port_to_dev_port(dev_tgt->dev_id,
+                                                         PORT_LIST[idx].fp_port);
+            uint64_t value = 0;
+            uint64_t delta = 0;
+
+            if ((uint32_t)dev_port >= ARRLEN(last_ingress_port_counts))
+            {
+                continue;
+            }
+
+            status = read_counter_index(ingress_port_debug_counter,
+                                        (uint32_t)dev_port,
+                                        &value);
+            if (status != BF_SUCCESS)
+            {
+                printf("[debug-counter] read ingress fp_port=%s dev_port=%u failed, status=%d\n",
+                       PORT_LIST[idx].fp_port,
+                       (uint32_t)dev_port,
+                       status);
+                continue;
+            }
+
+            delta = value - last_ingress_port_counts[(uint32_t)dev_port];
+            last_ingress_port_counts[(uint32_t)dev_port] = value;
+            if (delta != 0)
+            {
+                printf("ingress_fp=%s dev_port=%u pkts=%" PRIu64 " (+%" PRIu64 ")\n",
+                       PORT_LIST[idx].fp_port,
+                       (uint32_t)dev_port,
+                       value,
+                       delta);
+            }
+        }
+
+        for (uint32_t idx = 0; idx < ARRLEN(PORT_LIST); idx++)
+        {
+            bf_pal_front_port_handle_t port_hdl;
+            bf_rmon_counter_t ctr = bf_mac_stat_FramesReceivedAll;
+            uint64_t rx_all = 0;
+            uint64_t delta = 0;
+
+            status = bf_pm_port_str_to_hdl_get(dev_tgt->dev_id,
+                                               PORT_LIST[idx].fp_port,
+                                               &port_hdl);
+            if (status != BF_SUCCESS)
+            {
+                printf("[debug-counter] map fp_port=%s to handle failed, status=%d\n",
+                       PORT_LIST[idx].fp_port,
+                       status);
+                continue;
+            }
+
+            status = bf_pm_port_stat_direct_get(dev_tgt->dev_id,
+                                                &port_hdl,
+                                                &ctr,
+                                                &rx_all,
+                                                1);
+            if (status != BF_SUCCESS)
+            {
+                status = bf_pm_port_all_stats_update_sync(dev_tgt->dev_id,
+                                                          &port_hdl);
+                if (status == BF_SUCCESS)
+                {
+                    status = bf_pm_port_this_stat_get(dev_tgt->dev_id,
+                                                      &port_hdl,
+                                                      bf_mac_stat_FramesReceivedAll,
+                                                      &rx_all);
+                }
+            }
+            if (status != BF_SUCCESS)
+            {
+                printf("[debug-counter] read MAC RX fp_port=%s failed, status=%d\n",
+                       PORT_LIST[idx].fp_port,
+                       status);
+                continue;
+            }
+
+            delta = rx_all - last_mac_rx_counts[idx];
+            last_mac_rx_counts[idx] = rx_all;
+            if (delta != 0)
+            {
+                printf("mac_rx_fp=%s rx_all=%" PRIu64 " (+%" PRIu64 ")\n",
+                       PORT_LIST[idx].fp_port,
+                       rx_all,
+                       delta);
+            }
+        }
     }
 
     printf("recir_start=%" PRIu64 " (+%" PRIu64 ") recir_return=%" PRIu64 " (+%" PRIu64 ") recir_return_roce=%" PRIu64 " (+%" PRIu64 ") cnp_mirror=%" PRIu64 " (+%" PRIu64 ")\n",
@@ -1852,7 +1943,7 @@ static void mirrorSetup(const bf_rt_target_t *dev_tgt)
         .id = CNP_SES_ID,
         .egr_port = mirror_dev_port,
         .egr_port_v = true,
-        .max_pkt_len = 16384
+        .max_pkt_len = CNP_MIRROR_MAX_PKT_LEN
     };
 
     pd_status = p4_pd_mirror_session_create(mirror_session, pd_dev_tgt,

@@ -21,6 +21,9 @@ const l4_port_t UDP_ROCE_DST_PORT = 4791;
 const bit<8> CNP_OPCODE = 129;
 const bit<2> ECN_CE = 3;
 const bit<2> ECN_NOT_ECT = 0;
+const bit<16> CNP_IPV4_TOTAL_LEN = 60; // IPv4 + UDP + BTH + 16B CNP pad + iCRC
+const bit<16> CNP_UDP_LENGTH = 40;     // UDP + BTH + 16B CNP pad + iCRC
+const bit<8> BTH_CNP_BECN = 8w0x40;    // BTH FECN/BECN/resv6 byte: only BECN on wire
 
 // rixin: 由于使用了mirror，所以需要区分
 typedef bit<8>  pkt_type_t;
@@ -108,6 +111,15 @@ header bth_h {
     bit<24> psn;
 }
 
+header cnp_padding_h {
+    bit<64> reserved1;
+    bit<64> reserved2;
+}
+
+header icrc_h {
+    bit<32> value;
+}
+
 header arp_h {
     bit<16> hw_type;
     bit<16> proto_type;
@@ -169,6 +181,8 @@ struct my_egress_headers_t {
     tcp_h tcp;
     udp_h udp;
     bth_h bth;
+    cnp_padding_h cnp_padding;
+    icrc_h icrc;
 }
 
 struct empty_header_t {}

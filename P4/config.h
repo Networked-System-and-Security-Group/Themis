@@ -4,12 +4,9 @@
 #define GET_DAEMON_PKT_UDP_PORT 12345
 #define DAEMON_PKT_BUFFER_SIZE 1024
 #define CPU_PORT 192
-#define RECIRC_PORT 196
+#define RECIRC_PORT 384
 #define CNP_SES_ID 1
-#define ACT_196_PORT 141
-#define ACT_197_PORT 135
-#define ACT_198_PORT 142
-#define ACT_199_PORT 132
+#define CNP_MIRROR_MAX_PKT_LEN 55 /* mirror_md(1) + Ethernet(14) + IPv4(20) + UDP(8) + BTH(12) */
 
 
 
@@ -55,7 +52,7 @@
 #define POLLING_PFC_TRC 2
 #define POLLING_ALL_TRC 3
 
-#define RECIRC_PORT 196
+#define RECIRC_PORT 384
 //#define BROADCAST_MC_GID 255
 #define SIGNAL_MC_GID 131
 #define POLLING_MC_GID_A 126
