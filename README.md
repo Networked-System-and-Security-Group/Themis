@@ -1,4 +1,6 @@
-# THEMIS Addressing Congestion-Induced Unfairness in Long-Haul RDMA Networks
+# THEMIS
+
+**Addressing Congestion-Induced Unfairness in Long-Haul RDMA Networks**
 
 <p align="center">
   <a href="#icnp-2025"><img src="https://img.shields.io/badge/Paper-ICNP%202025-2f6f9f" alt="Paper: ICNP 2025"></a>
