@@ -1,4 +1,4 @@
-# THEMIS
+# THEMIS: Addressing Congestion-Induced Unfairness in Long-Haul RDMA Networks
 
 **Addressing Congestion-Induced Unfairness in Long-Haul RDMA Networks**
 
