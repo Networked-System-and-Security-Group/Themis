@@ -1,9 +1,9 @@
-# THEMIS
+# THEMIS Addressing Congestion-Induced Unfairness in Long-Haul RDMA Networks
 
-**Addressing Congestion-Induced Unfairness in Long-Haul RDMA Networks**
-
-[![Paper: ICNP 2025](https://img.shields.io/badge/Paper-ICNP%202025-2f6f9f)](#icnp-2025)
-[![Paper: IEEE/ACM ToN](https://img.shields.io/badge/Paper-IEEE%2FACM%20ToN-2a7f62)](#ieeeacm-transactions-on-networking)
+<p align="center">
+  <a href="#icnp-2025"><img src="https://img.shields.io/badge/Paper-ICNP%202025-2f6f9f" alt="Paper: ICNP 2025"></a>
+  <a href="#ieeeacm-transactions-on-networking"><img src="https://img.shields.io/badge/Paper-IEEE%2FACM%20ToN-2a7f62" alt="Paper: IEEE/ACM ToN"></a>
+</p>
 
 THEMIS is a fairness-maintenance patch for long-haul RDMA networks. It addresses congestion-induced unfairness caused by asymmetric feedback delays between inter-datacenter and intra-datacenter flows. The implementation combines a **Proactive Notification Point (PNP)** for near-source congestion with a **Temporary Reaction Point (TRP)** for near-destination congestion.
 
